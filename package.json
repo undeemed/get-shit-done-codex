@@ -1,28 +1,31 @@
 {
-  "name": "get-shit-done-cc",
-  "version": "1.3.31",
-  "description": "A meta-prompting, context engineering and spec-driven development system for Claude Code by TÂCHES.",
+  "name": "get-shit-done-codex",
+  "version": "1.0.0",
+  "description": "A meta-prompting, context engineering and spec-driven development system for OpenAI Codex CLI by TÂCHES.",
   "bin": {
-    "get-shit-done-cc": "bin/install.js"
+    "get-shit-done-codex": "bin/install.js"
   },
   "files": [
     "bin",
     "commands",
-    "get-shit-done"
+    "get-shit-done",
+    "AGENTS.md"
   ],
   "keywords": [
-    "claude",
-    "claude-code",
+    "openai",
+    "codex",
+    "codex-cli",
     "ai",
     "meta-prompting",
     "context-engineering",
-    "spec-driven-development"
+    "spec-driven-development",
+    "agents"
   ],
   "author": "TÂCHES",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/glittercowboy/get-shit-done.git"
+    "url": "git+https://github.com/undeemed/get-shit-done-codex.git"
   },
   "engines": {
     "node": ">=16.7.0"

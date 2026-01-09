@@ -17,85 +17,49 @@ const pkg = require('../package.json');
 
 const banner = `
 ${cyan}   ██████╗ ███████╗██████╗
-  ██╔════╝ ██╔════╝██╔══██╗
-  ██║  ███╗███████╗██║  ██║
-  ██║   ██║╚════██║██║  ██║
-  ╚██████╔╝███████║██████╔╝
-   ╚═════╝ ╚══════╝╚═════╝${reset}
+   ██╔════╝ ██╔════╝██╔══██╗
+   ██║  ███╗███████╗██║  ██║
+   ██║   ██║╚════██║██║  ██║
+   ╚██████╔╝███████║██████╔╝
+    ╚═════╝ ╚══════╝╚═════╝${reset}
 
-  Get Shit Done ${dim}v${pkg.version}${reset}
-  A meta-prompting, context engineering and spec-driven
-  development system for Claude Code by TÂCHES.
+   Get Shit Done ${dim}v${pkg.version}${reset}
+   A meta-prompting, context engineering and spec-driven
+   development system for OpenAI Codex CLI by TÂCHES.
 `;
 
 // Parse args
 const args = process.argv.slice(2);
 const hasGlobal = args.includes('--global') || args.includes('-g');
 const hasLocal = args.includes('--local') || args.includes('-l');
-
-// Parse --config-dir argument
-function parseConfigDirArg() {
-  const configDirIndex = args.findIndex(arg => arg === '--config-dir' || arg === '-c');
-  if (configDirIndex !== -1) {
-    const nextArg = args[configDirIndex + 1];
-    // Error if --config-dir is provided without a value or next arg is another flag
-    if (!nextArg || nextArg.startsWith('-')) {
-      console.error(`  ${yellow}--config-dir requires a path argument${reset}`);
-      process.exit(1);
-    }
-    return nextArg;
-  }
-  // Also handle --config-dir=value format
-  const configDirArg = args.find(arg => arg.startsWith('--config-dir=') || arg.startsWith('-c='));
-  if (configDirArg) {
-    return configDirArg.split('=')[1];
-  }
-  return null;
-}
-const explicitConfigDir = parseConfigDirArg();
 const hasHelp = args.includes('--help') || args.includes('-h');
 
 console.log(banner);
 
 // Show help if requested
 if (hasHelp) {
-  console.log(`  ${yellow}Usage:${reset} npx get-shit-done-cc [options]
+  console.log(`  ${yellow}Usage:${reset} npx get-shit-done-codex [options]
 
   ${yellow}Options:${reset}
-    ${cyan}-g, --global${reset}              Install globally (to Claude config directory)
-    ${cyan}-l, --local${reset}               Install locally (to ./.claude in current directory)
-    ${cyan}-c, --config-dir <path>${reset}   Specify custom Claude config directory
+    ${cyan}-g, --global${reset}              Install globally (to ~/.codex/)
+    ${cyan}-l, --local${reset}               Install locally (to current directory)
     ${cyan}-h, --help${reset}                Show this help message
 
   ${yellow}Examples:${reset}
-    ${dim}# Install to default ~/.claude directory${reset}
-    npx get-shit-done-cc --global
-
-    ${dim}# Install to custom config directory (for multiple Claude accounts)${reset}
-    npx get-shit-done-cc --global --config-dir ~/.claude-bc
-
-    ${dim}# Using environment variable${reset}
-    CLAUDE_CONFIG_DIR=~/.claude-bc npx get-shit-done-cc --global
+    ${dim}# Install globally to ~/.codex directory${reset}
+    npx get-shit-done-codex --global
 
     ${dim}# Install to current project only${reset}
-    npx get-shit-done-cc --local
+    npx get-shit-done-codex --local
 
   ${yellow}Notes:${reset}
-    The --config-dir option is useful when you have multiple Claude Code
-    configurations (e.g., for different subscriptions). It takes priority
-    over the CLAUDE_CONFIG_DIR environment variable.
+    For codex-cli, this installer:
+    - Creates/updates AGENTS.md in the target directory
+    - Copies the get-shit-done skill and commands
+    - Global install goes to ~/.codex/ (inherited by all projects)
+    - Local install puts files in current directory
 `);
   process.exit(0);
-}
-
-/**
- * Expand ~ to home directory (shell doesn't expand in env vars passed to node)
- */
-function expandTilde(filePath) {
-  if (filePath && filePath.startsWith('~/')) {
-    return path.join(os.homedir(), filePath.slice(2));
-  }
-  return filePath;
 }
 
 /**
@@ -114,8 +78,12 @@ function copyWithPathReplacement(srcDir, destDir, pathPrefix) {
       copyWithPathReplacement(srcPath, destPath, pathPrefix);
     } else if (entry.name.endsWith('.md')) {
       // Replace ~/.claude/ with the appropriate prefix in markdown files
+      // Also replace Claude-specific references with Codex equivalents
       let content = fs.readFileSync(srcPath, 'utf8');
       content = content.replace(/~\/\.claude\//g, pathPrefix);
+      content = content.replace(/\.claude\//g, pathPrefix.replace('~/', ''));
+      content = content.replace(/Claude Code/g, 'Codex CLI');
+      content = content.replace(/Claude/g, 'Codex');
       fs.writeFileSync(destPath, content);
     } else {
       fs.copyFileSync(srcPath, destPath);
@@ -128,27 +96,34 @@ function copyWithPathReplacement(srcDir, destDir, pathPrefix) {
  */
 function install(isGlobal) {
   const src = path.join(__dirname, '..');
-  // Priority: explicit --config-dir arg > CLAUDE_CONFIG_DIR env var > default ~/.claude
-  const configDir = expandTilde(explicitConfigDir) || expandTilde(process.env.CLAUDE_CONFIG_DIR);
-  const defaultGlobalDir = configDir || path.join(os.homedir(), '.claude');
-  const claudeDir = isGlobal
-    ? defaultGlobalDir
-    : path.join(process.cwd(), '.claude');
+  const codexDir = isGlobal
+    ? path.join(os.homedir(), '.codex')
+    : process.cwd();
 
   const locationLabel = isGlobal
-    ? claudeDir.replace(os.homedir(), '~')
-    : claudeDir.replace(process.cwd(), '.');
+    ? '~/.codex'
+    : '.';
 
   // Path prefix for file references
-  // Use actual path when CLAUDE_CONFIG_DIR is set, otherwise use ~ shorthand
   const pathPrefix = isGlobal
-    ? (configDir ? `${claudeDir}/` : '~/.claude/')
-    : './.claude/';
+    ? '~/.codex/'
+    : './';
 
   console.log(`  Installing to ${cyan}${locationLabel}${reset}\n`);
 
+  // Create target directory if needed
+  fs.mkdirSync(codexDir, { recursive: true });
+
+  // Copy AGENTS.md
+  const agentsSrc = path.join(src, 'AGENTS.md');
+  const agentsDest = path.join(codexDir, 'AGENTS.md');
+  let agentsContent = fs.readFileSync(agentsSrc, 'utf8');
+  agentsContent = agentsContent.replace(/~\/\.claude\//g, pathPrefix);
+  fs.writeFileSync(agentsDest, agentsContent);
+  console.log(`  ${green}✓${reset} Installed AGENTS.md`);
+
   // Create commands directory
-  const commandsDir = path.join(claudeDir, 'commands');
+  const commandsDir = path.join(codexDir, 'commands');
   fs.mkdirSync(commandsDir, { recursive: true });
 
   // Copy commands/gsd with path replacement
@@ -159,12 +134,23 @@ function install(isGlobal) {
 
   // Copy get-shit-done skill with path replacement
   const skillSrc = path.join(src, 'get-shit-done');
-  const skillDest = path.join(claudeDir, 'get-shit-done');
+  const skillDest = path.join(codexDir, 'get-shit-done');
   copyWithPathReplacement(skillSrc, skillDest, pathPrefix);
   console.log(`  ${green}✓${reset} Installed get-shit-done`);
 
   console.log(`
-  ${green}Done!${reset} Run ${cyan}/gsd:help${reset} to get started.
+  ${green}Done!${reset} 
+  
+  ${yellow}For Codex CLI:${reset}
+  - AGENTS.md is at ${cyan}${codexDir}/AGENTS.md${reset}
+  - Commands are in ${cyan}${codexDir}/commands/gsd/${reset}
+  
+  ${yellow}Getting Started:${reset}
+  1. Run ${cyan}codex${reset} to start the Codex CLI
+  2. Use ${cyan}/gsd:help${reset} to see available commands
+  3. Start with ${cyan}/gsd:new-project${reset} to initialize a project
+
+  ${dim}See AGENTS.md for full documentation.${reset}
 `);
 }
 
@@ -177,14 +163,10 @@ function promptLocation() {
     output: process.stdout
   });
 
-  const configDir = expandTilde(explicitConfigDir) || expandTilde(process.env.CLAUDE_CONFIG_DIR);
-  const globalPath = configDir || path.join(os.homedir(), '.claude');
-  const globalLabel = globalPath.replace(os.homedir(), '~');
-
   console.log(`  ${yellow}Where would you like to install?${reset}
 
-  ${cyan}1${reset}) Global ${dim}(${globalLabel})${reset} - available in all projects
-  ${cyan}2${reset}) Local  ${dim}(./.claude)${reset} - this project only
+  ${cyan}1${reset}) Global ${dim}(~/.codex)${reset} - available in all projects
+  ${cyan}2${reset}) Local  ${dim}(.)${reset} - this project only
 `);
 
   rl.question(`  Choice ${dim}[1]${reset}: `, (answer) => {
@@ -198,9 +180,6 @@ function promptLocation() {
 // Main
 if (hasGlobal && hasLocal) {
   console.error(`  ${yellow}Cannot specify both --global and --local${reset}`);
-  process.exit(1);
-} else if (explicitConfigDir && hasLocal) {
-  console.error(`  ${yellow}Cannot use --config-dir with --local${reset}`);
   process.exit(1);
 } else if (hasGlobal) {
   install(true);
