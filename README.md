@@ -2,19 +2,19 @@
 
 # GET SHIT DONE
 
-**A light-weight and powerful meta-prompting, context engineering and spec-driven development system for Claude Code by TÂCHES.**
+**A light-weight and powerful meta-prompting, context engineering and spec-driven development system for OpenAI Codex CLI by TÂCHES.**
 
-**Solves context rot — the quality degradation that happens as Claude fills its context window.**
+**Solves context rot — the quality degradation that happens as AI fills its context window.**
 
-[![npm version](https://img.shields.io/npm/v/get-shit-done-cc?style=for-the-badge&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/get-shit-done-cc)
-[![npm downloads](https://img.shields.io/npm/dm/get-shit-done-cc?style=for-the-badge&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/get-shit-done-cc)
+[![npm version](https://img.shields.io/npm/v/get-shit-done-codex?style=for-the-badge&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/get-shit-done-codex)
+[![npm downloads](https://img.shields.io/npm/dm/get-shit-done-codex?style=for-the-badge&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/get-shit-done-codex)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/glittercowboy/get-shit-done?style=for-the-badge&logo=github&color=181717)](https://github.com/glittercowboy/get-shit-done)
 
 <br>
 
 ```bash
-npx get-shit-done-cc
+npx get-shit-done-codex
 ```
 
 **Works on Mac, Windows, and Linux.**
@@ -29,7 +29,7 @@ npx get-shit-done-cc
 
 *"I've done SpecKit, OpenSpec and Taskmaster — this has produced the best results for me."*
 
-*"By far the most powerful addition to my Claude Code. Nothing over-engineered. Literally just gets shit done."*
+*"By far the most powerful addition to my Codex CLI. Nothing over-engineered. Literally just gets shit done."*
 
 <br>
 
@@ -43,15 +43,15 @@ npx get-shit-done-cc
 
 ## Why I Built This
 
-I'm a solo developer. I don't write code — Claude Code does.
+I'm a solo developer. I don't write code — AI does.
 
 Other spec-driven development tools exist; BMAD, Speckit... But they all seem to make things way more complicated than they need to be (sprint ceremonies, story points, stakeholder syncs, retrospectives, Jira workflows) or lack real big picture understanding of what you're building. I'm not a 50-person software company. I don't want to play enterprise theater. I'm just a creative person trying to build great things that work.
 
 So I built GSD. The complexity is in the system, not in your workflow. Behind the scenes: context engineering, XML prompt formatting, subagent orchestration, state management. What you see: a few commands that just work.
 
-The system gives Claude everything it needs to do the work *and* verify it. I trust the workflow. It just does a good job.
+The system gives the AI everything it needs to do the work *and* verify it. I trust the workflow. It just does a good job.
 
-That's what this is. No enterprise roleplay bullshit. Just an incredibly effective system for building cool stuff consistently using Claude Code.
+That's what this is. No enterprise roleplay bullshit. Just an incredibly effective system for building cool stuff consistently using Codex CLI.
 
 — **TÂCHES**
 
@@ -59,7 +59,7 @@ That's what this is. No enterprise roleplay bullshit. Just an incredibly effecti
 
 Vibecoding has a bad reputation. You describe what you want, AI generates code, and you get inconsistent garbage that falls apart at scale.
 
-GSD fixes that. It's the context engineering layer that makes Claude Code reliable. Describe your idea, let the system extract everything it needs to know, and let Claude Code get to work.
+GSD fixes that. It's the context engineering layer that makes Codex CLI reliable. Describe your idea, let the system extract everything it needs to know, and let the AI get to work.
 
 ---
 
@@ -72,31 +72,31 @@ People who want to describe what they want and have it built correctly — witho
 ## Getting Started
 
 ```bash
-npx get-shit-done-cc
+npx get-shit-done-codex
 ```
 
-That's it. Verify with `/gsd:help` inside your Claude Code interface.
+That's it. Verify with `/prompts:gsd-help` inside Codex CLI.
 
 ### Staying Updated
 
 GSD evolves fast. Check for updates periodically:
 
 ```
-/gsd:whats-new
+/prompts:gsd-whats-new
 ```
 
 Update with:
 
 ```bash
-npx get-shit-done-cc@latest
+npx get-shit-done-codex@latest
 ```
 
 <details>
 <summary><strong>Non-interactive Install (Docker, CI, Scripts)</strong></summary>
 
 ```bash
-npx get-shit-done-cc --global   # Install to ~/.claude/
-npx get-shit-done-cc --local    # Install to ./.claude/
+npx get-shit-done-codex --global   # Install to ~/.claude/
+npx get-shit-done-codex --local    # Install to ./.claude/
 ```
 
 Use `--global` (`-g`) or `--local` (`-l`) to skip the interactive prompt.
@@ -120,7 +120,7 @@ Installs to `./.claude/` for testing modifications before contributing.
 
 ### Recommended: Skip Permissions Mode
 
-GSD is designed for frictionless automation. Run Claude Code with:
+GSD is designed for frictionless automation. Run Codex CLI with:
 
 ```bash
 claude --dangerously-skip-permissions
@@ -166,12 +166,12 @@ If you prefer not to use that flag, add this to your project's `.claude/settings
 
 ## How It Works
 
-> **Already have code?** Run `/gsd:map-codebase` first. It spawns parallel agents to analyze your stack, architecture, conventions, and concerns. Then `/gsd:new-project` knows your codebase — questions focus on what you're adding, and planning automatically loads your patterns.
+> **Already have code?** Run `/prompts:gsd-map-codebase` first. It spawns parallel agents to analyze your stack, architecture, conventions, and concerns. Then `/prompts:gsd-new-project` knows your codebase — questions focus on what you're adding, and planning automatically loads your patterns.
 
 ### 1. Initialize Project
 
 ```
-/gsd:new-project
+/prompts:gsd-new-project
 ```
 
 One command, one flow. The system:
@@ -190,7 +190,7 @@ You approve the roadmap. Now you're ready to build.
 ### 2. Discuss Phase
 
 ```
-/gsd:discuss-phase 1
+/prompts:gsd-discuss-phase 1
 ```
 
 **This is where you shape the implementation.**
@@ -218,7 +218,7 @@ The deeper you go here, the more the system builds what you actually want. Skip 
 ### 3. Plan Phase
 
 ```
-/gsd:plan-phase 1
+/prompts:gsd-plan-phase 1
 ```
 
 The system:
@@ -236,7 +236,7 @@ Each plan is small enough to execute in a fresh context window. No degradation, 
 ### 4. Execute Phase
 
 ```
-/gsd:execute-phase 1
+/prompts:gsd-execute-phase 1
 ```
 
 The system:
@@ -255,7 +255,7 @@ Walk away, come back to completed work with clean git history.
 ### 5. Verify Work
 
 ```
-/gsd:verify-work 1
+/prompts:gsd-verify-work 1
 ```
 
 **This is where you confirm it actually works.**
@@ -269,7 +269,7 @@ The system:
 3. **Diagnoses failures automatically** — Spawns debug agents to find root causes
 4. **Creates verified fix plans** — Ready for immediate re-execution
 
-If everything passes, you move on. If something's broken, you don't manually debug — you just run `/gsd:execute-phase` again with the fix plans it created.
+If everything passes, you move on. If something's broken, you don't manually debug — you just run `/prompts:gsd-execute-phase` again with the fix plans it created.
 
 **Creates:** `{phase}-UAT.md`, fix plans if issues found
 
@@ -278,22 +278,22 @@ If everything passes, you move on. If something's broken, you don't manually deb
 ### 6. Repeat → Complete → Next Milestone
 
 ```
-/gsd:discuss-phase 2
-/gsd:plan-phase 2
-/gsd:execute-phase 2
-/gsd:verify-work 2
+/prompts:gsd-discuss-phase 2
+/prompts:gsd-plan-phase 2
+/prompts:gsd-execute-phase 2
+/prompts:gsd-verify-work 2
 ...
-/gsd:complete-milestone
-/gsd:new-milestone
+/prompts:gsd-complete-milestone
+/prompts:gsd-new-milestone
 ```
 
 Loop **discuss → plan → execute → verify** until milestone complete.
 
 Each phase gets your input (discuss), proper research (plan), clean execution (execute), and human verification (verify). Context stays fresh. Quality stays high.
 
-When all phases are done, `/gsd:complete-milestone` archives the milestone and tags the release.
+When all phases are done, `/prompts:gsd-complete-milestone` archives the milestone and tags the release.
 
-Then `/gsd:new-milestone` starts the next version — same flow as `new-project` but for your existing codebase. You describe what you want to build next, the system researches the domain, you scope requirements, and it creates a fresh roadmap. Each milestone is a clean cycle: define → build → ship.
+Then `/prompts:gsd-new-milestone` starts the next version — same flow as `new-project` but for your existing codebase. You describe what you want to build next, the system researches the domain, you scope requirements, and it creates a fresh roadmap. Each milestone is a clean cycle: define → build → ship.
 
 ---
 
@@ -301,26 +301,26 @@ Then `/gsd:new-milestone` starts the next version — same flow as `new-project`
 
 ### Context Engineering
 
-Claude Code is incredibly powerful *if* you give it the context it needs. Most people don't.
+Codex CLI is incredibly powerful *if* you give it the context it needs. Most people don't.
 
 GSD handles it for you:
 
-| File | What it does |
-|------|--------------|
-| `PROJECT.md` | Project vision, always loaded |
-| `research/` | Ecosystem knowledge (stack, features, architecture, pitfalls) |
-| `REQUIREMENTS.md` | Scoped v1/v2 requirements with phase traceability |
-| `ROADMAP.md` | Where you're going, what's done |
-| `STATE.md` | Decisions, blockers, position — memory across sessions |
-| `PLAN.md` | Atomic task with XML structure, verification steps |
-| `SUMMARY.md` | What happened, what changed, committed to history |
-| `todos/` | Captured ideas and tasks for later work |
+| File              | What it does                                                  |
+|-------------------|---------------------------------------------------------------|
+| `PROJECT.md`      | Project vision, always loaded                                 |
+| `research/`       | Ecosystem knowledge (stack, features, architecture, pitfalls) |
+| `REQUIREMENTS.md` | Scoped v1/v2 requirements with phase traceability             |
+| `ROADMAP.md`      | Where you're going, what's done                               |
+| `STATE.md`        | Decisions, blockers, position — memory across sessions        |
+| `PLAN.md`         | Atomic task with XML structure, verification steps            |
+| `SUMMARY.md`      | What happened, what changed, committed to history             |
+| `todos/`          | Captured ideas and tasks for later work                       |
 
-Size limits based on where Claude's quality degrades. Stay under, get consistent excellence.
+Size limits based on where AI quality degrades. Stay under, get consistent excellence.
 
 ### XML Prompt Formatting
 
-Every plan is structured XML optimized for Claude:
+Every plan is structured XML optimized for the AI:
 
 ```xml
 <task type="auto">
@@ -342,12 +342,12 @@ Precise instructions. No guessing. Verification built in.
 
 Every stage uses the same pattern: a thin orchestrator spawns specialized agents, collects results, and routes to the next step.
 
-| Stage | Orchestrator does | Agents do |
-|-------|------------------|-----------|
-| Research | Coordinates, presents findings | 4 parallel researchers investigate stack, features, architecture, pitfalls |
-| Planning | Validates, manages iteration | Planner creates plans, checker verifies, loop until pass |
-| Execution | Groups into waves, tracks progress | Executors implement in parallel, each with fresh 200k context |
-| Verification | Presents results, routes next | Verifier checks codebase against goals, debuggers diagnose failures |
+| Stage        | Orchestrator does                  | Agents do                                                                  |
+|--------------|------------------------------------|----------------------------------------------------------------------------|
+| Research     | Coordinates, presents findings     | 4 parallel researchers investigate stack, features, architecture, pitfalls |
+| Planning     | Validates, manages iteration       | Planner creates plans, checker verifies, loop until pass                   |
+| Execution    | Groups into waves, tracks progress | Executors implement in parallel, each with fresh 200k context              |
+| Verification | Presents results, routes next      | Verifier checks codebase against goals, debuggers diagnose failures        |
 
 The orchestrator never does heavy lifting. It spawns agents, waits, integrates results.
 
@@ -365,7 +365,7 @@ lmn012o feat(08-02): create registration endpoint
 ```
 
 > [!NOTE]
-> **Benefits:** Git bisect finds exact failing task. Each task independently revertable. Clear history for Claude in future sessions. Better observability in AI-automated workflow.
+> **Benefits:** Git bisect finds exact failing task. Each task independently revertable. Clear history for AI in future sessions. Better observability in AI-automated workflow.
 
 Every commit is surgical, traceable, and meaningful.
 
@@ -384,51 +384,51 @@ You're never locked in. The system adapts.
 
 ### Core Workflow
 
-| Command | What it does |
-|---------|--------------|
-| `/gsd:new-project` | Full initialization: questions → research → requirements → roadmap |
-| `/gsd:discuss-phase [N]` | Capture implementation decisions before planning |
-| `/gsd:plan-phase [N]` | Research + plan + verify for a phase |
-| `/gsd:execute-phase <N>` | Execute all plans in parallel waves, verify when complete |
-| `/gsd:verify-work [N]` | Manual user acceptance testing ¹ |
-| `/gsd:complete-milestone` | Archive milestone, tag release |
-| `/gsd:new-milestone [name]` | Start next version: questions → research → requirements → roadmap |
+| Command                             | What it does                                                       |
+|-------------------------------------|--------------------------------------------------------------------|
+| `/prompts:gsd-new-project`          | Full initialization: questions → research → requirements → roadmap |
+| `/prompts:gsd-discuss-phase [N]`    | Capture implementation decisions before planning                   |
+| `/prompts:gsd-plan-phase [N]`       | Research + plan + verify for a phase                               |
+| `/prompts:gsd-execute-phase <N>`    | Execute all plans in parallel waves, verify when complete          |
+| `/prompts:gsd-verify-work [N]`      | Manual user acceptance testing ¹                                   |
+| `/prompts:gsd-complete-milestone`   | Archive milestone, tag release                                     |
+| `/prompts:gsd-new-milestone [name]` | Start next version: questions → research → requirements → roadmap  |
 
 ### Navigation
 
-| Command | What it does |
-|---------|--------------|
-| `/gsd:progress` | Where am I? What's next? |
-| `/gsd:help` | Show all commands and usage guide |
+| Command                 | What it does                      |
+|-------------------------|-----------------------------------|
+| `/prompts:gsd-progress` | Where am I? What's next?          |
+| `/prompts:gsd-help`     | Show all commands and usage guide |
 
 ### Brownfield
 
-| Command | What it does |
-|---------|--------------|
-| `/gsd:map-codebase` | Analyze existing codebase before new-project |
+| Command                     | What it does                                 |
+|-----------------------------|----------------------------------------------|
+| `/prompts:gsd-map-codebase` | Analyze existing codebase before new-project |
 
 ### Phase Management
 
-| Command | What it does |
-|---------|--------------|
-| `/gsd:add-phase` | Append phase to roadmap |
-| `/gsd:insert-phase [N]` | Insert urgent work between phases |
-| `/gsd:remove-phase [N]` | Remove future phase, renumber |
+| Command                         | What it does                      |
+|---------------------------------|-----------------------------------|
+| `/prompts:gsd-add-phase`        | Append phase to roadmap           |
+| `/prompts:gsd-insert-phase [N]` | Insert urgent work between phases |
+| `/prompts:gsd-remove-phase [N]` | Remove future phase, renumber     |
 
 ### Session
 
-| Command | What it does |
-|---------|--------------|
-| `/gsd:pause-work` | Create handoff when stopping mid-phase |
-| `/gsd:resume-work` | Restore from last session |
+| Command                    | What it does                           |
+|----------------------------|----------------------------------------|
+| `/prompts:gsd-pause-work`  | Create handoff when stopping mid-phase |
+| `/prompts:gsd-resume-work` | Restore from last session              |
 
 ### Utilities
 
-| Command | What it does |
-|---------|--------------|
-| `/gsd:add-todo [desc]` | Capture idea for later |
-| `/gsd:check-todos` | List pending todos |
-| `/gsd:debug [desc]` | Systematic debugging with persistent state |
+| Command                        | What it does                               |
+|--------------------------------|--------------------------------------------|
+| `/prompts:gsd-add-todo [desc]` | Capture idea for later                     |
+| `/prompts:gsd-check-todos`     | List pending todos                         |
+| `/prompts:gsd-debug [desc]`    | Systematic debugging with persistent state |
 
 <sup>¹ Contributed by reddit user OracleGreyBeard</sup>
 
@@ -437,23 +437,23 @@ You're never locked in. The system adapts.
 ## Troubleshooting
 
 **Commands not found after install?**
-- Restart Claude Code to reload slash commands
+- Restart Codex CLI to reload prompts
 - Verify files exist in `~/.claude/commands/gsd/` (global) or `./.claude/commands/gsd/` (local)
 
 **Commands not working as expected?**
-- Run `/gsd:help` to verify installation
-- Re-run `npx get-shit-done-cc` to reinstall
+- Run `/prompts:gsd-help` to verify installation
+- Re-run `npx get-shit-done-codex` to reinstall
 
 **Updating to the latest version?**
 ```bash
-npx get-shit-done-cc@latest
+npx get-shit-done-codex@latest
 ```
 
 **Using Docker or containerized environments?**
 
 If file reads fail with tilde paths (`~/.claude/...`), set `CLAUDE_CONFIG_DIR` before installing:
 ```bash
-CLAUDE_CONFIG_DIR=/home/youruser/.claude npx get-shit-done-cc --global
+CLAUDE_CONFIG_DIR=/home/youruser/.claude npx get-shit-done-codex --global
 ```
 This ensures absolute paths are used instead of `~` which may not expand correctly in containers.
 
@@ -479,6 +479,6 @@ MIT License. See [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**Claude Code is powerful. GSD makes it reliable.**
+**Codex CLI is powerful. GSD makes it reliable.**
 
 </div>
