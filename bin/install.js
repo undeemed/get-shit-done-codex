@@ -122,15 +122,29 @@ function install(isGlobal) {
   fs.writeFileSync(agentsDest, agentsContent);
   console.log(`  ${green}✓${reset} Installed AGENTS.md`);
 
-  // Create commands directory
-  const commandsDir = path.join(codexDir, 'commands');
-  fs.mkdirSync(commandsDir, { recursive: true });
+  // Create prompts directory (Codex CLI uses prompts/ for custom slash commands)
+  const promptsDir = path.join(codexDir, 'prompts');
+  fs.mkdirSync(promptsDir, { recursive: true });
 
-  // Copy commands/gsd with path replacement
+  // Copy commands/gsd as prompts (flatten the structure for Codex CLI)
+  // Codex CLI expects prompts/command-name.md format
   const gsdSrc = path.join(src, 'commands', 'gsd');
-  const gsdDest = path.join(commandsDir, 'gsd');
-  copyWithPathReplacement(gsdSrc, gsdDest, pathPrefix);
-  console.log(`  ${green}✓${reset} Installed commands/gsd`);
+  const entries = fs.readdirSync(gsdSrc);
+  for (const entry of entries) {
+    if (entry.endsWith('.md')) {
+      const srcPath = path.join(gsdSrc, entry);
+      // Convert to gsd-command format (e.g., help.md -> gsd-help.md)
+      const destName = 'gsd-' + entry;
+      const destPath = path.join(promptsDir, destName);
+      let content = fs.readFileSync(srcPath, 'utf8');
+      content = content.replace(/~\/\.claude\//g, pathPrefix);
+      content = content.replace(/\.claude\//g, pathPrefix.replace('~/', ''));
+      content = content.replace(/Claude Code/g, 'Codex CLI');
+      content = content.replace(/Claude/g, 'Codex');
+      fs.writeFileSync(destPath, content);
+    }
+  }
+  console.log(`  ${green}✓${reset} Installed prompts/gsd-*.md (${entries.filter(e => e.endsWith('.md')).length} commands)`);
 
   // Copy get-shit-done skill with path replacement
   const skillSrc = path.join(src, 'get-shit-done');
@@ -143,14 +157,14 @@ function install(isGlobal) {
   
   ${yellow}For Codex CLI:${reset}
   - AGENTS.md is at ${cyan}${codexDir}/AGENTS.md${reset}
-  - Commands are in ${cyan}${codexDir}/commands/gsd/${reset}
+  - Slash commands are in ${cyan}${codexDir}/prompts/${reset}
   
   ${yellow}Getting Started:${reset}
   1. Run ${cyan}codex${reset} to start the Codex CLI
-  2. Use ${cyan}/gsd:help${reset} to see available commands
-  3. Start with ${cyan}/gsd:new-project${reset} to initialize a project
+  2. Type ${cyan}/${reset} to see available commands (look for ${cyan}/gsd-help${reset})
+  3. Start with ${cyan}/gsd-new-project${reset} to initialize a project
 
-  ${dim}See AGENTS.md for full documentation.${reset}
+  ${dim}Note: Commands use /gsd-name format (e.g., /gsd-help, /gsd-new-project)${reset}
 `);
 }
 
