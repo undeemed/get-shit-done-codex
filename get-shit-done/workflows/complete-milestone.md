@@ -396,7 +396,7 @@ Add milestone headers and collapse completed work:
 ## Progress
 
 | Phase             | Milestone | Plans Complete | Status      | Completed  |
-| ----------------- | --------- | -------------- | ----------- | ---------- |
+|-------------------|-----------|----------------|-------------|------------|
 | 1. Foundation     | v1.0      | 2/2            | Complete    | YYYY-MM-DD |
 | 2. Authentication | v1.0      | 2/2            | Complete    | YYYY-MM-DD |
 | 3. Core Features  | v1.0      | 3/3            | Complete    | YYYY-MM-DD |

@@ -1,326 +1,224 @@
-<div align="center">
+# Get Shit Done (Codex CLI Fork)
 
-# GET SHIT DONE
+A spec-driven development system for [OpenAI Codex CLI](https://github.com/openai/codex). Fork of the original [get-shit-done](https://github.com/taches/get-shit-done) by TÂCHES.
 
-**A light-weight and powerful meta-prompting, context engineering and spec-driven development system for OpenAI Codex CLI by TÂCHES.**
+[![npm version](https://img.shields.io/npm/v/get-shit-done-codex?style=flat-square)](https://www.npmjs.com/package/get-shit-done-codex)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 
-[![npm version](https://img.shields.io/npm/v/get-shit-done-codex?style=for-the-badge&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/get-shit-done-codex)
-[![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/undeemed/get-shit-done-codex?style=for-the-badge&logo=github&color=181717)](https://github.com/undeemed/get-shit-done-codex)
+## What This Does
 
-<br>
+GSD is a context engineering layer for AI coding assistants. It structures your project through specs and plans so the AI has what it needs to build reliably.
+
+**The problem:** AI assistants lose quality as conversations grow. Context gets polluted, requirements get forgotten, work becomes inconsistent.
+
+**The solution:** Hierarchical planning with fresh context windows. Each task runs in isolation with exactly the context it needs—no degradation from accumulated garbage.
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  PROJECT.md     →   What you're building                    │
+│  ROADMAP.md     →   Phases from start to finish             │
+│  PLAN.md        →   2-3 atomic tasks with verification      │
+│  SUMMARY.md     →   What happened, committed to history     │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Prerequisites
+
+You need [Codex CLI](https://github.com/openai/codex) installed and configured:
+
+```bash
+# Install Codex CLI
+npm install -g @openai/codex
+
+# Set your OpenAI API key
+export OPENAI_API_KEY="your-key-here"
+```
+
+## Installation
 
 ```bash
 npx get-shit-done-codex
 ```
 
-**Works on Mac, Windows, and Linux.**
+You'll be prompted to install globally (`~/.codex/`) or locally (`./`).
 
-<br>
-
-_"If you know clearly what you want, this WILL build it for you. No bs."_
-
-_"I've done SpecKit, OpenSpec and Taskmaster — this has produced the best results for me."_
-
-_"By far the most powerful addition to my Codex CLI. Nothing over-engineered. Literally just gets shit done."_
-
-<br>
-
-[Why I Built This](#why-i-built-this) · [How It Works](#how-it-works) · [Commands](#commands) · [Why It Works](#why-it-works)
-
-</div>
-
----
-
-## Why I Built This
-
-I'm a solo developer. I don't write code — AI does.
-
-Other spec-driven development tools exist; BMAD, Speckit... But they all seem to make things way more complicated than they need to be (sprint ceremonies, story points, stakeholder syncs, retrospectives, Jira workflows) or lack real big picture understanding of what you're building. I'm not a 50-person software company. I don't want to play enterprise theater. I'm just a creative person trying to build great things that work.
-
-So I built GSD. The complexity is in the system, not in your workflow. Behind the scenes: context engineering, XML prompt formatting, subagent orchestration, state management. What you see: a few commands that just work.
-
-The system gives the AI everything it needs to do the work _and_ verify it. I trust the workflow. It just does a good job.
-
-That's what this is. No enterprise roleplay bullshit. Just an incredibly effective system for building cool stuff consistently using Codex CLI.
-
-— **TÂCHES**
-
----
-
-Vibecoding has a bad reputation. You describe what you want, AI generates code, and you get inconsistent garbage that falls apart at scale.
-
-GSD fixes that. It's the context engineering layer that makes Codex CLI reliable. Describe your idea, let the system extract everything it needs to know, and let the AI get to work.
-
----
-
-## Who This Is For
-
-People who want to describe what they want and have it built correctly — without pretending they're running a 50-person engineering org.
-
----
-
-## Getting Started
-
-```bash
-npx get-shit-done-codex
-```
-
-That's it. Verify with `/gsd:help`.
-
-<details>
-<summary><strong>Non-interactive Install (Docker, CI, Scripts)</strong></summary>
+For non-interactive installs:
 
 ```bash
 npx get-shit-done-codex --global   # Install to ~/.codex/
 npx get-shit-done-codex --local    # Install to current directory
 ```
 
-Use `--global` (`-g`) or `--local` (`-l`) to skip the interactive prompt.
+## Quick Start
 
-</details>
-
-<details>
-<summary><strong>Development Installation</strong></summary>
-
-Clone the repository and run the installer locally:
+After installation, run `codex` to start Codex CLI, then:
 
 ```bash
-git clone https://github.com/undeemed/get-shit-done-codex.git
-cd get-shit-done-codex
-node bin/install.js --local
+# 1. Initialize project with deep questioning
+/prompts:gsd-new-project
+
+# 2. Create roadmap and phases
+/prompts:gsd-create-roadmap
+
+# 3. Plan the first phase
+/prompts:gsd-plan-phase 1
+
+# 4. Execute the plan
+/prompts:gsd-execute-plan .planning/phases/01-foundation/01-01-PLAN.md
 ```
 
-Installs to current directory for testing modifications before contributing.
+Verify installation with `/prompts:gsd-help` to see all commands.
 
-</details>
+## For Existing Codebases
 
-### AGENTS.md
-
-GSD uses `AGENTS.md` — the standard configuration file for Codex CLI. After installation:
-
-- **Global install:** `~/.codex/AGENTS.md` (applies to all projects)
-- **Local install:** `./AGENTS.md` (applies to current project only)
-
-Codex CLI automatically reads `AGENTS.md` to understand your project's conventions and workflows.
-
----
-
-## How It Works
-
-### 1. Start with an idea
-
-```
-/gsd:new-project
-```
-
-The system asks questions. Keeps asking until it has everything — your goals, constraints, tech preferences, edge cases. You go back and forth until the idea is fully captured. Creates **PROJECT.md**.
-
-### 2. Create roadmap
-
-```
-/gsd:create-roadmap
-```
-
-Produces:
-
-- **ROADMAP.md** — Phases from start to finish
-- **STATE.md** — Living memory that persists across sessions
-
-### 3. Plan and execute phases
-
-```
-/gsd:plan-phase 1      # System creates atomic task plans
-/gsd:execute-plan      # Subagent implements autonomously
-```
-
-Each phase breaks into 2-3 atomic tasks. Each task runs in a fresh context — maximum tokens purely for implementation, zero degradation.
-
-### 4. Ship and iterate
-
-```
-/gsd:complete-milestone   # Archive v1, prep for v2
-/gsd:add-phase            # Append new work
-/gsd:insert-phase 2       # Slip urgent work between phases
-```
-
-Ship your MVP in a day. Add features. Insert hotfixes. The system stays modular — you're never stuck.
-
----
-
-## Existing Projects (Brownfield)
-
-Already have code? Start here instead.
-
-### 1. Map the codebase
-
-```
-/gsd:map-codebase
-```
-
-Spawns parallel agents to analyze your code. Creates `.planning/codebase/` with 7 documents:
-
-| Document          | Purpose                                |
-| ----------------- | -------------------------------------- |
-| `STACK.md`        | Languages, frameworks, dependencies    |
-| `ARCHITECTURE.md` | Patterns, layers, data flow            |
-| `STRUCTURE.md`    | Directory layout, where things live    |
-| `CONVENTIONS.md`  | Code style, naming patterns            |
-| `TESTING.md`      | Test framework, patterns               |
-| `INTEGRATIONS.md` | External services, APIs                |
-| `CONCERNS.md`     | Tech debt, known issues, fragile areas |
-
-### 2. Initialize project
-
-```
-/gsd:new-project
-```
-
-Same as greenfield, but the system knows your codebase. Questions focus on what you're adding/changing, not starting from scratch.
-
-### 3. Continue as normal
-
-From here, it's the same: `/gsd:create-roadmap` → `/gsd:plan-phase` → `/gsd:execute-plan`
-
-The codebase docs load automatically during planning. The AI knows your patterns, conventions, and where to put things.
-
----
-
-## Why It Works
-
-### Context Engineering
-
-AI is incredibly powerful _if_ you give it the context it needs. Most people don't.
-
-GSD handles it for you:
-
-| File         | What it does                                           |
-| ------------ | ------------------------------------------------------ |
-| `PROJECT.md` | Project vision, always loaded                          |
-| `ROADMAP.md` | Where you're going, what's done                        |
-| `STATE.md`   | Decisions, blockers, position — memory across sessions |
-| `PLAN.md`    | Atomic task with XML structure, verification steps     |
-| `SUMMARY.md` | What happened, what changed, committed to history      |
-| `ISSUES.md`  | Deferred enhancements tracked across sessions          |
-
-Size limits based on where quality degrades. Stay under, get consistent excellence.
-
-### XML Prompt Formatting
-
-Every plan is structured XML optimized for the AI:
-
-```xml
-<task type="auto">
-  <name>Create login endpoint</name>
-  <files>src/app/api/auth/login/route.ts</files>
-  <action>
-    Use jose for JWT (not jsonwebtoken - CommonJS issues).
-    Validate credentials against users table.
-    Return httpOnly cookie on success.
-  </action>
-  <verify>curl -X POST localhost:3000/api/auth/login returns 200 + Set-Cookie</verify>
-  <done>Valid credentials return cookie, invalid return 401</done>
-</task>
-```
-
-Precise instructions. No guessing. Verification built in.
-
-### Subagent Execution
-
-As the AI fills its context window, quality degrades. You've seen it: _"Due to context limits, I'll be more concise now."_ That "concision" is code for cutting corners.
-
-GSD prevents this. Each plan is maximum 3 tasks. Each plan runs in a fresh context — maximum tokens purely for implementation, zero accumulated garbage.
-
-| Task   | Context | Quality |
-| ------ | ------- | ------- |
-| Task 1 | Fresh   | ✅ Full |
-| Task 2 | Fresh   | ✅ Full |
-| Task 3 | Fresh   | ✅ Full |
-
-No degradation. Walk away, come back to completed work.
-
-### Atomic Git Commits
-
-Each task gets its own commit immediately after completion:
+Have existing code? Map it first:
 
 ```bash
-abc123f docs(08-02): complete user registration plan
-def456g feat(08-02): add email confirmation flow
-hij789k feat(08-02): implement password hashing
-lmn012o feat(08-02): create registration endpoint
+/prompts:gsd-map-codebase
 ```
 
-> [!NOTE] > **Benefits:** Git bisect finds exact failing task. Each task independently revertable. Clear history for AI in future sessions. Better observability in AI-automated workflow.
-
-Every commit is surgical, traceable, and meaningful.
-
-### Modular by Design
-
-- Add phases to current milestone
-- Insert urgent work between phases
-- Complete milestones and start fresh
-- Adjust plans without rebuilding everything
-
-You're never locked in. The system adapts.
-
----
+Creates `.planning/codebase/` with docs on your stack, architecture, conventions, etc. Then continue with `/prompts:gsd-new-project`—the system knows your patterns.
 
 ## Commands
 
-| Command                           | What it does                                            |
-| --------------------------------- | ------------------------------------------------------- |
-| `/gsd:new-project`                | Extract your idea through questions, create PROJECT.md  |
-| `/gsd:create-roadmap`             | Create roadmap and state tracking                       |
-| `/gsd:map-codebase`               | Map existing codebase for brownfield projects           |
-| `/gsd:plan-phase [N]`             | Generate task plans for phase                           |
-| `/gsd:execute-plan`               | Run plan via subagent                                   |
-| `/gsd:progress`                   | Where am I? What's next?                                |
-| `/gsd:verify-work [N]`            | User acceptance test of phase or plan                   |
-| `/gsd:plan-fix [plan]`            | Plan fixes for UAT issues from verify-work              |
-| `/gsd:complete-milestone`         | Ship it, prep next version                              |
-| `/gsd:discuss-milestone`          | Gather context for next milestone                       |
-| `/gsd:new-milestone [name]`       | Create new milestone with phases                        |
-| `/gsd:add-phase`                  | Append phase to roadmap                                 |
-| `/gsd:insert-phase [N]`           | Insert urgent work                                      |
-| `/gsd:remove-phase [N]`           | Remove future phase, renumber subsequent                |
-| `/gsd:discuss-phase [N]`          | Gather context before planning                          |
-| `/gsd:research-phase [N]`         | Deep ecosystem research for niche domains               |
-| `/gsd:list-phase-assumptions [N]` | See what the AI thinks before you correct it            |
-| `/gsd:pause-work`                 | Create handoff file when stopping mid-phase             |
-| `/gsd:resume-work`                | Restore from last session                               |
-| `/gsd:consider-issues`            | Review deferred issues, close resolved, identify urgent |
-| `/gsd:help`                       | Show all commands and usage guide                       |
+Custom prompts are invoked with `/prompts:<name>`. After installation, these are available:
 
----
+| Command                                   | Description                                   |
+|-------------------------------------------|-----------------------------------------------|
+| `/prompts:gsd-new-project`                | Define project through Q&A, create PROJECT.md |
+| `/prompts:gsd-create-roadmap`             | Create roadmap and state tracking             |
+| `/prompts:gsd-map-codebase`               | Analyze existing codebase (brownfield)        |
+| `/prompts:gsd-plan-phase [N]`             | Generate task plans for phase                 |
+| `/prompts:gsd-execute-plan [path]`        | Run plan via subagent                         |
+| `/prompts:gsd-progress`                   | Show current status and route to next action  |
+| `/prompts:gsd-verify-work [N]`            | User acceptance testing                       |
+| `/prompts:gsd-plan-fix [plan]`            | Plan fixes for UAT issues                     |
+| `/prompts:gsd-complete-milestone`         | Archive milestone, prep next                  |
+| `/prompts:gsd-discuss-milestone`          | Gather context for next milestone             |
+| `/prompts:gsd-new-milestone [name]`       | Create new milestone                          |
+| `/prompts:gsd-add-phase`                  | Append phase to roadmap                       |
+| `/prompts:gsd-insert-phase [N]`           | Insert phase at position                      |
+| `/prompts:gsd-remove-phase [N]`           | Remove phase, renumber rest                   |
+| `/prompts:gsd-discuss-phase [N]`          | Gather context before planning                |
+| `/prompts:gsd-research-phase [N]`         | Deep research for niche domains               |
+| `/prompts:gsd-list-phase-assumptions [N]` | See AI's assumptions                          |
+| `/prompts:gsd-pause-work`                 | Create handoff for stopping mid-phase         |
+| `/prompts:gsd-resume-work`                | Restore from last session                     |
+| `/prompts:gsd-consider-issues`            | Review deferred issues                        |
+| `/prompts:gsd-help`                       | Show all commands                             |
+
+## How It Works
+
+### Context Files
+
+```
+.planning/
+├── PROJECT.md       # Project vision, always loaded
+├── ROADMAP.md       # Phases and progress
+├── STATE.md         # Decisions, blockers, memory across sessions
+├── ISSUES.md        # Deferred enhancements
+├── config.json      # Workflow mode & settings
+├── codebase/        # (brownfield) Codebase analysis
+│   ├── STACK.md
+│   ├── ARCHITECTURE.md
+│   ├── CONVENTIONS.md
+│   └── ...
+└── phases/
+    └── 01-foundation/
+        ├── 01-01-PLAN.md
+        └── 01-01-SUMMARY.md
+```
+
+### Task Isolation
+
+Each plan is max 3 tasks, each runs in fresh context. No degradation from accumulated garbage.
+
+### Atomic Commits
+
+Each task gets its own commit. Clean history, easy to bisect or revert.
+
+```
+feat(01-01): implement user authentication
+feat(01-01): add password hashing
+docs(01-01): complete auth-setup plan
+```
+
+### Workflow Modes
+
+Set during `/prompts:gsd-new-project`:
+
+- **Interactive** — Confirms at each step, more guidance
+- **YOLO** — Auto-approves, executes without stopping
+
+Change anytime by editing `.planning/config.json`.
+
+## Common Workflows
+
+**Resuming after a break:**
+
+```bash
+/prompts:gsd-progress  # Shows where you left off, routes to next action
+```
+
+**Adding urgent mid-milestone work:**
+
+```bash
+/prompts:gsd-insert-phase 5 "Critical security fix"
+/prompts:gsd-plan-phase 5.1
+/prompts:gsd-execute-plan .planning/phases/05.1-critical-security-fix/05.1-01-PLAN.md
+```
+
+**Completing a milestone:**
+
+```bash
+/prompts:gsd-verify-work       # Optional UAT
+/prompts:gsd-complete-milestone 1.0.0
+```
 
 ## Troubleshooting
 
-**Commands not found after install?**
+### Commands not found?
 
-- Restart Codex CLI to reload the AGENTS.md
-- Verify AGENTS.md exists in `~/.codex/` (global) or `./` (local)
+1. Restart Codex CLI to reload prompts
+2. Check the install location:
+   - Global: `~/.codex/prompts/gsd-*.md` should exist
+   - Local: `./prompts/gsd-*.md` should exist
+3. Verify AGENTS.md exists at `~/.codex/AGENTS.md` (global) or `./AGENTS.md` (local)
 
-**Commands not working as expected?**
-
-- Run `/gsd:help` to verify installation
-- Re-run `npx get-shit-done-codex` to reinstall
-
-**Updating to the latest version?**
+### Update to latest
 
 ```bash
 npx get-shit-done-codex@latest
 ```
 
----
+### Using with Cursor IDE
+
+GSD works with Cursor's built-in AI as well. When installing locally:
+
+```bash
+npx get-shit-done-codex --local
+```
+
+Cursor will pick up the AGENTS.md file in your project root and provide GSD context to the AI. Slash commands (`/prompts:*`) are specific to Codex CLI—in Cursor, reference the workflows directly or ask the AI to follow GSD methodology.
+
+### Command format note
+
+The source files use `/gsd:name` format (Claude Code style). The installer converts these to `/prompts:gsd-name` format for Codex CLI compatibility.
+
+## How GSD Differs from Vibe Coding
+
+| Vibe Coding               | GSD                                             |
+|---------------------------|-------------------------------------------------|
+| "Build me a todo app"     | Deep questioning → PROJECT.md with requirements |
+| One long conversation     | Fresh context per task                          |
+| Hope it remembers context | STATE.md tracks decisions                       |
+| Unclear what's done       | ROADMAP.md with progress tracking               |
+| Random commits            | Atomic commits per task                         |
+
+## Credits
+
+Original project by [TÂCHES](https://github.com/taches). This fork adapts it for Codex CLI.
 
 ## License
 
-MIT License. See [LICENSE](LICENSE) for details.
-
----
-
-<div align="center">
-
-**Codex CLI is powerful. GSD makes it reliable.**
-
-</div>
+MIT

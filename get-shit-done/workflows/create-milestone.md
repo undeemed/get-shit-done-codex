@@ -86,11 +86,11 @@ Next phase starts at: [last_phase + 1]
 cat .planning/config.json 2>/dev/null | grep depth
 ```
 
-| Depth | Phases/Milestone |
-|-------|------------------|
-| Quick | 3-5 |
-| Standard | 5-8 |
-| Comprehensive | 8-12 |
+| Depth         | Phases/Milestone |
+|---------------|------------------|
+| Quick         | 3-5              |
+| Standard      | 5-8              |
+| Comprehensive | 8-12             |
 
 If context from discuss-milestone provided, use that scope.
 
@@ -124,7 +124,7 @@ Apply research triggers from create-roadmap.md:
 **Likely (flag the phase):**
 
 | Trigger Pattern                                       | Why Research Needed                     |
-| ----------------------------------------------------- | --------------------------------------- |
+|-------------------------------------------------------|-----------------------------------------|
 | "integrate [service]", "connect to [API]"             | External API - need current docs        |
 | "authentication", "auth", "login", "JWT"              | Architectural decision + library choice |
 | "payment", "billing", "Stripe", "subscription"        | External API + compliance patterns      |
@@ -139,7 +139,7 @@ Apply research triggers from create-roadmap.md:
 **Unlikely (no flag needed):**
 
 | Pattern                                     | Why No Research         |
-| ------------------------------------------- | ----------------------- |
+|---------------------------------------------|-------------------------|
 | "add button", "create form", "update UI"    | Internal patterns       |
 | "CRUD operations", "list/detail views"      | Standard patterns       |
 | "refactor", "reorganize", "clean up"        | Internal work           |
@@ -262,7 +262,7 @@ Add rows for all new phases with milestone attribution.
 
 ```markdown
 | Phase         | Milestone | Plans | Status      | Completed |
-| ------------- | --------- | ----- | ----------- | --------- |
+|---------------|-----------|-------|-------------|-----------|
 | [N]. [Name]   | v[X.Y]    | 0/?   | Not started | -         |
 | [N+1]. [Name] | v[X.Y]    | 0/?   | Not started | -         |
 ```
