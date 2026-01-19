@@ -1,6 +1,6 @@
 {
   "name": "@undeemed/get-shit-done-codex",
-  "version": "1.6.10",
+  "version": "1.6.11",
   "description": "A meta-prompting, context engineering and spec-driven development system for OpenAI Codex CLI. Fork of get-shit-done by TÂCHES, adapted for Codex CLI by undeemed.",
   "bin": {
     "get-shit-done-codex": "bin/install.js"
@@ -35,8 +35,5 @@
   },
   "engines": {
     "node": ">=16.7.0"
-  },
-  "dependencies": {
-    "@undeemed/get-shit-done-codex": "^1.6.5"
   }
 }
