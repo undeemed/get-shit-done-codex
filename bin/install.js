@@ -23,9 +23,10 @@ ${green}   ██████╗ ███████╗██████╗  
    ╚██████╔╝███████║██████╔╝╚██████╗
     ╚═════╝ ╚══════╝╚═════╝  ╚═════╝${reset}
 
-   Get Shit Done ${dim}v${pkg.version}${reset}
-   A meta-prompting, context engineering and spec-driven
-   development system for OpenAI Codex CLI by TÂCHES.
+   get-shit-done-codex ${dim}v${pkg.version}${reset}
+   A meta-prompting, context engineering and spec-driven development
+   system for OpenAI Codex CLI. Fork of get-shit-done by TÂCHES,
+   adapted for Codex CLI by undeemed.
 `;
 
 // Parse args
@@ -47,10 +48,10 @@ if (hasHelp) {
 
   ${yellow}Examples:${reset}
     ${dim}# Install globally to ~/.codex directory${reset}
-    npx get-shit-done-codex --global
+    npx ${pkg.name} --global
 
     ${dim}# Install to current project only${reset}
-    npx get-shit-done-codex --local
+    npx ${pkg.name} --local
 
   ${yellow}Notes:${reset}
     For codex-cli, this installer:
