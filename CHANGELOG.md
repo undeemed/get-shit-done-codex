@@ -6,6 +6,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.6.5] - 2026-01-19
+
+### Changed
+- README license badge color updated to green
+
 ## [1.6.4] - 2026-01-17
 
 ### Fixed
