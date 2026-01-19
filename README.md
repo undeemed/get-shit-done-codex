@@ -99,8 +99,8 @@ Manual user acceptance testing. The system walks you through testable deliverabl
 | `/prompts:gsd-new-project`          | Initialize project: questions → research → requirements → roadmap |
 | `/prompts:gsd-plan-phase [N]`       | Research + plan + verify for a phase                              |
 | `/prompts:gsd-execute-phase <N>`    | Execute all plans in parallel waves                               |
-| `/prompts:gsd-verify-work [N]`      | Manual user acceptance testing                                   |
-| `/prompts:gsd-complete-milestone`   | Archive milestone, tag release                                     |
+| `/prompts:gsd-verify-work [N]`      | Manual user acceptance testing                                    |
+| `/prompts:gsd-complete-milestone`   | Archive milestone, tag release                                    |
 | `/prompts:gsd-new-milestone [name]` | Start next version                                                |
 | `/prompts:gsd-progress`             | Show current status and what's next                               |
 | `/prompts:gsd-help`                 | Show all commands                                                 |
@@ -153,6 +153,22 @@ Git bisect finds exact failing task. Each task independently revertable.
 ```bash
 npx get-shit-done-codex@latest
 ```
+
+## More Documentation
+
+For deeper guides, detailed workflows, and comprehensive documentation, see the [original get-shit-done README](https://github.com/taches/get-shit-done/blob/main/README.md).
+
+The original repository contains:
+- Detailed workflow explanations
+- Advanced usage patterns
+- Complete command reference
+- Best practices and examples
+- Architecture and design principles
+
+**Note:** The original README is written for Claude Code. When following it, remember that this fork uses:
+- `/prompts:gsd-*` command format (instead of `/gsd:*`)
+- Codex CLI (instead of Claude Code)
+- `~/.codex/` directory (instead of `~/.claude/`)
 
 ## Credits
 
