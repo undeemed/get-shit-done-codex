@@ -7,7 +7,7 @@ const readline = require('readline');
 
 // Colors
 const cyan = '\x1b[36m';
-const #00ff00 = '\x1b[32m';
+const green = '\x1b[32m';
 const yellow = '\x1b[33m';
 const dim = '\x1b[2m';
 const reset = '\x1b[0m';
@@ -16,14 +16,14 @@ const reset = '\x1b[0m';
 const pkg = require('../package.json');
 
 const banner = `
-${#00ff00}   ██████╗ ███████╗██████╗
+${green}   ██████╗ ███████╗██████╗
    ██╔════╝ ██╔════╝██╔══██╗
    ██║  ███╗███████╗██║  ██║
    ██║   ██║╚════██║██║  ██║
    ╚██████╔╝███████║██████╔╝
-    ╚═════╝ ╚══════╝╚═════╝${ reset }
+    ╚═════╝ ╚══════╝╚═════╝${reset}
 
-   Get Shit Done ${ dim }v${ pkg.version }${ reset }
+   Get Shit Done ${dim}v${pkg.version}${reset}
    A meta - prompting, context engineering and spec - driven
    development system for OpenAI Codex CLI originally by TÂCHES.
 `;
@@ -38,21 +38,21 @@ console.log(banner);
 
 // Show help if requested
 if (hasHelp) {
-  console.log(`  ${ yellow } Usage:${ reset } npx get - shit - done - codex[options]
+  console.log(`  ${yellow} Usage:${reset} npx get - shit - done - codex[options]
 
-  ${ yellow } Options:${ reset }
-    ${ cyan } -g, --global${ reset }              Install globally(to ~/.codex/)
-    ${ cyan } -l, --local${ reset }               Install locally(to current directory)
-    ${ cyan } -h, --help${ reset }                Show this help message
+  ${yellow} Options:${reset}
+    ${cyan} -g, --global${reset}              Install globally(to ~/.codex/)
+    ${cyan} -l, --local${reset}               Install locally(to current directory)
+    ${cyan} -h, --help${reset}                Show this help message
 
-  ${ yellow } Examples:${ reset }
-    ${ dim }# Install globally to ~/.codex directory${reset}
+  ${yellow} Examples:${reset}
+    ${dim}# Install globally to ~/.codex directory${reset}
     npx get - shit - done - codex--global
 
-    ${ dim }# Install to current project only${ reset }
+    ${dim}# Install to current project only${reset}
     npx get - shit - done - codex--local
 
-  ${ yellow } Notes:${ reset }
+  ${yellow} Notes:${reset}
     For codex - cli, this installer:
 - Creates / updates AGENTS.md in the target directory
   - Copies the get - shit - done skill and commands
@@ -69,14 +69,14 @@ function applyReplacements(content, pathPrefix) {
   // Path replacements
   content = content.replace(/~\/\.claude\//g, pathPrefix);
   content = content.replace(/\.claude\//g, pathPrefix.replace('~/', ''));
-  
+
   // Claude → Codex naming
   content = content.replace(/Claude Code/g, 'Codex CLI');
   content = content.replace(/Claude/g, 'Codex');
-  
+
   // Command format: /gsd:name → /prompts:gsd-name (Codex CLI custom prompts format)
   content = content.replace(/\/gsd:/g, '/prompts:gsd-');
-  
+
   return content;
 }
 
@@ -122,7 +122,7 @@ function install(isGlobal) {
     ? '~/.codex/'
     : './';
 
-  console.log(`  Installing to ${ cyan }${ locationLabel }${ reset } \n`);
+  console.log(`  Installing to ${cyan}${locationLabel}${reset} \n`);
 
   // Create target directory if needed
   fs.mkdirSync(codexDir, { recursive: true });
@@ -133,7 +133,7 @@ function install(isGlobal) {
   let agentsContent = fs.readFileSync(agentsSrc, 'utf8');
   agentsContent = applyReplacements(agentsContent, pathPrefix);
   fs.writeFileSync(agentsDest, agentsContent);
-  console.log(`  ${ green }✓${ reset } Installed AGENTS.md`);
+  console.log(`  ${green}✓${reset} Installed AGENTS.md`);
 
   // Create prompts directory (Codex CLI uses prompts/ for custom slash commands)
   const promptsDir = path.join(codexDir, 'prompts');
@@ -154,27 +154,27 @@ function install(isGlobal) {
       fs.writeFileSync(destPath, content);
     }
   }
-  console.log(`  ${ green }✓${ reset } Installed prompts / gsd -*.md(${ entries.filter(e => e.endsWith('.md')).length } commands)`);
+  console.log(`  ${green}✓${reset} Installed prompts / gsd -*.md(${entries.filter(e => e.endsWith('.md')).length} commands)`);
 
   // Copy get-shit-done skill with path replacement
   const skillSrc = path.join(src, 'get-shit-done');
   const skillDest = path.join(codexDir, 'get-shit-done');
   copyWithPathReplacement(skillSrc, skillDest, pathPrefix);
-  console.log(`  ${ green }✓${ reset } Installed get - shit - done`);
+  console.log(`  ${green}✓${reset} Installed get - shit - done`);
 
   console.log(`
-  ${ green } Done!${ reset } 
+  ${green} Done!${reset} 
   
-  ${ yellow }For Codex CLI:${ reset }
-- AGENTS.md is at ${ cyan }${ codexDir }/AGENTS.md${reset}
-  - Slash commands are in ${ cyan }${ codexDir } /prompts/${ reset }
+  ${yellow}For Codex CLI:${reset}
+- AGENTS.md is at ${cyan}${codexDir}/AGENTS.md${reset}
+  - Slash commands are in ${cyan}${codexDir} /prompts/${reset}
   
-  ${ yellow }Getting Started:${ reset }
-1. Run ${ cyan }codex${ reset } to start the Codex CLI
-2. Type ${ cyan }/${reset} to see available commands
-3. Start with ${ cyan }/prompts:gsd-new-project${reset} to initialize a project
+  ${yellow}Getting Started:${reset}
+1. Run ${cyan}codex${reset} to start the Codex CLI
+2. Type ${cyan}/${reset} to see available commands
+3. Start with ${cyan}/prompts:gsd-new-project${reset} to initialize a project
 
-  ${ dim }Commands use / prompts: gsd - name format(e.g., /prompts:gsd-help)${ reset }
+  ${dim}Commands use / prompts: gsd - name format(e.g., /prompts:gsd-help)${reset}
 `);
 }
 
@@ -187,13 +187,13 @@ function promptLocation() {
     output: process.stdout
   });
 
-  console.log(`  ${ yellow }Where would you like to install ? ${ reset }
+  console.log(`  ${yellow}Where would you like to install ? ${reset}
 
-  ${ cyan } 1${ reset }) Global ${ dim } (~/.codex)${ reset } - available in all projects
-  ${ cyan } 2${ reset }) Local  ${ dim } (.)${ reset } - this project only
+  ${cyan} 1${reset}) Global ${dim} (~/.codex)${reset} - available in all projects
+  ${cyan} 2${reset}) Local  ${dim} (.)${reset} - this project only
 `);
 
-  rl.question(`  Choice ${ dim } [1]${ reset }: `, (answer) => {
+  rl.question(`  Choice ${dim} [1]${reset}: `, (answer) => {
     rl.close();
     const choice = answer.trim() || '1';
     const isGlobal = choice !== '2';
@@ -203,7 +203,7 @@ function promptLocation() {
 
 // Main
 if (hasGlobal && hasLocal) {
-  console.error(`  ${ yellow }Cannot specify both--global and--local${ reset } `);
+  console.error(`  ${yellow}Cannot specify both--global and--local${reset} `);
   process.exit(1);
 } else if (hasGlobal) {
   install(true);
