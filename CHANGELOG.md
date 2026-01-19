@@ -6,6 +6,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.6.6] - 2026-01-19
+
+### Changed
+- Installer ASCII banner color updated to green
+
 ## [1.6.5] - 2026-01-19
 
 ### Changed
