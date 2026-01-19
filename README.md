@@ -1,4 +1,4 @@
-# Get Shit Done (Codex CLI)
+# get-shit-done-codex (Codex CLI)
 
 A meta-prompting, context engineering and spec-driven development system for [OpenAI Codex CLI](https://github.com/openai/codex).
 
@@ -9,7 +9,7 @@ Fork of [get-shit-done](https://github.com/taches/get-shit-done) by TÂCHES, ada
 
 ## What This Does
 
-GSD solves context rot — the quality degradation that happens as AI fills its context window. It structures your project through specs and plans so Codex CLI has what it needs to build reliably.
+get-shit-done-codex (GSD) solves context rot — the quality degradation that happens as AI fills its context window. It structures your project through specs and plans so Codex CLI has what it needs to build reliably.
 
 **The problem:** AI assistants lose quality as conversations grow. Context gets polluted, requirements get forgotten, work becomes inconsistent.
 
@@ -151,7 +151,7 @@ Git bisect finds exact failing task. Each task independently revertable.
 
 **Update to latest:**
 ```bash
-npx get-shit-done-codex@latest
+npx @undeemed/get-shit-done-codex@latest
 ```
 
 ## More Documentation
