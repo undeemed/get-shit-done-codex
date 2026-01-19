@@ -63,6 +63,24 @@ if (hasHelp) {
 }
 
 /**
+ * Apply content replacements for Codex CLI compatibility
+ */
+function applyReplacements(content, pathPrefix) {
+  // Path replacements
+  content = content.replace(/~\/\.claude\//g, pathPrefix);
+  content = content.replace(/\.claude\//g, pathPrefix.replace('~/', ''));
+  
+  // Claude → Codex naming
+  content = content.replace(/Claude Code/g, 'Codex CLI');
+  content = content.replace(/Claude/g, 'Codex');
+  
+  // Command format: /gsd:name → /prompts:gsd-name (Codex CLI custom prompts format)
+  content = content.replace(/\/gsd:/g, '/prompts:gsd-');
+  
+  return content;
+}
+
+/**
  * Recursively copy directory, replacing paths in .md files
  */
 function copyWithPathReplacement(srcDir, destDir, pathPrefix) {
@@ -77,13 +95,8 @@ function copyWithPathReplacement(srcDir, destDir, pathPrefix) {
     if (entry.isDirectory()) {
       copyWithPathReplacement(srcPath, destPath, pathPrefix);
     } else if (entry.name.endsWith('.md')) {
-      // Replace ~/.claude/ with the appropriate prefix in markdown files
-      // Also replace Claude-specific references with Codex equivalents
       let content = fs.readFileSync(srcPath, 'utf8');
-      content = content.replace(/~\/\.claude\//g, pathPrefix);
-      content = content.replace(/\.claude\//g, pathPrefix.replace('~/', ''));
-      content = content.replace(/Claude Code/g, 'Codex CLI');
-      content = content.replace(/Claude/g, 'Codex');
+      content = applyReplacements(content, pathPrefix);
       fs.writeFileSync(destPath, content);
     } else {
       fs.copyFileSync(srcPath, destPath);
@@ -118,7 +131,7 @@ function install(isGlobal) {
   const agentsSrc = path.join(src, 'AGENTS.md');
   const agentsDest = path.join(codexDir, 'AGENTS.md');
   let agentsContent = fs.readFileSync(agentsSrc, 'utf8');
-  agentsContent = agentsContent.replace(/~\/\.claude\//g, pathPrefix);
+  agentsContent = applyReplacements(agentsContent, pathPrefix);
   fs.writeFileSync(agentsDest, agentsContent);
   console.log(`  ${green}✓${reset} Installed AGENTS.md`);
 
@@ -137,10 +150,7 @@ function install(isGlobal) {
       const destName = 'gsd-' + entry;
       const destPath = path.join(promptsDir, destName);
       let content = fs.readFileSync(srcPath, 'utf8');
-      content = content.replace(/~\/\.claude\//g, pathPrefix);
-      content = content.replace(/\.claude\//g, pathPrefix.replace('~/', ''));
-      content = content.replace(/Claude Code/g, 'Codex CLI');
-      content = content.replace(/Claude/g, 'Codex');
+      content = applyReplacements(content, pathPrefix);
       fs.writeFileSync(destPath, content);
     }
   }
@@ -161,10 +171,10 @@ function install(isGlobal) {
   
   ${yellow}Getting Started:${reset}
   1. Run ${cyan}codex${reset} to start the Codex CLI
-  2. Type ${cyan}/${reset} to see available commands (look for ${cyan}/gsd-help${reset})
-  3. Start with ${cyan}/gsd-new-project${reset} to initialize a project
+  2. Type ${cyan}/${reset} to see available commands
+  3. Start with ${cyan}/prompts:gsd-new-project${reset} to initialize a project
 
-  ${dim}Note: Commands use /gsd-name format (e.g., /gsd-help, /gsd-new-project)${reset}
+  ${dim}Commands use /prompts:gsd-name format (e.g., /prompts:gsd-help)${reset}
 `);
 }
 
