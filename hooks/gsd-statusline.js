@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Claude Code Statusline - GSD Edition
+// Codex Statusline - GSD Edition
 // Shows: model | current task | directory | context usage
 
 const fs = require('fs');
@@ -13,13 +13,13 @@ process.stdin.on('data', chunk => input += chunk);
 process.stdin.on('end', () => {
   try {
     const data = JSON.parse(input);
-    const model = data.model?.display_name || 'Claude';
+    const model = data.model?.display_name || 'Codex';
     const dir = data.workspace?.current_dir || process.cwd();
     const session = data.session_id || '';
     const remaining = data.context_window?.remaining_percentage;
 
     // Context window display (shows USED percentage scaled to 80% limit)
-    // Claude Code enforces an 80% context limit, so we scale to show 100% at that point
+    // Scale context to show 100% at the effective limit.
     let ctx = '';
     if (remaining != null) {
       const rem = Math.round(remaining);
@@ -46,7 +46,7 @@ process.stdin.on('end', () => {
     // Current task from todos
     let task = '';
     const homeDir = os.homedir();
-    const todosDir = path.join(homeDir, '.claude', 'todos');
+    const todosDir = path.join(homeDir, '.codex', 'todos');
     if (session && fs.existsSync(todosDir)) {
       try {
         const files = fs.readdirSync(todosDir)
@@ -68,12 +68,12 @@ process.stdin.on('end', () => {
 
     // GSD update available?
     let gsdUpdate = '';
-    const cacheFile = path.join(homeDir, '.claude', 'cache', 'gsd-update-check.json');
+    const cacheFile = path.join(homeDir, '.codex', 'cache', 'gsd-update-check.json');
     if (fs.existsSync(cacheFile)) {
       try {
         const cache = JSON.parse(fs.readFileSync(cacheFile, 'utf8'));
         if (cache.update_available) {
-          gsdUpdate = '\x1b[33m⬆ /gsd:update\x1b[0m │ ';
+          gsdUpdate = '\x1b[33m⬆ /prompts:gsd-update\x1b[0m │ ';
         }
       } catch (e) {}
     }

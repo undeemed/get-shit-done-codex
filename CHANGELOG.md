@@ -6,6 +6,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.20.1] - 2026-02-16
+
+### Changed
+- Codex installer now writes `get-shit-done/VERSION` so `/prompts:gsd-update` can correctly detect local/global installed version.
+- Installer replacement logic now maps upstream package/repo references to this fork, so update workflows target `@undeemed/get-shit-done-codex` instead of `get-shit-done-cc`.
+- README updated with Codex-specific update guidance and notification paths.
+
+### Added
+- Installer now warns users when a newer npm version is available and shows the exact upgrade command.
+
 ## [1.20.0] - 2026-02-15
 
 ### Added

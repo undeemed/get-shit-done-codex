@@ -33,6 +33,18 @@ npx @undeemed/get-shit-done-codex --local    # Install to current directory
 
 After installation, run `codex` to start Codex CLI, then use `/prompts:gsd-help` to see all commands.
 
+## Staying Updated
+
+```bash
+# Check for updates from inside Codex
+/prompts:gsd-update
+
+# Update from terminal
+npx @undeemed/get-shit-done-codex@latest --global
+```
+
+The installer now writes a `get-shit-done/VERSION` file so `/prompts:gsd-update` can detect installed vs latest and show changelog before updating.
+
 ## Quick Start
 
 ```bash
@@ -104,6 +116,7 @@ Manual user acceptance testing. The system walks you through testable deliverabl
 | `/prompts:gsd-complete-milestone`   | Archive milestone, tag release                                    |
 | `/prompts:gsd-new-milestone [name]` | Start next version                                                |
 | `/prompts:gsd-progress`             | Show current status and what's next                               |
+| `/prompts:gsd-update`               | Check npm for a newer release and apply update                    |
 | `/prompts:gsd-help`                 | Show all commands                                                 |
 
 See `/prompts:gsd-help` for the complete command reference.
@@ -154,6 +167,11 @@ Git bisect finds exact failing task. Each task independently revertable.
 ```bash
 npx @undeemed/get-shit-done-codex@latest
 ```
+
+**Can users be notified when an update is available?**
+- Yes. The installer prints an update notice if a newer npm version exists.
+- In-Codex update checks are available via `/prompts:gsd-update`.
+- For release notifications outside the CLI, enable GitHub release watching on this repo.
 
 ## More Documentation
 
