@@ -112,7 +112,7 @@ Pattern B only (verify-only checkpoints). Skip for A/C.
    - Check `git log --oneline --all --grep="{phase}-{plan}"` returns ≥1 commit
    - Append `## Self-Check: PASSED` or `## Self-Check: FAILED` to SUMMARY
 
-   **Known Codex Code bug (classifyHandoffIfNeeded):** If any segment agent reports "failed" with `classifyHandoffIfNeeded is not defined`, this is a Codex Code runtime bug — not a real failure. Run spot-checks; if they pass, treat as successful.
+   **Known Codex CLI bug (classifyHandoffIfNeeded):** If any segment agent reports "failed" with `classifyHandoffIfNeeded is not defined`, this is a Codex CLI runtime bug — not a real failure. Run spot-checks; if they pass, treat as successful.
 
 
 

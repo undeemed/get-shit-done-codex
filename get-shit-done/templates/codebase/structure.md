@@ -146,7 +146,7 @@ get-shit-done/
 - Subdirectories: None
 
 **commands/gsd/**
-- Purpose: Slash command definitions for Codex Code
+- Purpose: Slash command definitions for Codex CLI
 - Contains: *.md files (one per command)
 - Key files: new-project.md, plan-phase.md, execute-plan.md
 - Subdirectories: None (flat structure)
@@ -186,7 +186,7 @@ get-shit-done/
 
 **Documentation:**
 - `README.md` - User-facing installation and usage guide
-- `CODEX.md` - Instructions for Codex Code when working in this repo
+- `CODEX.md` - Instructions for Codex CLI when working in this repo
 
 ## Naming Conventions
 

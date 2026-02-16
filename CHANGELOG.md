@@ -112,7 +112,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `/gsd:update` workflow now notifies about backed-up local patches and suggests `/gsd:reapply-patches`
 
 ### Fixed
-- Added workaround for Codex Code `classifyHandoffIfNeeded` bug that causes false agent failures — execute-phase and quick workflows now spot-check actual output before reporting failure
+- Added workaround for Codex CLI `classifyHandoffIfNeeded` bug that causes false agent failures — execute-phase and quick workflows now spot-check actual output before reporting failure
 
 ## [1.16.0] - 2026-02-08
 
@@ -193,7 +193,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [1.11.2] - 2026-02-05
 
 ### Added
-- Security section in README with Codex Code deny rules for sensitive files
+- Security section in README with Codex CLI deny rules for sensitive files
 
 ### Changed
 - Install respects `attribution.commit` setting for OpenCode compatibility (#286)
@@ -233,7 +233,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 - Native Gemini CLI support — install with `--gemini` flag or select from interactive menu
-- New `--all` flag to install for Codex Code, OpenCode, and Gemini simultaneously
+- New `--all` flag to install for Codex CLI, OpenCode, and Gemini simultaneously
 
 ### Fixed
 - Context bar now shows 100% at actual 80% limit (was scaling incorrectly)
@@ -282,9 +282,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [1.9.6] - 2026-01-22
 
 ### Added
-- Interactive runtime selection: installer now prompts to choose Codex Code, OpenCode, or both
+- Interactive runtime selection: installer now prompts to choose Codex CLI, OpenCode, or both
 - Native OpenCode support: `--opencode` flag converts GSD to OpenCode format automatically
-- `--both` flag to install for both Codex Code and OpenCode in one command
+- `--both` flag to install for both Codex CLI and OpenCode in one command
 - Auto-configures `~/.opencode.json` permissions for seamless GSD doc access
 
 ### Changed
@@ -294,7 +294,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [1.9.5] - 2025-01-22
 
 ### Fixed
-- Subagents can now access MCP tools (Context7, etc.) - workaround for Codex Code bug #13898
+- Subagents can now access MCP tools (Context7, etc.) - workaround for Codex CLI bug #13898
 - Installer: Escape/Ctrl+C now cancels instead of installing globally
 - Installer: Fixed hook paths on Windows
 - Removed stray backticks in `/gsd:new-project` output
@@ -976,7 +976,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [1.3.26] - 2026-01-06
 
 ### Added
-- Codex Code marketplace plugin support
+- Codex CLI marketplace plugin support
 
 ### Fixed
 - Phase artifacts now committed when created
@@ -1193,7 +1193,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [1.2.0] - 2025-12-15
 
 ### Changed
-- Research workflow implemented as Codex Code context injection
+- Research workflow implemented as Codex CLI context injection
 
 ## [1.1.2] - 2025-12-15
 
