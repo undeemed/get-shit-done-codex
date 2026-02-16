@@ -29,7 +29,7 @@ ${green}   ██████╗ ███████╗██████╗
 
    Get Shit Done ${dim}v${pkg.version}${reset}
    A meta-prompting, context engineering, and spec-driven
-   development system for OpenAI Codex CLI.
+   development system for OpenAI Codex (CLI + Desktop).
 `;
 
 const args = process.argv.slice(2);
@@ -170,12 +170,12 @@ function install(isGlobal) {
   console.log(`
   ${green}Done!${reset}
 
-  ${yellow}For Codex CLI:${reset}
+  ${yellow}For Codex (CLI + Desktop):${reset}
   - AGENTS.md: ${cyan}${codexDir}/AGENTS.md${reset}
   - Prompt commands: ${cyan}${codexDir}/prompts/${reset}
 
   ${yellow}Getting Started:${reset}
-  1. Run ${cyan}codex${reset}
+  1. Run ${cyan}codex${reset} (CLI) or ${cyan}codex app${reset} (Desktop)
   2. Use ${cyan}/prompts:gsd-help${reset} to list commands
   3. Start with ${cyan}/prompts:gsd-new-project${reset}
 

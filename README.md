@@ -1,6 +1,6 @@
-# get-shit-done-codex (Codex CLI)
+# get-shit-done-codex (Codex CLI/Desktop)
 
-A meta-prompting, context engineering and spec-driven development system for [OpenAI Codex CLI](https://github.com/openai/codex).
+A meta-prompting, context engineering and spec-driven development system for [OpenAI Codex](https://github.com/openai/codex), including both CLI and Desktop.
 
 Fork of [get-shit-done](https://github.com/taches/get-shit-done) by TÂCHES, adapted for Codex CLI by [undeemed](https://github.com/undeemed).
 
@@ -31,7 +31,7 @@ npx @undeemed/get-shit-done-codex --global   # Install to ~/.codex/
 npx @undeemed/get-shit-done-codex --local    # Install to current directory
 ```
 
-After installation, run `codex` to start Codex CLI, then use `/prompts:gsd-help` to see all commands.
+After installation, run `codex` (CLI) or `codex app` (Desktop), then use `/prompts:gsd-help` to see all commands.
 
 ## Staying Updated
 
