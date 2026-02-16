@@ -979,13 +979,27 @@ mkdir -p .planning/debug/resolved
 mv .planning/debug/{slug}.md .planning/debug/resolved/
 ```
 
-Commit:
+**Check planning config using state load (commit_docs is available from the output):**
+
 ```bash
-git add -A
+INIT=$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state load)
+# commit_docs is in the JSON output
+```
+
+**Commit the fix:**
+
+Stage and commit code changes (NEVER `git add -A` or `git add .`):
+```bash
+git add src/path/to/fixed-file.ts
+git add src/path/to/other-file.ts
 git commit -m "fix: {brief description}
 
-Root cause: {root_cause}
-Debug session: .planning/debug/resolved/{slug}.md"
+Root cause: {root_cause}"
+```
+
+Then commit planning docs via CLI (respects `commit_docs` config automatically):
+```bash
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: resolve debug {slug}" --files .planning/debug/resolved/{slug}.md
 ```
 
 Report completion and offer next steps.

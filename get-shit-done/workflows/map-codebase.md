@@ -22,11 +22,22 @@ Documents are reference material for Claude when planning/executing. Always incl
 
 <process>
 
-<step name="check_existing" priority="first">
-Check if .planning/codebase/ already exists:
+<step name="init_context" priority="first">
+Load codebase mapping context:
 
 ```bash
-ls -la .planning/codebase/ 2>/dev/null
+INIT=$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs init map-codebase)
+```
+
+Extract from init JSON: `mapper_model`, `commit_docs`, `codebase_dir`, `existing_maps`, `has_maps`, `codebase_dir_exists`.
+</step>
+
+<step name="check_existing">
+Check if .planning/codebase/ already exists using `has_maps` from init context.
+
+If `codebase_dir_exists` is true:
+```bash
+ls -la .planning/codebase/
 ```
 
 **If exists:**
@@ -73,7 +84,7 @@ Continue to spawn_agents.
 <step name="spawn_agents">
 Spawn 4 parallel gsd-codebase-mapper agents.
 
-Use Task tool with `subagent_type="gsd-codebase-mapper"` and `run_in_background=true` for parallel execution.
+Use Task tool with `subagent_type="gsd-codebase-mapper"`, `model="{mapper_model}"`, and `run_in_background=true` for parallel execution.
 
 **CRITICAL:** Use the dedicated `gsd-codebase-mapper` agent, NOT `Explore`. The mapper agent writes documents directly.
 
@@ -82,6 +93,7 @@ Use Task tool with `subagent_type="gsd-codebase-mapper"` and `run_in_background=
 Task tool parameters:
 ```
 subagent_type: "gsd-codebase-mapper"
+model: "{mapper_model}"
 run_in_background: true
 description: "Map codebase tech stack"
 ```
@@ -104,6 +116,7 @@ Explore thoroughly. Write documents directly using templates. Return confirmatio
 Task tool parameters:
 ```
 subagent_type: "gsd-codebase-mapper"
+model: "{mapper_model}"
 run_in_background: true
 description: "Map codebase architecture"
 ```
@@ -126,6 +139,7 @@ Explore thoroughly. Write documents directly using templates. Return confirmatio
 Task tool parameters:
 ```
 subagent_type: "gsd-codebase-mapper"
+model: "{mapper_model}"
 run_in_background: true
 description: "Map codebase conventions"
 ```
@@ -148,6 +162,7 @@ Explore thoroughly. Write documents directly using templates. Return confirmatio
 Task tool parameters:
 ```
 subagent_type: "gsd-codebase-mapper"
+model: "{mapper_model}"
 run_in_background: true
 description: "Map codebase concerns"
 ```
@@ -205,6 +220,41 @@ wc -l .planning/codebase/*.md
 
 If any documents missing or empty, note which agents may have failed.
 
+Continue to scan_for_secrets.
+</step>
+
+<step name="scan_for_secrets">
+**CRITICAL SECURITY CHECK:** Scan output files for accidentally leaked secrets before committing.
+
+Run secret pattern detection:
+
+```bash
+# Check for common API key patterns in generated docs
+grep -E '(sk-[a-zA-Z0-9]{20,}|sk_live_[a-zA-Z0-9]+|sk_test_[a-zA-Z0-9]+|ghp_[a-zA-Z0-9]{36}|gho_[a-zA-Z0-9]{36}|glpat-[a-zA-Z0-9_-]+|AKIA[A-Z0-9]{16}|xox[baprs]-[a-zA-Z0-9-]+|-----BEGIN.*PRIVATE KEY|eyJ[a-zA-Z0-9_-]+\.eyJ[a-zA-Z0-9_-]+\.)' .planning/codebase/*.md 2>/dev/null && SECRETS_FOUND=true || SECRETS_FOUND=false
+```
+
+**If SECRETS_FOUND=true:**
+
+```
+⚠️  SECURITY ALERT: Potential secrets detected in codebase documents!
+
+Found patterns that look like API keys or tokens in:
+[show grep output]
+
+This would expose credentials if committed.
+
+**Action required:**
+1. Review the flagged content above
+2. If these are real secrets, they must be removed before committing
+3. Consider adding sensitive files to Claude Code "Deny" permissions
+
+Pausing before commit. Reply "safe to proceed" if the flagged content is not actually sensitive, or edit the files first.
+```
+
+Wait for user confirmation before continuing to commit_codebase_map.
+
+**If SECRETS_FOUND=false:**
+
 Continue to commit_codebase_map.
 </step>
 
@@ -212,19 +262,7 @@ Continue to commit_codebase_map.
 Commit the codebase map:
 
 ```bash
-git add .planning/codebase/*.md
-git commit -m "$(cat <<'EOF'
-docs: map existing codebase
-
-- STACK.md - Technologies and dependencies
-- ARCHITECTURE.md - System design and patterns
-- STRUCTURE.md - Directory layout
-- CONVENTIONS.md - Code style and patterns
-- TESTING.md - Test structure
-- INTEGRATIONS.md - External services
-- CONCERNS.md - Technical debt and issues
-EOF
-)"
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: map existing codebase" --files .planning/codebase/*.md
 ```
 
 Continue to offer_next.

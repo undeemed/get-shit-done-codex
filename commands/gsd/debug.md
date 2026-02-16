@@ -28,6 +28,17 @@ ls .planning/debug/*.md 2>/dev/null | grep -v resolved | head -5
 
 <process>
 
+## 0. Initialize Context
+
+```bash
+INIT=$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state load)
+```
+
+Extract `commit_docs` from init JSON. Resolve debugger model:
+```bash
+DEBUGGER_MODEL=$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs resolve-model gsd-debugger --raw)
+```
+
 ## 1. Check Active Sessions
 
 If active sessions exist AND no $ARGUMENTS:
@@ -82,6 +93,7 @@ Create: .planning/debug/{slug}.md
 Task(
   prompt=filled_prompt,
   subagent_type="gsd-debugger",
+  model="{debugger_model}",
   description="Debug {slug}"
 )
 ```
@@ -134,6 +146,7 @@ goal: find_and_fix
 Task(
   prompt=continuation_prompt,
   subagent_type="gsd-debugger",
+  model="{debugger_model}",
   description="Continue debug {slug}"
 )
 ```
