@@ -184,9 +184,9 @@ The original repository contains:
 - Best practices and examples
 - Architecture and design principles
 
-**Note:** The original README is written for Codex Code. When following it, remember that this fork uses:
+**Note:** The original README is written for Codex CLI. When following it, remember that this fork uses:
 - `/prompts:gsd-*` command format (instead of `/gsd:*`)
-- Codex CLI (instead of Codex Code)
+- Codex CLI (instead of Codex CLI)
 - `~/.codex/` directory (instead of `~/.codex/`)
 
 ## Credits

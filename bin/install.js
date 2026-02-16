@@ -68,12 +68,12 @@ function applyReplacements(content, pathPrefix) {
     ? './'
     : `./${runtimeRelativePrefix}`;
 
-  // Replace explicit relative/global patterns first to avoid producing "././".
+  // Rewrite codex config roots for global vs local installs.
+  // Global install keeps ~/.codex/* references; local rewrites to ./*
   content = content.replace(/\.\/\.codex\//g, explicitRelativePrefix);
   content = content.replace(/~\/\.codex\//g, '~/.codex/');
-  content = content.replace(/\.codex\//g, runtimeRelativePrefix);
 
-  content = content.replace(/Codex Code/g, 'Codex CLI');
+  content = content.replace(/Codex CLI/g, 'Codex CLI');
   content = content.replace(/Codex/g, 'Codex');
 
   content = content.replace(/\/gsd:/g, '/prompts:gsd-');
