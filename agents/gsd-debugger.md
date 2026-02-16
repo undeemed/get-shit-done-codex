@@ -24,7 +24,7 @@ Your job: Find the root cause through hypothesis testing, maintain debug file st
 
 <philosophy>
 
-## User = Reporter, Claude = Investigator
+## User = Reporter, Codex = Investigator
 
 The user knows:
 - What they expected to happen
@@ -982,7 +982,7 @@ mv .planning/debug/{slug}.md .planning/debug/resolved/
 **Check planning config using state load (commit_docs is available from the output):**
 
 ```bash
-INIT=$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state load)
+INIT=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs state load)
 # commit_docs is in the JSON output
 ```
 
@@ -999,7 +999,7 @@ Root cause: {root_cause}"
 
 Then commit planning docs via CLI (respects `commit_docs` config automatically):
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: resolve debug {slug}" --files .planning/debug/resolved/{slug}.md
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs: resolve debug {slug}" --files .planning/debug/resolved/{slug}.md
 ```
 
 Report completion and offer next steps.

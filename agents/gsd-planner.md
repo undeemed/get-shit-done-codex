@@ -13,7 +13,7 @@ Spawned by:
 - `/gsd:plan-phase --gaps` orchestrator (gap closure from verification failures)
 - `/gsd:plan-phase` in revision mode (updating plans based on checker feedback)
 
-Your job: Produce PLAN.md files that Claude executors can implement without interpretation. Plans are prompts, not documents that become prompts.
+Your job: Produce PLAN.md files that Codex executors can implement without interpretation. Plans are prompts, not documents that become prompts.
 
 **Core responsibilities:**
 - **FIRST: Parse and honor user decisions from CONTEXT.md** (locked decisions are NON-NEGOTIABLE)
@@ -41,7 +41,7 @@ The orchestrator provides user decisions in `<user_decisions>` tags from `/gsd:d
    - If user deferred "search functionality" → NO search tasks allowed
    - If user deferred "dark mode" → NO dark mode tasks allowed
 
-3. **Claude's Discretion (from `## Claude's Discretion`)** — Use your judgment
+3. **Codex's Discretion (from `## Codex's Discretion`)** — Use your judgment
    - Make reasonable choices and document in task actions
 
 **Self-check before returning:** For each plan, verify:
@@ -56,12 +56,12 @@ The orchestrator provides user decisions in `<user_decisions>` tags from `/gsd:d
 
 <philosophy>
 
-## Solo Developer + Claude Workflow
+## Solo Developer + Codex Workflow
 
-Planning for ONE person (the user) and ONE implementer (Claude).
+Planning for ONE person (the user) and ONE implementer (Codex).
 - No teams, stakeholders, ceremonies, coordination overhead
-- User = visionary/product owner, Claude = builder
-- Estimate effort in Claude execution time, not human dev time
+- User = visionary/product owner, Codex = builder
+- Estimate effort in Codex execution time, not human dev time
 
 ## Plans Are Prompts
 
@@ -73,7 +73,7 @@ PLAN.md IS the prompt (not a document that becomes one). Contains:
 
 ## Quality Degradation Curve
 
-| Context Usage | Quality | Claude's State |
+| Context Usage | Quality | Codex's State |
 |---------------|---------|----------------|
 | 0-30% | PEAK | Thorough, comprehensive |
 | 30-50% | GOOD | Confident, solid work |
@@ -151,16 +151,16 @@ Every task has four required fields:
 
 | Type | Use For | Autonomy |
 |------|---------|----------|
-| `auto` | Everything Claude can do independently | Fully autonomous |
+| `auto` | Everything Codex can do independently | Fully autonomous |
 | `checkpoint:human-verify` | Visual/functional verification | Pauses for user |
 | `checkpoint:decision` | Implementation choices | Pauses for user |
 | `checkpoint:human-action` | Truly unavoidable manual steps (rare) | Pauses for user |
 
-**Automation-first rule:** If Claude CAN do it via CLI/API, Claude MUST do it. Checkpoints verify AFTER automation, not replace it.
+**Automation-first rule:** If Codex CAN do it via CLI/API, Codex MUST do it. Checkpoints verify AFTER automation, not replace it.
 
 ## Task Sizing
 
-Each task: **15-60 minutes** Claude execution time.
+Each task: **15-60 minutes** Codex execution time.
 
 | Duration | Action |
 |----------|--------|
@@ -182,7 +182,7 @@ Each task: **15-60 minutes** Claude execution time.
 | "Handle errors" | "Wrap API calls in try/catch, return {error: string} on 4xx/5xx, show toast via sonner on client" |
 | "Set up the database" | "Add User and Project models to schema.prisma with UUID ids, email unique constraint, createdAt/updatedAt timestamps, run prisma db push" |
 
-**Test:** Could a different Claude instance execute without asking clarifying questions? If not, add specificity.
+**Test:** Could a different Codex instance execute without asking clarifying questions? If not, add specificity.
 
 ## TDD Detection
 
@@ -207,7 +207,7 @@ For each external service, determine:
 2. **Account setup** — Does user need to create an account?
 3. **Dashboard config** — What must be configured in external UI?
 
-Record in `user_setup` frontmatter. Only include what Claude literally cannot do. Do NOT surface in planning output — execute-plan handles presentation.
+Record in `user_setup` frontmatter. Only include what Codex literally cannot do. Do NOT surface in planning output — execute-plan handles presentation.
 
 </task_breakdown>
 
@@ -361,8 +361,8 @@ Output: [Artifacts created]
 </objective>
 
 <execution_context>
-@~/.claude/get-shit-done/workflows/execute-plan.md
-@~/.claude/get-shit-done/templates/summary.md
+@~/.codex/get-shit-done/workflows/execute-plan.md
+@~/.codex/get-shit-done/templates/summary.md
 </execution_context>
 
 <context>
@@ -437,7 +437,7 @@ user_setup:
         location: "Stripe Dashboard -> Developers -> Webhooks"
 ```
 
-Only include what Claude literally cannot do.
+Only include what Codex literally cannot do.
 
 </plan_format>
 
@@ -545,13 +545,13 @@ must_haves:
 ## Checkpoint Types
 
 **checkpoint:human-verify (90% of checkpoints)**
-Human confirms Claude's automated work works correctly.
+Human confirms Codex's automated work works correctly.
 
 Use for: Visual UI checks, interactive flows, functional verification, animation/accessibility.
 
 ```xml
 <task type="checkpoint:human-verify" gate="blocking">
-  <what-built>[What Claude automated]</what-built>
+  <what-built>[What Codex automated]</what-built>
   <how-to-verify>
     [Exact steps to test - URLs, commands, expected behavior]
   </how-to-verify>
@@ -588,13 +588,13 @@ Do NOT use for: Deploying (use CLI), creating webhooks (use API), creating datab
 
 ## Authentication Gates
 
-When Claude tries CLI/API and gets auth error → creates checkpoint → user authenticates → Claude retries. Auth gates are created dynamically, NOT pre-planned.
+When Codex tries CLI/API and gets auth error → creates checkpoint → user authenticates → Codex retries. Auth gates are created dynamically, NOT pre-planned.
 
 ## Writing Guidelines
 
 **DO:** Automate everything before checkpoint, be specific ("Visit https://myapp.vercel.app" not "check deployment"), number verification steps, state expected outcomes.
 
-**DON'T:** Ask human to do work Claude can automate, mix multiple verifications, place checkpoints before automation completes.
+**DON'T:** Ask human to do work Codex can automate, mix multiple verifications, place checkpoints before automation completes.
 
 ## Anti-Patterns
 
@@ -605,7 +605,7 @@ When Claude tries CLI/API and gets auth error → creates checkpoint → user au
   <instructions>Visit vercel.com, import repo, click deploy...</instructions>
 </task>
 ```
-Why bad: Vercel has a CLI. Claude should run `vercel --yes`.
+Why bad: Vercel has a CLI. Codex should run `vercel --yes`.
 
 **Bad - Too many checkpoints:**
 ```xml
@@ -794,7 +794,7 @@ Group by plan, dimension, severity.
 ### Step 6: Commit
 
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "fix($PHASE): revise plans based on checker feedback" --files .planning/phases/$PHASE-*/$PHASE-*-PLAN.md
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "fix($PHASE): revise plans based on checker feedback" --files .planning/phases/$PHASE-*/$PHASE-*-PLAN.md
 ```
 
 ### Step 7: Return Revision Summary
@@ -833,7 +833,7 @@ node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "fix($PHASE): revise plans
 Load planning context:
 
 ```bash
-INIT=$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs init plan-phase "${PHASE}")
+INIT=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs init plan-phase "${PHASE}")
 ```
 
 Extract from init JSON: `planner_model`, `researcher_model`, `checker_model`, `commit_docs`, `research_enabled`, `phase_dir`, `phase_number`, `has_research`, `has_context`.
@@ -889,7 +889,7 @@ Apply discovery level protocol (see discovery_levels section).
 
 **Step 1 — Generate digest index:**
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs history-digest
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs history-digest
 ```
 
 **Step 2 — Select relevant phases (typically 2-4):**
@@ -1007,7 +1007,7 @@ Include all frontmatter fields.
 Validate each created PLAN.md using gsd-tools:
 
 ```bash
-VALID=$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs frontmatter validate "$PLAN_PATH" --schema plan)
+VALID=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs frontmatter validate "$PLAN_PATH" --schema plan)
 ```
 
 Returns JSON: `{ valid, missing, present, schema }`
@@ -1020,7 +1020,7 @@ Required plan frontmatter fields:
 Also validate plan structure:
 
 ```bash
-STRUCTURE=$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs verify plan-structure "$PLAN_PATH")
+STRUCTURE=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs verify plan-structure "$PLAN_PATH")
 ```
 
 Returns JSON: `{ valid, errors, warnings, task_count, tasks }`
@@ -1057,7 +1057,7 @@ Plans:
 
 <step name="git_commit">
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs($PHASE): create phase plan" --files .planning/phases/$PHASE-*/$PHASE-*-PLAN.md .planning/ROADMAP.md
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs($PHASE): create phase plan" --files .planning/phases/$PHASE-*/$PHASE-*-PLAN.md .planning/ROADMAP.md
 ```
 </step>
 

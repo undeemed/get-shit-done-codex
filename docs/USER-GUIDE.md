@@ -169,7 +169,7 @@ A detailed reference for workflows, troubleshooting, and configuration. For quic
 | `/gsd:add-phase` | Append new phase to roadmap | Scope grows after initial planning |
 | `/gsd:insert-phase [N]` | Insert urgent work (decimal numbering) | Urgent fix mid-milestone |
 | `/gsd:remove-phase [N]` | Remove future phase and renumber | Descoping a feature |
-| `/gsd:list-phase-assumptions [N]` | Preview Claude's intended approach | Before planning, to validate direction |
+| `/gsd:list-phase-assumptions [N]` | Preview Codex's intended approach | Before planning, to validate direction |
 | `/gsd:plan-milestone-gaps` | Create phases for audit gaps | After audit finds missing items |
 | `/gsd:research-phase [N]` | Deep ecosystem research only | Complex or unfamiliar domain |
 
@@ -289,7 +289,7 @@ Disable these to speed up phases in familiar domains or when conserving tokens.
 ### New Project (Full Cycle)
 
 ```bash
-claude --dangerously-skip-permissions
+codex --dangerously-skip-permissions
 /gsd:new-project            # Answer questions, configure, approve roadmap
 /clear
 /gsd:discuss-phase 1        # Lock in your preferences
@@ -370,11 +370,11 @@ You ran `/gsd:new-project` but `.planning/PROJECT.md` already exists. This is a 
 
 ### Context Degradation During Long Sessions
 
-Clear your context window between major commands: `/clear` in Claude Code. GSD is designed around fresh contexts -- every subagent gets a clean 200K window. If quality is dropping in the main session, clear and use `/gsd:resume-work` or `/gsd:progress` to restore state.
+Clear your context window between major commands: `/clear` in Codex CLI. GSD is designed around fresh contexts -- every subagent gets a clean 200K window. If quality is dropping in the main session, clear and use `/gsd:resume-work` or `/gsd:progress` to restore state.
 
 ### Plans Seem Wrong or Misaligned
 
-Run `/gsd:discuss-phase [N]` before planning. Most plan quality issues come from Claude making assumptions that `CONTEXT.md` would have prevented. You can also run `/gsd:list-phase-assumptions [N]` to see what Claude intends to do before committing to a plan.
+Run `/gsd:discuss-phase [N]` before planning. Most plan quality issues come from Codex making assumptions that `CONTEXT.md` would have prevented. You can also run `/gsd:list-phase-assumptions [N]` to see what Codex intends to do before committing to a plan.
 
 ### Execution Fails or Produces Stubs
 
@@ -390,7 +390,7 @@ Do not re-run `/gsd:execute-phase`. Use `/gsd:quick` for targeted fixes, or `/gs
 
 ### Model Costs Too High
 
-Switch to budget profile: `/gsd:set-profile budget`. Disable research and plan-check agents via `/gsd:settings` if the domain is familiar to you (or to Claude).
+Switch to budget profile: `/gsd:set-profile budget`. Disable research and plan-check agents via `/gsd:settings` if the domain is familiar to you (or to Codex).
 
 ### Working on a Sensitive/Private Project
 
@@ -402,7 +402,7 @@ Since v1.17, the installer backs up locally modified files to `gsd-local-patches
 
 ### Subagent Appears to Fail but Work Was Done
 
-A known workaround exists for a Claude Code classification bug. GSD's orchestrators (execute-phase, quick) spot-check actual output before reporting failure. If you see a failure message but commits were made, check `git log` -- the work may have succeeded.
+A known workaround exists for a Codex CLI classification bug. GSD's orchestrators (execute-phase, quick) spot-check actual output before reporting failure. If you see a failure message but commits were made, check `git log` -- the work may have succeeded.
 
 ---
 

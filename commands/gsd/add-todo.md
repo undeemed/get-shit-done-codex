@@ -24,11 +24,11 @@ Routes to the add-todo workflow which handles:
 
 <execution_context>
 @.planning/STATE.md
-@~/.claude/get-shit-done/workflows/add-todo.md
+@~/.codex/get-shit-done/workflows/add-todo.md
 </execution_context>
 
 <process>
-**Follow the add-todo workflow** from `@~/.claude/get-shit-done/workflows/add-todo.md`.
+**Follow the add-todo workflow** from `@~/.codex/get-shit-done/workflows/add-todo.md`.
 
 The workflow handles all logic including:
 1. Directory ensuring

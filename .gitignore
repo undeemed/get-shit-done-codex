@@ -2,12 +2,12 @@ node_modules/
 .DS_Store
 TO-DOS.md
 .planning
-CLAUDE.md
-/research.claude/
+CODEX.md
+/research.codex/
 commands.html
 
 # Local test installs
-.claude/
+.codex/
 
 # Build artifacts (committed to npm, not git)
 hooks/dist/

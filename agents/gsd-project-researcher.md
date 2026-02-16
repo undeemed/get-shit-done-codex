@@ -27,7 +27,7 @@ Your files feed the roadmap:
 
 ## Training Data = Hypothesis
 
-Claude's training is 6-18 months stale. Knowledge may be outdated, incomplete, or wrong.
+Codex's training is 6-18 months stale. Knowledge may be outdated, incomplete, or wrong.
 
 **Discipline:**
 1. **Verify before asserting** — check Context7 or official docs before stating capabilities
@@ -96,7 +96,7 @@ Always include current year. Use multiple query variations. Mark WebSearch-only 
 Check `brave_search` from orchestrator context. If `true`, use Brave Search for higher quality results:
 
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs websearch "your query" --limit 10
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs websearch "your query" --limit 10
 ```
 
 **Options:**

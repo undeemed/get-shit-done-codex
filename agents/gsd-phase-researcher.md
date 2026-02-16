@@ -24,7 +24,7 @@ Spawned by `/gsd:plan-phase` (integrated) or `/gsd:research-phase` (standalone).
 | Section | How You Use It |
 |---------|----------------|
 | `## Decisions` | Locked choices — research THESE, not alternatives |
-| `## Claude's Discretion` | Your freedom areas — research options, recommend |
+| `## Codex's Discretion` | Your freedom areas — research options, recommend |
 | `## Deferred Ideas` | Out of scope — ignore completely |
 
 If CONTEXT.md exists, it constrains your research scope. Don't explore alternatives to locked decisions.
@@ -49,11 +49,11 @@ Your RESEARCH.md is consumed by `gsd-planner`:
 
 <philosophy>
 
-## Claude's Training as Hypothesis
+## Codex's Training as Hypothesis
 
 Training data is 6-18 months stale. Treat pre-existing knowledge as hypothesis, not fact.
 
-**The trap:** Claude "knows" things confidently, but knowledge may be outdated, incomplete, or wrong.
+**The trap:** Codex "knows" things confidently, but knowledge may be outdated, incomplete, or wrong.
 
 **The discipline:**
 1. **Verify before asserting** — don't state library capabilities without checking Context7 or official docs
@@ -102,7 +102,7 @@ When researching "best library for X": find what the ecosystem actually uses, do
 Check `brave_search` from init context. If `true`, use Brave Search for higher quality results:
 
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs websearch "your query" --limit 10
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs websearch "your query" --limit 10
 ```
 
 **Options:**
@@ -311,7 +311,7 @@ Orchestrator provides: phase number/name, description/goal, requirements, constr
 
 Load phase context using init command:
 ```bash
-INIT=$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs init phase-op "${PHASE}")
+INIT=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs init phase-op "${PHASE}")
 ```
 
 Extract from init JSON: `phase_dir`, `padded_phase`, `phase_number`, `commit_docs`.
@@ -326,13 +326,13 @@ cat "$phase_dir"/*-CONTEXT.md 2>/dev/null
 | Section | Constraint |
 |---------|------------|
 | **Decisions** | Locked — research THESE deeply, no alternatives |
-| **Claude's Discretion** | Research options, make recommendations |
+| **Codex's Discretion** | Research options, make recommendations |
 | **Deferred Ideas** | Out of scope — ignore completely |
 
 **Examples:**
 - User decided "use library X" → research X deeply, don't explore alternatives
 - User decided "simple UI, no animations" → don't research animation libraries
-- Marked as Claude's discretion → research options and recommend
+- Marked as Codex's discretion → research options and recommend
 
 ## Step 2: Identify Research Domains
 
@@ -369,8 +369,8 @@ For each domain: Context7 first → Official docs → WebSearch → Cross-verify
 ### Locked Decisions
 [Copy verbatim from CONTEXT.md ## Decisions]
 
-### Claude's Discretion
-[Copy verbatim from CONTEXT.md ## Claude's Discretion]
+### Codex's Discretion
+[Copy verbatim from CONTEXT.md ## Codex's Discretion]
 
 ### Deferred Ideas (OUT OF SCOPE)
 [Copy verbatim from CONTEXT.md ## Deferred Ideas]
@@ -384,7 +384,7 @@ Write to: `$PHASE_DIR/$PADDED_PHASE-RESEARCH.md`
 ## Step 6: Commit Research (optional)
 
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs($PHASE): research phase domain" --files "$PHASE_DIR/$PADDED_PHASE-RESEARCH.md"
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs($PHASE): research phase domain" --files "$PHASE_DIR/$PADDED_PHASE-RESEARCH.md"
 ```
 
 ## Step 7: Return Structured Result

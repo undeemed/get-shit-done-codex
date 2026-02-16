@@ -40,7 +40,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 - User-level default settings via `~/.gsd/defaults.json` — set GSD defaults across all projects
-- Per-agent model overrides — customize which Claude model each agent uses
+- Per-agent model overrides — customize which Codex model each agent uses
 
 ### Changed
 - Completed milestone phase directories are now archived for cleaner project structure
@@ -112,7 +112,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `/gsd:update` workflow now notifies about backed-up local patches and suggests `/gsd:reapply-patches`
 
 ### Fixed
-- Added workaround for Claude Code `classifyHandoffIfNeeded` bug that causes false agent failures — execute-phase and quick workflows now spot-check actual output before reporting failure
+- Added workaround for Codex CLI `classifyHandoffIfNeeded` bug that causes false agent failures — execute-phase and quick workflows now spot-check actual output before reporting failure
 
 ## [1.16.0] - 2026-02-08
 
@@ -193,7 +193,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [1.11.2] - 2026-02-05
 
 ### Added
-- Security section in README with Claude Code deny rules for sensitive files
+- Security section in README with Codex CLI deny rules for sensitive files
 
 ### Changed
 - Install respects `attribution.commit` setting for OpenCode compatibility (#286)
@@ -233,7 +233,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 - Native Gemini CLI support — install with `--gemini` flag or select from interactive menu
-- New `--all` flag to install for Claude Code, OpenCode, and Gemini simultaneously
+- New `--all` flag to install for Codex CLI, OpenCode, and Gemini simultaneously
 
 ### Fixed
 - Context bar now shows 100% at actual 80% limit (was scaling incorrectly)
@@ -282,9 +282,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [1.9.6] - 2026-01-22
 
 ### Added
-- Interactive runtime selection: installer now prompts to choose Claude Code, OpenCode, or both
+- Interactive runtime selection: installer now prompts to choose Codex CLI, OpenCode, or both
 - Native OpenCode support: `--opencode` flag converts GSD to OpenCode format automatically
-- `--both` flag to install for both Claude Code and OpenCode in one command
+- `--both` flag to install for both Codex CLI and OpenCode in one command
 - Auto-configures `~/.opencode.json` permissions for seamless GSD doc access
 
 ### Changed
@@ -294,7 +294,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [1.9.5] - 2025-01-22
 
 ### Fixed
-- Subagents can now access MCP tools (Context7, etc.) - workaround for Claude Code bug #13898
+- Subagents can now access MCP tools (Context7, etc.) - workaround for Codex CLI bug #13898
 - Installer: Escape/Ctrl+C now cancels instead of installing globally
 - Installer: Fixed hook paths on Windows
 - Removed stray backticks in `/gsd:new-project` output
@@ -306,7 +306,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [1.9.4] - 2026-01-21
 
 ### Changed
-- Checkpoint automation now enforces automation-first principle: Claude starts servers, handles CLI installs, and fixes setup failures before presenting checkpoints to users
+- Checkpoint automation now enforces automation-first principle: Codex starts servers, handles CLI installs, and fixes setup failures before presenting checkpoints to users
 - Added server lifecycle protocol (port conflict handling, background process management)
 - Added CLI auto-installation handling with safe-to-install matrix
 - Added pre-checkpoint failure recovery (fix broken environment before asking user to verify)
@@ -462,7 +462,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [1.5.23] - 2025-01-16
 
 ### Added
-- Cross-platform completion notification hook (Mac/Linux/Windows alerts when Claude stops)
+- Cross-platform completion notification hook (Mac/Linux/Windows alerts when Codex stops)
 - Phase researcher now loads CONTEXT.md from discuss-phase to focus research on user decisions
 
 ### Fixed
@@ -513,7 +513,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Changed
 - `/gsd:discuss-phase` redesigned with intelligent gray area analysis — analyzes phase to identify discussable areas (UI, UX, Behavior, etc.), presents multi-select for user control, deep-dives each area with focused questioning
 - Explicit scope guardrail prevents scope creep during discussion — captures deferred ideas without acting on them
-- CONTEXT.md template restructured for decisions (domain boundary, decisions by category, Claude's discretion, deferred ideas)
+- CONTEXT.md template restructured for decisions (domain boundary, decisions by category, Codex's discretion, deferred ideas)
 - Downstream awareness: discuss-phase now explicitly documents that CONTEXT.md feeds researcher and planner agents
 - `/gsd:plan-phase` now integrates research — spawns `gsd-phase-researcher` before planning unless research exists or `--skip-research` flag used
 
@@ -633,7 +633,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Research-phase no longer gatekeeps by domain type
 
 ### Removed
-- Domain expertise feature (`~/.claude/skills/expertise/`) - was personal tooling not available to other users
+- Domain expertise feature (`~/.codex/skills/expertise/`) - was personal tooling not available to other users
 
 ## [1.5.8] - 2025-01-15
 
@@ -875,7 +875,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 - Parallel-first planning with dependency graphs
 - Checkpoint-resume capability for long-running phases
-- `.claude/rules/` directory for auto-loaded contribution rules
+- `.codex/rules/` directory for auto-loaded contribution rules
 
 ### Changed
 - execute-phase uses wave-based blocking execution
@@ -931,7 +931,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Consistent zero-padding for decimal phase numbers (e.g., 01.1)
 
 ### Changed
-- Removed obsolete .claude-plugin directory
+- Removed obsolete .codex-plugin directory
 
 ## [1.3.32] - 2026-01-10
 
@@ -976,7 +976,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [1.3.26] - 2026-01-06
 
 ### Added
-- Claude Code marketplace plugin support
+- Codex CLI marketplace plugin support
 
 ### Fixed
 - Phase artifacts now committed when created
@@ -989,7 +989,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [1.3.24] - 2026-01-06
 
 ### Added
-- `CLAUDE_CONFIG_DIR` environment variable support
+- `CODEX_CONFIG_DIR` environment variable support
 
 ## [1.3.23] - 2026-01-06
 
@@ -1193,7 +1193,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [1.2.0] - 2025-12-15
 
 ### Changed
-- Research workflow implemented as Claude Code context injection
+- Research workflow implemented as Codex CLI context injection
 
 ## [1.1.2] - 2025-12-15
 
