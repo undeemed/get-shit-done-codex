@@ -6,6 +6,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.20.2] - 2026-02-16
+
+### Changed
+- Clarified Codex runtime support across docs and installer output: this fork supports both Codex CLI and Codex Desktop.
+- Updated package metadata description to explicitly include Desktop compatibility.
+
 ## [1.20.1] - 2026-02-16
 
 ### Changed
