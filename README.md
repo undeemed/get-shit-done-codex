@@ -19,7 +19,7 @@ get-shit-done-codex (GSD) solves context rot — the quality degradation that ha
 ## Installation
 
 ```bash
-npx @undeemed/get-shit-done-codex
+npx @undeemed/get-shit-done-codex@latest
 ```
 
 You'll be prompted to install globally (`~/.codex/`) or locally (`./`).
