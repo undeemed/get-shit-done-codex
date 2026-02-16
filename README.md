@@ -45,6 +45,20 @@ npx @undeemed/get-shit-done-codex@latest --global
 
 The installer now writes a `get-shit-done/VERSION` file so `/prompts:gsd-update` can detect installed vs latest and show changelog before updating.
 
+## npm Trusted Publisher (OIDC)
+
+This repo includes a GitHub Actions publish workflow at:
+
+- `.github/workflows/publish.yml`
+
+When setting up npm Trusted Publisher for this package, use:
+
+- **Publisher:** `GitHub Actions`
+- **Organization or user:** `undeemed`
+- **Repository:** `get-shit-done-codex`
+- **Workflow filename:** `publish.yml`
+- **Environment name:** leave blank (unless you later bind this workflow to a specific GitHub Environment)
+
 ## Quick Start
 
 ```bash
