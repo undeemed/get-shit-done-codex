@@ -46,10 +46,10 @@ The document should describe what you want to build.
 **MANDATORY FIRST STEP — Execute these checks before ANY user interaction:**
 
 ```bash
-INIT=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" init new-project)
+INIT=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs init new-project)
 ```
 
-Parse JSON for: `researcher_model`, `synthesizer_model`, `roadmapper_model`, `commit_docs`, `project_exists`, `has_codebase_map`, `planning_exists`, `has_existing_code`, `has_package_file`, `is_brownfield`, `needs_codebase_map`, `has_git`, `project_path`.
+Parse JSON for: `researcher_model`, `synthesizer_model`, `roadmapper_model`, `commit_docs`, `project_exists`, `has_codebase_map`, `planning_exists`, `has_existing_code`, `has_package_file`, `is_brownfield`, `needs_codebase_map`, `has_git`.
 
 **If `project_exists` is true:** Error — project already initialized. Use `/gsd:progress`.
 
@@ -176,8 +176,7 @@ Create `.planning/config.json` with mode set to "yolo":
   "workflow": {
     "research": true|false,
     "plan_check": true|false,
-    "verifier": true|false,
-    "auto_advance": true
+    "verifier": true|false
   }
 }
 ```
@@ -188,13 +187,7 @@ Create `.planning/config.json` with mode set to "yolo":
 
 ```bash
 mkdir -p .planning
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit "chore: add project config" --files .planning/config.json
-```
-
-**Persist auto-advance to config (survives context compaction):**
-
-```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" config-set workflow.auto_advance true
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "chore: add project config" --files .planning/config.json
 ```
 
 Proceed to Step 4 (skip Steps 3 and 5).
@@ -338,7 +331,7 @@ Do not compress. Capture everything gathered.
 
 ```bash
 mkdir -p .planning
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit "docs: initialize project" --files .planning/PROJECT.md
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs: initialize project" --files .planning/PROJECT.md
 ```
 
 ## 5. Workflow Preferences
@@ -490,7 +483,7 @@ Create `.planning/config.json` with all settings:
 **Commit config.json:**
 
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit "chore: add project config" --files .planning/config.json
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "chore: add project config" --files .planning/config.json
 ```
 
 **Note:** Run `/gsd:settings` anytime to update these preferences.
@@ -541,10 +534,10 @@ Display spawning indicator:
   → Pitfalls research
 ```
 
-Spawn 4 parallel gsd-project-researcher agents with path references:
+Spawn 4 parallel gsd-project-researcher agents with rich context:
 
 ```
-Task(prompt="First, read ~/.claude/agents/gsd-project-researcher.md for your role and instructions.
+Task(prompt="First, read ~/.codex/agents/gsd-project-researcher.md for your role and instructions.
 
 <research_type>
 Project Research — Stack dimension for [domain].
@@ -561,9 +554,9 @@ Subsequent: Research what's needed to add [target features] to an existing [doma
 What's the standard 2025 stack for [domain]?
 </question>
 
-<files_to_read>
-- {project_path} (Project context and goals)
-</files_to_read>
+<project_context>
+[PROJECT.md summary - core value, constraints, what they're building]
+</project_context>
 
 <downstream_consumer>
 Your STACK.md feeds into roadmap creation. Be prescriptive:
@@ -580,11 +573,11 @@ Your STACK.md feeds into roadmap creation. Be prescriptive:
 
 <output>
 Write to: .planning/research/STACK.md
-Use template: ~/.claude/get-shit-done/templates/research-project/STACK.md
+Use template: ~/.codex/get-shit-done/templates/research-project/STACK.md
 </output>
 ", subagent_type="general-purpose", model="{researcher_model}", description="Stack research")
 
-Task(prompt="First, read ~/.claude/agents/gsd-project-researcher.md for your role and instructions.
+Task(prompt="First, read ~/.codex/agents/gsd-project-researcher.md for your role and instructions.
 
 <research_type>
 Project Research — Features dimension for [domain].
@@ -601,9 +594,9 @@ Subsequent: How do [target features] typically work? What's expected behavior?
 What features do [domain] products have? What's table stakes vs differentiating?
 </question>
 
-<files_to_read>
-- {project_path} (Project context)
-</files_to_read>
+<project_context>
+[PROJECT.md summary]
+</project_context>
 
 <downstream_consumer>
 Your FEATURES.md feeds into requirements definition. Categorize clearly:
@@ -620,11 +613,11 @@ Your FEATURES.md feeds into requirements definition. Categorize clearly:
 
 <output>
 Write to: .planning/research/FEATURES.md
-Use template: ~/.claude/get-shit-done/templates/research-project/FEATURES.md
+Use template: ~/.codex/get-shit-done/templates/research-project/FEATURES.md
 </output>
 ", subagent_type="general-purpose", model="{researcher_model}", description="Features research")
 
-Task(prompt="First, read ~/.claude/agents/gsd-project-researcher.md for your role and instructions.
+Task(prompt="First, read ~/.codex/agents/gsd-project-researcher.md for your role and instructions.
 
 <research_type>
 Project Research — Architecture dimension for [domain].
@@ -641,9 +634,9 @@ Subsequent: How do [target features] integrate with existing [domain] architectu
 How are [domain] systems typically structured? What are major components?
 </question>
 
-<files_to_read>
-- {project_path} (Project context)
-</files_to_read>
+<project_context>
+[PROJECT.md summary]
+</project_context>
 
 <downstream_consumer>
 Your ARCHITECTURE.md informs phase structure in roadmap. Include:
@@ -660,11 +653,11 @@ Your ARCHITECTURE.md informs phase structure in roadmap. Include:
 
 <output>
 Write to: .planning/research/ARCHITECTURE.md
-Use template: ~/.claude/get-shit-done/templates/research-project/ARCHITECTURE.md
+Use template: ~/.codex/get-shit-done/templates/research-project/ARCHITECTURE.md
 </output>
 ", subagent_type="general-purpose", model="{researcher_model}", description="Architecture research")
 
-Task(prompt="First, read ~/.claude/agents/gsd-project-researcher.md for your role and instructions.
+Task(prompt="First, read ~/.codex/agents/gsd-project-researcher.md for your role and instructions.
 
 <research_type>
 Project Research — Pitfalls dimension for [domain].
@@ -681,9 +674,9 @@ Subsequent: What are common mistakes when adding [target features] to [domain]?
 What do [domain] projects commonly get wrong? Critical mistakes?
 </question>
 
-<files_to_read>
-- {project_path} (Project context)
-</files_to_read>
+<project_context>
+[PROJECT.md summary]
+</project_context>
 
 <downstream_consumer>
 Your PITFALLS.md prevents mistakes in roadmap/planning. For each pitfall:
@@ -700,7 +693,7 @@ Your PITFALLS.md prevents mistakes in roadmap/planning. For each pitfall:
 
 <output>
 Write to: .planning/research/PITFALLS.md
-Use template: ~/.claude/get-shit-done/templates/research-project/PITFALLS.md
+Use template: ~/.codex/get-shit-done/templates/research-project/PITFALLS.md
 </output>
 ", subagent_type="general-purpose", model="{researcher_model}", description="Pitfalls research")
 ```
@@ -713,16 +706,17 @@ Task(prompt="
 Synthesize research outputs into SUMMARY.md.
 </task>
 
-<files_to_read>
+<research_files>
+Read these files:
 - .planning/research/STACK.md
 - .planning/research/FEATURES.md
 - .planning/research/ARCHITECTURE.md
 - .planning/research/PITFALLS.md
-</files_to_read>
+</research_files>
 
 <output>
 Write to: .planning/research/SUMMARY.md
-Use template: ~/.claude/get-shit-done/templates/research-project/SUMMARY.md
+Use template: ~/.codex/get-shit-done/templates/research-project/SUMMARY.md
 Commit after writing.
 </output>
 ", subagent_type="gsd-research-synthesizer", model="{synthesizer_model}", description="Synthesize research")
@@ -887,7 +881,7 @@ If "adjust": Return to scoping.
 **Commit requirements:**
 
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit "docs: define v1 requirements" --files .planning/REQUIREMENTS.md
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs: define v1 requirements" --files .planning/REQUIREMENTS.md
 ```
 
 ## 8. Create Roadmap
@@ -901,18 +895,23 @@ Display stage banner:
 ◆ Spawning roadmapper...
 ```
 
-Spawn gsd-roadmapper agent with path references:
+Spawn gsd-roadmapper agent with context:
 
 ```
 Task(prompt="
 <planning_context>
 
-<files_to_read>
-- .planning/PROJECT.md (Project context)
-- .planning/REQUIREMENTS.md (v1 Requirements)
-- .planning/research/SUMMARY.md (Research findings - if exists)
-- .planning/config.json (Depth and mode settings)
-</files_to_read>
+**Project:**
+@.planning/PROJECT.md
+
+**Requirements:**
+@.planning/REQUIREMENTS.md
+
+**Research (if exists):**
+@.planning/research/SUMMARY.md
+
+**Config:**
+@.planning/config.json
 
 </planning_context>
 
@@ -1000,9 +999,7 @@ Use AskUserQuestion:
   User feedback on roadmap:
   [user's notes]
 
-  <files_to_read>
-  - .planning/ROADMAP.md (Current roadmap to revise)
-  </files_to_read>
+  Current ROADMAP.md: @.planning/ROADMAP.md
 
   Update the roadmap based on feedback. Edit files in place.
   Return ROADMAP REVISED with changes made.
@@ -1017,7 +1014,7 @@ Use AskUserQuestion:
 **Commit roadmap (after approval or auto mode):**
 
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit "docs: create roadmap ([N] phases)" --files .planning/ROADMAP.md .planning/STATE.md .planning/REQUIREMENTS.md
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs: create roadmap ([N] phases)" --files .planning/ROADMAP.md .planning/STATE.md .planning/REQUIREMENTS.md
 ```
 
 ## 9. Done

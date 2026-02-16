@@ -69,12 +69,12 @@ function applyReplacements(content, pathPrefix) {
     : `./${runtimeRelativePrefix}`;
 
   // Replace explicit relative/global patterns first to avoid producing "././".
-  content = content.replace(/\.\/\.claude\//g, explicitRelativePrefix);
-  content = content.replace(/~\/\.claude\//g, '~/.codex/');
-  content = content.replace(/\.claude\//g, runtimeRelativePrefix);
+  content = content.replace(/\.\/\.codex\//g, explicitRelativePrefix);
+  content = content.replace(/~\/\.codex\//g, '~/.codex/');
+  content = content.replace(/\.codex\//g, runtimeRelativePrefix);
 
-  content = content.replace(/Claude Code/g, 'Codex CLI');
-  content = content.replace(/Claude/g, 'Codex');
+  content = content.replace(/Codex Code/g, 'Codex CLI');
+  content = content.replace(/Codex/g, 'Codex');
 
   content = content.replace(/\/gsd:/g, '/prompts:gsd-');
 

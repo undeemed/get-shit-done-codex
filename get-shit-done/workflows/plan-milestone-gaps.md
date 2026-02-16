@@ -65,8 +65,8 @@ Gap: Flow "View dashboard" broken at data fetch
 Find highest existing phase:
 ```bash
 # Get sorted phase list, extract last one
-PHASES=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" phases list)
-HIGHEST=$(printf '%s\n' "$PHASES" | jq -r '.directories[-1]')
+PHASES=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs phases list)
+HIGHEST=$(echo "$PHASES" | jq -r '.directories[-1]')
 ```
 
 New phases continue from there:
@@ -123,34 +123,19 @@ Add new phases to current milestone:
 ...
 ```
 
-## 7. Update REQUIREMENTS.md Traceability Table (REQUIRED)
-
-For each REQ-ID assigned to a gap closure phase:
-- Update the Phase column to reflect the new gap closure phase
-- Reset Status to `Pending`
-
-Reset checked-off requirements the audit found unsatisfied:
-- Change `[x]` → `[ ]` for any requirement marked unsatisfied in the audit
-- Update coverage count at top of REQUIREMENTS.md
-
-```bash
-# Verify traceability table reflects gap closure assignments
-grep -c "Pending" .planning/REQUIREMENTS.md
-```
-
-## 8. Create Phase Directories
+## 7. Create Phase Directories
 
 ```bash
 mkdir -p ".planning/phases/{NN}-{name}"
 ```
 
-## 9. Commit Roadmap and Requirements Update
+## 8. Commit Roadmap Update
 
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit "docs(roadmap): add gap closure phases {N}-{M}" --files .planning/ROADMAP.md .planning/REQUIREMENTS.md
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs(roadmap): add gap closure phases {N}-{M}" --files .planning/ROADMAP.md
 ```
 
-## 10. Offer Next Steps
+## 9. Offer Next Steps
 
 ```markdown
 ## ✓ Gap Closure Phases Created
@@ -265,10 +250,7 @@ becomes:
 - [ ] Gaps grouped into logical phases
 - [ ] User confirmed phase plan
 - [ ] ROADMAP.md updated with new phases
-- [ ] REQUIREMENTS.md traceability table updated with gap closure phase assignments
-- [ ] Unsatisfied requirement checkboxes reset (`[x]` → `[ ]`)
-- [ ] Coverage count updated in REQUIREMENTS.md
 - [ ] Phase directories created
-- [ ] Changes committed (includes REQUIREMENTS.md)
+- [ ] Changes committed
 - [ ] User knows to run `/gsd:plan-phase` next
 </success_criteria>

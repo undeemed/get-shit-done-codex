@@ -20,7 +20,7 @@ body:
     attributes:
       label: Runtime
       options:
-        - Claude Code
+        - Codex Code
         - Gemini CLI
         - OpenCode
     validations:

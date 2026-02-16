@@ -6,19 +6,25 @@ Execute a phase prompt (PLAN.md) and create the outcome summary (SUMMARY.md).
 Read STATE.md before any operation to load project context.
 Read config.json for planning behavior settings.
 
-@~/.claude/get-shit-done/references/git-integration.md
+@~/.codex/get-shit-done/references/git-integration.md
 </required_reading>
 
 <process>
 
 <step name="init_context" priority="first">
-Load execution context (paths only to minimize orchestrator context):
+Load execution context (uses `init execute-phase` for full context, including file contents):
 
 ```bash
-INIT=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" init execute-phase "${PHASE}")
+INIT=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs init execute-phase "${PHASE}" --include state,config)
 ```
 
-Extract from init JSON: `executor_model`, `commit_docs`, `phase_dir`, `phase_number`, `plans`, `summaries`, `incomplete_plans`, `state_path`, `config_path`.
+Extract from init JSON: `executor_model`, `commit_docs`, `phase_dir`, `phase_number`, `plans`, `summaries`, `incomplete_plans`.
+
+**File contents (from --include):** `state_content`, `config_content`. Access with:
+```bash
+STATE_CONTENT=$(echo "$INIT" | jq -r '.state_content // empty')
+CONFIG_CONTENT=$(echo "$INIT" | jq -r '.config_content // empty')
+```
 
 If `.planning/` missing: error.
 </step>
@@ -34,7 +40,7 @@ Find first PLAN without matching SUMMARY. Decimal phases supported (`01.1-hotfix
 
 ```bash
 PHASE=$(echo "$PLAN_PATH" | grep -oE '[0-9]+(\.[0-9]+)?-[0-9]+')
-# config settings can be fetched via gsd-tools config-get if needed
+# config_content already loaded via --include config in init_context
 ```
 
 <if mode="yolo">
@@ -106,7 +112,7 @@ Pattern B only (verify-only checkpoints). Skip for A/C.
    - Check `git log --oneline --all --grep="{phase}-{plan}"` returns ≥1 commit
    - Append `## Self-Check: PASSED` or `## Self-Check: FAILED` to SUMMARY
 
-   **Known Claude Code bug (classifyHandoffIfNeeded):** If any segment agent reports "failed" with `classifyHandoffIfNeeded is not defined`, this is a Claude Code runtime bug — not a real failure. Run spot-checks; if they pass, treat as successful.
+   **Known Codex Code bug (classifyHandoffIfNeeded):** If any segment agent reports "failed" with `classifyHandoffIfNeeded is not defined`, this is a Codex Code runtime bug — not a real failure. Run spot-checks; if they pass, treat as successful.
 
 
 
@@ -118,13 +124,11 @@ Pattern B only (verify-only checkpoints). Skip for A/C.
 cat .planning/phases/XX-name/{phase}-{plan}-PLAN.md
 ```
 This IS the execution instructions. Follow exactly. If plan references CONTEXT.md: honor user's vision throughout.
-
-**If plan contains `<interfaces>` block:** These are pre-extracted type definitions and contracts. Use them directly — do NOT re-read the source files to discover types. The planner already extracted what you need.
 </step>
 
 <step name="previous_phase_check">
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" phases list --type summaries --raw
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs phases list --type summaries --raw
 # Extract the second-to-last summary from the JSON result
 ```
 If previous SUMMARY has unresolved "Issues Encountered" or "Next Phase Readiness" blockers: AskUserQuestion(header="Previous Issues", options: "Proceed anyway" | "Address first" | "Review previous").
@@ -222,7 +226,7 @@ For `type: tdd` plans — RED-GREEN-REFACTOR:
 
 Errors: RED doesn't fail → investigate test/existing feature. GREEN doesn't pass → debug, iterate. REFACTOR breaks → undo.
 
-See `~/.claude/get-shit-done/references/tdd.md` for structure.
+See `~/.codex/get-shit-done/references/tdd.md` for structure.
 </tdd_plan_execution>
 
 <task_commit>
@@ -274,7 +278,7 @@ Display: `CHECKPOINT: [Type]` box → Progress {X}/{Y} → Task name → type-sp
 
 After response: verify if specified. Pass → continue. Fail → inform, wait. WAIT for user — do NOT hallucinate completion.
 
-See ~/.claude/get-shit-done/references/checkpoints.md for details.
+See ~/.codex/get-shit-done/references/checkpoints.md for details.
 </step>
 
 <step name="checkpoint_return_for_orchestrator">
@@ -312,13 +316,13 @@ fi
 grep -A 50 "^user_setup:" .planning/phases/XX-name/{phase}-{plan}-PLAN.md | head -50
 ```
 
-If user_setup exists: create `{phase}-USER-SETUP.md` using template `~/.claude/get-shit-done/templates/user-setup.md`. Per service: env vars table, account setup checklist, dashboard config, local dev notes, verification commands. Status "Incomplete". Set `USER_SETUP_CREATED=true`. If empty/missing: skip.
+If user_setup exists: create `{phase}-USER-SETUP.md` using template `~/.codex/get-shit-done/templates/user-setup.md`. Per service: env vars table, account setup checklist, dashboard config, local dev notes, verification commands. Status "Incomplete". Set `USER_SETUP_CREATED=true`. If empty/missing: skip.
 </step>
 
 <step name="create_summary">
-Create `{phase}-{plan}-SUMMARY.md` at `.planning/phases/XX-name/`. Use `~/.claude/get-shit-done/templates/summary.md`.
+Create `{phase}-{plan}-SUMMARY.md` at `.planning/phases/XX-name/`. Use `~/.codex/get-shit-done/templates/summary.md`.
 
-**Frontmatter:** phase, plan, subsystem, tags | requires/provides/affects | tech-stack.added/patterns | key-files.created/modified | key-decisions | requirements-completed (**MUST** copy `requirements` array from PLAN.md frontmatter verbatim) | duration ($DURATION), completed ($PLAN_END_TIME date).
+**Frontmatter:** phase, plan, subsystem, tags | requires/provides/affects | tech-stack.added/patterns | key-files.created/modified | key-decisions | duration ($DURATION), completed ($PLAN_END_TIME date).
 
 Title: `# Phase [X] Plan [Y]: [Name] Summary`
 
@@ -334,13 +338,13 @@ Update STATE.md using gsd-tools:
 
 ```bash
 # Advance plan counter (handles last-plan edge case)
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state advance-plan
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs state advance-plan
 
 # Recalculate progress bar from disk state
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state update-progress
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs state update-progress
 
 # Record execution metrics
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state record-metric \
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs state record-metric \
   --phase "${PHASE}" --plan "${PLAN}" --duration "${DURATION}" \
   --tasks "${TASK_COUNT}" --files "${FILE_COUNT}"
 ```
@@ -351,12 +355,11 @@ From SUMMARY: Extract decisions and add to STATE.md:
 
 ```bash
 # Add each decision from SUMMARY key-decisions
-# Prefer file inputs for shell-safe text (preserves `$`, `*`, etc. exactly)
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state add-decision \
-  --phase "${PHASE}" --summary-file "${DECISION_TEXT_FILE}" --rationale-file "${RATIONALE_FILE}"
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs state add-decision \
+  --phase "${PHASE}" --summary "${DECISION_TEXT}" --rationale "${RATIONALE}"
 
 # Add blockers if any found
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state add-blocker --text-file "${BLOCKER_TEXT_FILE}"
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs state add-blocker "Blocker description"
 ```
 </step>
 
@@ -364,7 +367,7 @@ node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state add-blocker --text-fi
 Update session info using gsd-tools:
 
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state record-session \
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs state record-session \
   --stopped-at "Completed ${PHASE}-${PLAN}-PLAN.md" \
   --resume-file "None"
 ```
@@ -378,26 +381,16 @@ If SUMMARY "Issues Encountered" ≠ "None": yolo → log and continue. Interacti
 
 <step name="update_roadmap">
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" roadmap update-plan-progress "${PHASE}"
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs roadmap update-plan-progress "${PHASE}"
 ```
 Counts PLAN vs SUMMARY files on disk. Updates progress table row with correct count and status (`In Progress` or `Complete` with date).
-</step>
-
-<step name="update_requirements">
-Mark completed requirements from the PLAN.md frontmatter `requirements:` field:
-
-```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" requirements mark-complete ${REQ_IDS}
-```
-
-Extract requirement IDs from the plan's frontmatter (e.g., `requirements: [AUTH-01, AUTH-02]`). If no requirements field, skip.
 </step>
 
 <step name="git_commit_metadata">
 Task code already committed per-task. Commit plan metadata:
 
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit "docs({phase}-{plan}): complete [plan-name] plan" --files .planning/phases/XX-name/{phase}-{plan}-SUMMARY.md .planning/STATE.md .planning/ROADMAP.md .planning/REQUIREMENTS.md
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs({phase}-{plan}): complete [plan-name] plan" --files .planning/phases/XX-name/{phase}-{plan}-SUMMARY.md .planning/STATE.md .planning/ROADMAP.md
 ```
 </step>
 
@@ -412,7 +405,7 @@ git diff --name-only ${FIRST_TASK}^..HEAD 2>/dev/null
 Update only structural changes: new src/ dir → STRUCTURE.md | deps → STACK.md | file pattern → CONVENTIONS.md | API client → INTEGRATIONS.md | config → STACK.md | renamed → update paths. Skip code-only/bugfix/content changes.
 
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit "" --files .planning/codebase/*.md --amend
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "" --files .planning/codebase/*.md --amend
 ```
 </step>
 

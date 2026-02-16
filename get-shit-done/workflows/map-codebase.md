@@ -17,7 +17,7 @@ Output: .planning/codebase/ folder with 7 structured documents about the codebas
 Include enough detail to be useful as reference. Prioritize practical examples (especially code patterns) over arbitrary brevity.
 
 **Always include file paths:**
-Documents are reference material for Claude when planning/executing. Always include actual file paths formatted with backticks: `src/services/user.ts`.
+Documents are reference material for Codex when planning/executing. Always include actual file paths formatted with backticks: `src/services/user.ts`.
 </philosophy>
 
 <process>
@@ -26,7 +26,7 @@ Documents are reference material for Claude when planning/executing. Always incl
 Load codebase mapping context:
 
 ```bash
-INIT=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" init map-codebase)
+INIT=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs init map-codebase)
 ```
 
 Extract from init JSON: `mapper_model`, `commit_docs`, `codebase_dir`, `existing_maps`, `has_maps`, `codebase_dir_exists`.
@@ -90,13 +90,17 @@ Use Task tool with `subagent_type="gsd-codebase-mapper"`, `model="{mapper_model}
 
 **Agent 1: Tech Focus**
 
+Task tool parameters:
 ```
-Task(
-  subagent_type="gsd-codebase-mapper",
-  model="{mapper_model}",
-  run_in_background=true,
-  description="Map codebase tech stack",
-  prompt="Focus: tech
+subagent_type: "gsd-codebase-mapper"
+model: "{mapper_model}"
+run_in_background: true
+description: "Map codebase tech stack"
+```
+
+Prompt:
+```
+Focus: tech
 
 Analyze this codebase for technology stack and external integrations.
 
@@ -104,19 +108,22 @@ Write these documents to .planning/codebase/:
 - STACK.md - Languages, runtime, frameworks, dependencies, configuration
 - INTEGRATIONS.md - External APIs, databases, auth providers, webhooks
 
-Explore thoroughly. Write documents directly using templates. Return confirmation only."
-)
+Explore thoroughly. Write documents directly using templates. Return confirmation only.
 ```
 
 **Agent 2: Architecture Focus**
 
+Task tool parameters:
 ```
-Task(
-  subagent_type="gsd-codebase-mapper",
-  model="{mapper_model}",
-  run_in_background=true,
-  description="Map codebase architecture",
-  prompt="Focus: arch
+subagent_type: "gsd-codebase-mapper"
+model: "{mapper_model}"
+run_in_background: true
+description: "Map codebase architecture"
+```
+
+Prompt:
+```
+Focus: arch
 
 Analyze this codebase architecture and directory structure.
 
@@ -124,19 +131,22 @@ Write these documents to .planning/codebase/:
 - ARCHITECTURE.md - Pattern, layers, data flow, abstractions, entry points
 - STRUCTURE.md - Directory layout, key locations, naming conventions
 
-Explore thoroughly. Write documents directly using templates. Return confirmation only."
-)
+Explore thoroughly. Write documents directly using templates. Return confirmation only.
 ```
 
 **Agent 3: Quality Focus**
 
+Task tool parameters:
 ```
-Task(
-  subagent_type="gsd-codebase-mapper",
-  model="{mapper_model}",
-  run_in_background=true,
-  description="Map codebase conventions",
-  prompt="Focus: quality
+subagent_type: "gsd-codebase-mapper"
+model: "{mapper_model}"
+run_in_background: true
+description: "Map codebase conventions"
+```
+
+Prompt:
+```
+Focus: quality
 
 Analyze this codebase for coding conventions and testing patterns.
 
@@ -144,27 +154,29 @@ Write these documents to .planning/codebase/:
 - CONVENTIONS.md - Code style, naming, patterns, error handling
 - TESTING.md - Framework, structure, mocking, coverage
 
-Explore thoroughly. Write documents directly using templates. Return confirmation only."
-)
+Explore thoroughly. Write documents directly using templates. Return confirmation only.
 ```
 
 **Agent 4: Concerns Focus**
 
+Task tool parameters:
 ```
-Task(
-  subagent_type="gsd-codebase-mapper",
-  model="{mapper_model}",
-  run_in_background=true,
-  description="Map codebase concerns",
-  prompt="Focus: concerns
+subagent_type: "gsd-codebase-mapper"
+model: "{mapper_model}"
+run_in_background: true
+description: "Map codebase concerns"
+```
+
+Prompt:
+```
+Focus: concerns
 
 Analyze this codebase for technical debt, known issues, and areas of concern.
 
 Write this document to .planning/codebase/:
 - CONCERNS.md - Tech debt, bugs, security, performance, fragile areas
 
-Explore thoroughly. Write document directly using template. Return confirmation only."
-)
+Explore thoroughly. Write document directly using template. Return confirmation only.
 ```
 
 Continue to collect_confirmations.
@@ -234,7 +246,7 @@ This would expose credentials if committed.
 **Action required:**
 1. Review the flagged content above
 2. If these are real secrets, they must be removed before committing
-3. Consider adding sensitive files to Claude Code "Deny" permissions
+3. Consider adding sensitive files to Codex Code "Deny" permissions
 
 Pausing before commit. Reply "safe to proceed" if the flagged content is not actually sensitive, or edit the files first.
 ```
@@ -250,7 +262,7 @@ Continue to commit_codebase_map.
 Commit the codebase map:
 
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit "docs: map existing codebase" --files .planning/codebase/*.md
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs: map existing codebase" --files .planning/codebase/*.md
 ```
 
 Continue to offer_next.

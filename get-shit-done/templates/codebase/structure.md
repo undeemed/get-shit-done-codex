@@ -146,7 +146,7 @@ get-shit-done/
 - Subdirectories: None
 
 **commands/gsd/**
-- Purpose: Slash command definitions for Claude Code
+- Purpose: Slash command definitions for Codex Code
 - Contains: *.md files (one per command)
 - Key files: new-project.md, plan-phase.md, execute-plan.md
 - Subdirectories: None (flat structure)
@@ -186,14 +186,14 @@ get-shit-done/
 
 **Documentation:**
 - `README.md` - User-facing installation and usage guide
-- `CLAUDE.md` - Instructions for Claude Code when working in this repo
+- `CODEX.md` - Instructions for Codex Code when working in this repo
 
 ## Naming Conventions
 
 **Files:**
 - kebab-case.md: Markdown documents
 - kebab-case.js: JavaScript source files
-- UPPERCASE.md: Important project files (README, CLAUDE, CHANGELOG)
+- UPPERCASE.md: Important project files (README, CODEX, CHANGELOG)
 
 **Directories:**
 - kebab-case: All directories
@@ -216,7 +216,7 @@ get-shit-done/
 
 **New Workflow:**
 - Implementation: `get-shit-done/workflows/{name}.md`
-- Usage: Reference from command with `@~/.claude/get-shit-done/workflows/{name}.md`
+- Usage: Reference from command with `@~/.codex/get-shit-done/workflows/{name}.md`
 
 **New Reference Document:**
 - Implementation: `get-shit-done/references/{name}.md`
@@ -229,12 +229,12 @@ get-shit-done/
 ## Special Directories
 
 **get-shit-done/**
-- Purpose: Resources installed to ~/.claude/
+- Purpose: Resources installed to ~/.codex/
 - Source: Copied by bin/install.js during installation
 - Committed: Yes (source of truth)
 
 **commands/**
-- Purpose: Slash commands installed to ~/.claude/commands/
+- Purpose: Slash commands installed to ~/.codex/commands/
 - Source: Copied by bin/install.js during installation
 - Committed: Yes (source of truth)
 

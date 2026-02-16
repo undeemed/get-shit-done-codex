@@ -34,20 +34,20 @@ Normalize phase input in step 1 before any directory lookups.
 ## 0. Initialize Context
 
 ```bash
-INIT=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" init phase-op "$ARGUMENTS")
+INIT=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs init phase-op "$ARGUMENTS")
 ```
 
-Extract from init JSON: `phase_dir`, `phase_number`, `phase_name`, `phase_found`, `commit_docs`, `has_research`, `state_path`, `requirements_path`, `context_path`, `research_path`.
+Extract from init JSON: `phase_dir`, `phase_number`, `phase_name`, `phase_found`, `commit_docs`, `has_research`.
 
 Resolve researcher model:
 ```bash
-RESEARCHER_MODEL=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" resolve-model gsd-phase-researcher --raw)
+RESEARCHER_MODEL=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs resolve-model gsd-phase-researcher --raw)
 ```
 
 ## 1. Validate Phase
 
 ```bash
-PHASE_INFO=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" roadmap get-phase "${phase_number}")
+PHASE_INFO=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs roadmap get-phase "${phase_number}")
 ```
 
 **If `found` is false:** Error and exit. **If `found` is true:** Extract `phase_number`, `phase_name`, `goal` from JSON.
@@ -64,12 +64,15 @@ ls .planning/phases/${PHASE}-*/RESEARCH.md 2>/dev/null
 
 ## 3. Gather Phase Context
 
-Use paths from INIT (do not inline file contents in orchestrator context):
-- `requirements_path`
-- `context_path`
-- `state_path`
+```bash
+# Phase section already loaded in PHASE_INFO
+echo "$PHASE_INFO" | jq -r '.section'
+cat .planning/REQUIREMENTS.md 2>/dev/null
+cat .planning/phases/${PHASE}-*/*-CONTEXT.md 2>/dev/null
+grep -A30 "### Decisions Made" .planning/STATE.md 2>/dev/null
+```
 
-Present summary with phase description and what files the researcher will load.
+Present summary with phase description, requirements, prior decisions.
 
 ## 4. Spawn gsd-phase-researcher Agent
 
@@ -89,7 +92,7 @@ For this phase, discover:
 - What's the established architecture pattern?
 - What libraries form the standard stack?
 - What problems do people commonly hit?
-- What's SOTA vs what Claude's training thinks is SOTA?
+- What's SOTA vs what Codex's training thinks is SOTA?
 - What should NOT be hand-rolled?
 </key_insight>
 
@@ -98,15 +101,12 @@ Research implementation approach for Phase {phase_number}: {phase_name}
 Mode: ecosystem
 </objective>
 
-<files_to_read>
-- {requirements_path} (Requirements)
-- {context_path} (Phase context from discuss-phase, if exists)
-- {state_path} (Prior project decisions and blockers)
-</files_to_read>
-
-<additional_context>
+<context>
 **Phase description:** {phase_description}
-</additional_context>
+**Requirements:** {requirements_list}
+**Prior decisions:** {decisions_if_any}
+**Phase context:** {context_md_content}
+</context>
 
 <downstream_consumer>
 Your RESEARCH.md will be loaded by `/gsd:plan-phase` which uses specific sections:
@@ -135,7 +135,7 @@ Write to: .planning/phases/${PHASE}-{slug}/${PHASE}-RESEARCH.md
 
 ```
 Task(
-  prompt="First, read ~/.claude/agents/gsd-phase-researcher.md for your role and instructions.\n\n" + filled_prompt,
+  prompt="First, read ~/.codex/agents/gsd-phase-researcher.md for your role and instructions.\n\n" + filled_prompt,
   subagent_type="general-purpose",
   model="{researcher_model}",
   description="Research Phase {phase}"
@@ -158,9 +158,7 @@ Continue research for Phase {phase_number}: {phase_name}
 </objective>
 
 <prior_state>
-<files_to_read>
-- .planning/phases/${PHASE}-{slug}/${PHASE}-RESEARCH.md (Existing research)
-</files_to_read>
+Research file: @.planning/phases/${PHASE}-{slug}/${PHASE}-RESEARCH.md
 </prior_state>
 
 <checkpoint_response>
@@ -171,7 +169,7 @@ Continue research for Phase {phase_number}: {phase_name}
 
 ```
 Task(
-  prompt="First, read ~/.claude/agents/gsd-phase-researcher.md for your role and instructions.\n\n" + continuation_prompt,
+  prompt="First, read ~/.codex/agents/gsd-phase-researcher.md for your role and instructions.\n\n" + continuation_prompt,
   subagent_type="general-purpose",
   model="{researcher_model}",
   description="Continue research Phase {phase}"

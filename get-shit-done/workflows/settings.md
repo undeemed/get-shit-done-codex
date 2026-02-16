@@ -12,8 +12,8 @@ Read all files referenced by the invoking prompt's execution_context before star
 Ensure config exists and load current state:
 
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" config-ensure-section
-INIT=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state load)
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs config-ensure-section
+INIT=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs state load)
 ```
 
 Creates `.planning/config.json` with defaults if missing and loads current config values.
@@ -28,7 +28,6 @@ Parse current values (default to `true` if not present):
 - `workflow.research` — spawn researcher during plan-phase
 - `workflow.plan_check` — spawn plan checker during plan-phase
 - `workflow.verifier` — spawn verifier during execute-phase
-- `workflow.nyquist_validation` — validation architecture research during plan-phase
 - `model_profile` — which model each agent uses (default: `balanced`)
 - `git.branching_strategy` — branching approach (default: `"none"`)
 </step>
@@ -85,15 +84,6 @@ AskUserQuestion([
     ]
   },
   {
-    question: "Enable Nyquist Validation? (researches test coverage during planning)",
-    header: "Nyquist",
-    multiSelect: false,
-    options: [
-      { label: "Yes (Recommended)", description: "Research automated test coverage during plan-phase. Adds validation requirements to plans. Blocks approval if tasks lack automated verify." },
-      { label: "No", description: "Skip validation research. Good for rapid prototyping or no-test phases." }
-    ]
-  },
-  {
     question: "Git branching strategy?",
     header: "Branching",
     multiSelect: false,
@@ -118,8 +108,7 @@ Merge new settings into existing config.json:
     "research": true/false,
     "plan_check": true/false,
     "verifier": true/false,
-    "auto_advance": true/false,
-    "nyquist_validation": true/false
+    "auto_advance": true/false
   },
   "git": {
     "branching_strategy": "none" | "phase" | "milestone"
@@ -166,8 +155,7 @@ Write `~/.gsd/defaults.json` with:
     "research": <current>,
     "plan_check": <current>,
     "verifier": <current>,
-    "auto_advance": <current>,
-    "nyquist_validation": <current>
+    "auto_advance": <current>
   }
 }
 ```
@@ -188,7 +176,6 @@ Display:
 | Plan Checker         | {On/Off} |
 | Execution Verifier   | {On/Off} |
 | Auto-Advance         | {On/Off} |
-| Nyquist Validation   | {On/Off} |
 | Git Branching        | {None/Per Phase/Per Milestone} |
 | Saved as Defaults    | {Yes/No} |
 
@@ -206,7 +193,7 @@ Quick commands:
 
 <success_criteria>
 - [ ] Current config read
-- [ ] User presented with 7 settings (profile + 5 workflow toggles + git branching)
+- [ ] User presented with 6 settings (profile + 4 workflow toggles + git branching)
 - [ ] Config updated with model_profile, workflow, and git sections
 - [ ] User offered to save as global defaults (~/.gsd/defaults.json)
 - [ ] Changes confirmed to user

@@ -9,33 +9,16 @@ Read all files referenced by the invoking prompt's execution_context before star
 <process>
 
 <step name="get_installed_version">
-Detect whether GSD is installed locally or globally by checking both locations and validating install integrity:
+Detect whether GSD is installed locally or globally by checking both locations:
 
 ```bash
-# Check local first (takes priority only if valid)
-# Detect runtime config directory (supports Claude, OpenCode, Gemini)
-LOCAL_VERSION_FILE="" LOCAL_MARKER_FILE=""
-for dir in .claude .config/opencode .opencode .gemini; do
-  if [ -f "./$dir/get-shit-done/VERSION" ]; then
-    LOCAL_VERSION_FILE="./$dir/get-shit-done/VERSION"
-    LOCAL_MARKER_FILE="./$dir/get-shit-done/workflows/update.md"
-    break
-  fi
-done
-GLOBAL_VERSION_FILE="" GLOBAL_MARKER_FILE=""
-for dir in .claude .config/opencode .opencode .gemini; do
-  if [ -f "$HOME/$dir/get-shit-done/VERSION" ]; then
-    GLOBAL_VERSION_FILE="$HOME/$dir/get-shit-done/VERSION"
-    GLOBAL_MARKER_FILE="$HOME/$dir/get-shit-done/workflows/update.md"
-    break
-  fi
-done
-
-if [ -n "$LOCAL_VERSION_FILE" ] && [ -f "$LOCAL_VERSION_FILE" ] && [ -f "$LOCAL_MARKER_FILE" ] && grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+' "$LOCAL_VERSION_FILE"; then
-  cat "$LOCAL_VERSION_FILE"
+# Check local first (takes priority)
+# Paths templated at install time for runtime compatibility
+if [ -f ./.codex/get-shit-done/VERSION ]; then
+  cat ./.codex/get-shit-done/VERSION
   echo "LOCAL"
-elif [ -n "$GLOBAL_VERSION_FILE" ] && [ -f "$GLOBAL_VERSION_FILE" ] && [ -f "$GLOBAL_MARKER_FILE" ] && grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+' "$GLOBAL_VERSION_FILE"; then
-  cat "$GLOBAL_VERSION_FILE"
+elif [ -f ~/.codex/get-shit-done/VERSION ]; then
+  cat ~/.codex/get-shit-done/VERSION
   echo "GLOBAL"
 else
   echo "UNKNOWN"
@@ -43,8 +26,8 @@ fi
 ```
 
 Parse output:
-- If last line is "LOCAL": local install is valid; installed version is first line; use `--local`
-- If last line is "GLOBAL": local missing/invalid, global install is valid; installed version is first line; use `--global`
+- If last line is "LOCAL": installed version is first line, use `--local` flag for update
+- If last line is "GLOBAL": installed version is first line, use `--global` flag for update
 - If "UNKNOWN": proceed to install step (treat as version 0.0.0)
 
 **If VERSION file missing:**
@@ -139,13 +122,13 @@ Exit.
 - `get-shit-done/` will be wiped and replaced
 - `agents/gsd-*` files will be replaced
 
-(Paths are relative to your install location: `~/.claude/` for global, `./.claude/` for local)
+(Paths are relative to your install location: `~/.codex/` for global, `./.codex/` for local)
 
 Your custom files in other locations are preserved:
 - Custom commands not in `commands/gsd/` ✓
 - Custom agents not prefixed with `gsd-` ✓
 - Custom hooks ✓
-- Your CLAUDE.md files ✓
+- Your CODEX.md files ✓
 
 If you've modified any GSD files directly, they'll be automatically backed up to `gsd-local-patches/` and can be reapplied with `/gsd:reapply-patches` after the update.
 ```
@@ -164,27 +147,28 @@ Run the update using the install type detected in step 1:
 
 **If LOCAL install:**
 ```bash
-npx -y get-shit-done-cc@latest --local
+npx get-shit-done-cc --local
 ```
 
 **If GLOBAL install (or unknown):**
 ```bash
-npx -y get-shit-done-cc@latest --global
+npx get-shit-done-cc --global
 ```
 
 Capture output. If install fails, show error and exit.
 
 Clear the update cache so statusline indicator disappears:
 
+**If LOCAL install:**
 ```bash
-# Clear update cache across all runtime directories
-for dir in .claude .config/opencode .opencode .gemini; do
-  rm -f "./$dir/cache/gsd-update-check.json"
-  rm -f "$HOME/$dir/cache/gsd-update-check.json"
-done
+rm -f ./.codex/cache/gsd-update-check.json
 ```
 
-The SessionStart hook (`gsd-check-update.js`) writes to the detected runtime's cache directory, so all paths must be cleared to prevent stale update indicators.
+**If GLOBAL install:**
+```bash
+rm -f ~/.codex/cache/gsd-update-check.json
+```
+(Paths are templated at install time for runtime compatibility)
 </step>
 
 <step name="display_result">
@@ -195,7 +179,7 @@ Format completion message (changelog was already shown in confirmation step):
 ║  GSD Updated: v1.5.10 → v1.5.15                           ║
 ╚═══════════════════════════════════════════════════════════╝
 
-⚠️  Restart Claude Code to pick up the new commands.
+⚠️  Restart Codex Code to pick up the new commands.
 
 [View full changelog](https://github.com/glittercowboy/get-shit-done/blob/main/CHANGELOG.md)
 ```

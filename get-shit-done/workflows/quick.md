@@ -43,7 +43,7 @@ If `$FULL_MODE`:
 **Step 2: Initialize**
 
 ```bash
-INIT=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" init quick "$DESCRIPTION")
+INIT=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs init quick "$DESCRIPTION")
 ```
 
 Parse JSON for: `planner_model`, `executor_model`, `checker_model`, `verifier_model`, `commit_docs`, `next_num`, `slug`, `date`, `timestamp`, `quick_dir`, `task_dir`, `roadmap_exists`, `planning_exists`.
@@ -96,12 +96,8 @@ Task(
 **Directory:** ${QUICK_DIR}
 **Description:** ${DESCRIPTION}
 
-<files_to_read>
-- .planning/STATE.md (Project State)
-- ./CLAUDE.md (if exists — follow project-specific guidelines)
-</files_to_read>
-
-**Project skills:** Check .claude/skills/ or .agents/skills/ directory (if either exists) — read SKILL.md files, plans should account for project skill rules
+**Project State:**
+@.planning/STATE.md
 
 </planning_context>
 
@@ -147,6 +143,10 @@ Display banner:
 ◆ Spawning plan checker...
 ```
 
+```bash
+PLAN_CONTENT=$(cat "${QUICK_DIR}/${next_num}-PLAN.md" 2>/dev/null)
+```
+
 Checker prompt:
 
 ```markdown
@@ -154,9 +154,7 @@ Checker prompt:
 **Mode:** quick-full
 **Task Description:** ${DESCRIPTION}
 
-<files_to_read>
-- ${QUICK_DIR}/${next_num}-PLAN.md (Plan to verify)
-</files_to_read>
+**Plan to verify:** ${PLAN_CONTENT}
 
 **Scope:** This is a quick task, not a full phase. Skip checks that require a ROADMAP phase goal.
 </verification_context>
@@ -199,16 +197,17 @@ Track `iteration_count` (starts at 1 after initial plan + check).
 
 Display: `Sending back to planner for revision... (iteration ${N}/2)`
 
+```bash
+PLAN_CONTENT=$(cat "${QUICK_DIR}/${next_num}-PLAN.md" 2>/dev/null)
+```
+
 Revision prompt:
 
 ```markdown
 <revision_context>
 **Mode:** quick-full (revision)
 
-<files_to_read>
-- ${QUICK_DIR}/${next_num}-PLAN.md (Existing plan)
-</files_to_read>
-
+**Existing plan:** ${PLAN_CONTENT}
 **Checker issues:** ${structured_issues_from_checker}
 
 </revision_context>
@@ -222,7 +221,7 @@ Return what changed.
 
 ```
 Task(
-  prompt="First, read ~/.claude/agents/gsd-planner.md for your role and instructions.\n\n" + revision_prompt,
+  prompt="First, read ~/.codex/agents/gsd-planner.md for your role and instructions.\n\n" + revision_prompt,
   subagent_type="general-purpose",
   model="{planner_model}",
   description="Revise quick plan: ${DESCRIPTION}"
@@ -248,12 +247,8 @@ Task(
   prompt="
 Execute quick task ${next_num}.
 
-<files_to_read>
-- ${QUICK_DIR}/${next_num}-PLAN.md (Plan)
-- .planning/STATE.md (Project state)
-- ./CLAUDE.md (Project instructions, if exists)
-- .claude/skills/ or .agents/skills/ (Project skills, if either exists — list skills, read SKILL.md for each, follow relevant rules during implementation)
-</files_to_read>
+Plan: @${QUICK_DIR}/${next_num}-PLAN.md
+Project state: @.planning/STATE.md
 
 <constraints>
 - Execute all tasks in the plan
@@ -273,7 +268,7 @@ After executor returns:
 2. Extract commit hash from executor output
 3. Report completion status
 
-**Known Claude Code bug (classifyHandoffIfNeeded):** If executor reports "failed" with error `classifyHandoffIfNeeded is not defined`, this is a Claude Code runtime bug — not a real failure. Check if summary file exists and git log shows commits. If so, treat as successful.
+**Known Codex Code bug (classifyHandoffIfNeeded):** If executor reports "failed" with error `classifyHandoffIfNeeded is not defined`, this is a Codex Code runtime bug — not a real failure. Check if summary file exists and git log shows commits. If so, treat as successful.
 
 If summary not found, error: "Executor failed to create ${next_num}-SUMMARY.md"
 
@@ -299,11 +294,7 @@ Task(
   prompt="Verify quick task goal achievement.
 Task directory: ${QUICK_DIR}
 Task goal: ${DESCRIPTION}
-
-<files_to_read>
-- ${QUICK_DIR}/${next_num}-PLAN.md (Plan)
-</files_to_read>
-
+Plan: @${QUICK_DIR}/${next_num}-PLAN.md
 Check must_haves against actual codebase. Create VERIFICATION.md at ${QUICK_DIR}/${next_num}-VERIFICATION.md.",
   subagent_type="gsd-verifier",
   model="{verifier_model}",
@@ -392,7 +383,7 @@ Build file list:
 - If `$FULL_MODE` and verification file exists: `${QUICK_DIR}/${next_num}-VERIFICATION.md`
 
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit "docs(quick-${next_num}): ${DESCRIPTION}" --files ${file_list}
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs(quick-${next_num}): ${DESCRIPTION}" --files ${file_list}
 ```
 
 Get final commit hash:

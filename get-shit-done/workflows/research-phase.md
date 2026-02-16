@@ -8,17 +8,17 @@ Standalone research command. For most workflows, use `/gsd:plan-phase` which int
 
 ## Step 0: Resolve Model Profile
 
-@~/.claude/get-shit-done/references/model-profile-resolution.md
+@~/.codex/get-shit-done/references/model-profile-resolution.md
 
 Resolve model for:
 - `gsd-phase-researcher`
 
 ## Step 1: Normalize and Validate Phase
 
-@~/.claude/get-shit-done/references/phase-argument-parsing.md
+@~/.codex/get-shit-done/references/phase-argument-parsing.md
 
 ```bash
-PHASE_INFO=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" roadmap get-phase "${PHASE}")
+PHASE_INFO=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs roadmap get-phase "${PHASE}")
 ```
 
 If `found` is false: Error and exit.
@@ -34,8 +34,12 @@ If exists: Offer update/view/skip options.
 ## Step 3: Gather Phase Context
 
 ```bash
-INIT=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" init phase-op "${PHASE}")
-# Extract: phase_dir, padded_phase, phase_number, state_path, requirements_path, context_path
+# Phase section from roadmap (already loaded in PHASE_INFO)
+echo "$PHASE_INFO" | jq -r '.section'
+cat .planning/REQUIREMENTS.md 2>/dev/null
+cat .planning/phases/${PHASE}-*/*-CONTEXT.md 2>/dev/null
+# Decisions from state-snapshot (structured JSON)
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs state-snapshot | jq '.decisions'
 ```
 
 ## Step 4: Spawn Researcher
@@ -46,15 +50,12 @@ Task(
 Research implementation approach for Phase {phase}: {name}
 </objective>
 
-<files_to_read>
-- {context_path} (USER DECISIONS from /gsd:discuss-phase)
-- {requirements_path} (Project requirements)
-- {state_path} (Project decisions and history)
-</files_to_read>
-
-<additional_context>
+<context>
 Phase description: {description}
-</additional_context>
+Requirements: {requirements}
+Prior decisions: {decisions}
+Phase context: {context_md}
+</context>
 
 <output>
 Write to: .planning/phases/${PHASE}-{slug}/${PHASE}-RESEARCH.md
