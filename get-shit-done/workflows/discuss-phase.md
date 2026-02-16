@@ -13,7 +13,7 @@ You are a thinking partner, not an interviewer. The user is the visionary — yo
 
 2. **gsd-planner** — Reads CONTEXT.md to know WHAT decisions are locked
    - "Pull-to-refresh on mobile" → planner includes that in task specs
-   - "Claude's Discretion: loading skeleton" → planner can decide approach
+   - "Codex's Discretion: loading skeleton" → planner can decide approach
 
 **Your job:** Capture decisions clearly enough that downstream agents can act on them without asking the user again.
 
@@ -21,7 +21,7 @@ You are a thinking partner, not an interviewer. The user is the visionary — yo
 </downstream_awareness>
 
 <philosophy>
-**User = founder/visionary. Claude = builder.**
+**User = founder/visionary. Codex = builder.**
 
 The user knows:
 - How they imagine it working
@@ -98,7 +98,7 @@ Phase: "API documentation"
 
 **The key question:** What decisions would change the outcome that the user should weigh in on?
 
-**Claude handles these (don't ask):**
+**Codex handles these (don't ask):**
 - Technical implementation details
 - Architecture patterns
 - Performance optimization
@@ -111,7 +111,7 @@ Phase: "API documentation"
 Phase number from argument (required).
 
 ```bash
-INIT=$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs init phase-op "${PHASE}")
+INIT=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs init phase-op "${PHASE}")
 ```
 
 Parse JSON for: `commit_docs`, `phase_found`, `phase_dir`, `phase_number`, `phase_name`, `phase_slug`, `padded_phase`, `has_research`, `has_context`, `has_plans`, `has_verification`, `plan_count`, `roadmap_exists`, `planning_exists`.
@@ -259,7 +259,7 @@ Ask 4 questions per area before offering to continue or move on. Each answer oft
    - header: "[Area]" (max 12 chars — abbreviate if needed)
    - question: Specific decision for this area
    - options: 2-3 concrete choices (AskUserQuestion adds "Other" automatically)
-   - Include "You decide" as an option when reasonable — captures Claude discretion
+   - Include "You decide" as an option when reasonable — captures Codex discretion
 
 3. **After 4 questions, check:**
    - header: "[Area]" (max 12 chars)
@@ -331,8 +331,8 @@ mkdir -p ".planning/phases/${padded_phase}-${phase_slug}"
 ### [Category 2 that was discussed]
 - [Decision or preference captured]
 
-### Claude's Discretion
-[Areas where user said "you decide" — note that Claude has flexibility here]
+### Codex's Discretion
+[Areas where user said "you decide" — note that Codex has flexibility here]
 
 </decisions>
 
@@ -405,7 +405,7 @@ Created: .planning/phases/${PADDED_PHASE}-${SLUG}/${PADDED_PHASE}-CONTEXT.md
 Commit phase context (uses `commit_docs` from init internally):
 
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs(${padded_phase}): capture phase context" --files "${phase_dir}/${padded_phase}-CONTEXT.md"
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs(${padded_phase}): capture phase context" --files "${phase_dir}/${padded_phase}-CONTEXT.md"
 ```
 
 Confirm: "Committed: docs(${padded_phase}): capture phase context"
@@ -415,7 +415,7 @@ Confirm: "Committed: docs(${padded_phase}): capture phase context"
 Update STATE.md with session info:
 
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs state record-session \
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs state record-session \
   --stopped-at "Phase ${PHASE} context gathered" \
   --resume-file "${phase_dir}/${padded_phase}-CONTEXT.md"
 ```
@@ -423,7 +423,7 @@ node ~/.claude/get-shit-done/bin/gsd-tools.cjs state record-session \
 Commit STATE.md:
 
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs(state): record phase ${PHASE} context session" --files .planning/STATE.md
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs(state): record phase ${PHASE} context session" --files .planning/STATE.md
 ```
 </step>
 
@@ -433,7 +433,7 @@ Check for auto-advance trigger:
 1. Parse `--auto` flag from $ARGUMENTS
 2. Read `workflow.auto_advance` from config:
    ```bash
-   AUTO_CFG=$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs config-get workflow.auto_advance 2>/dev/null || echo "false")
+   AUTO_CFG=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs config-get workflow.auto_advance 2>/dev/null || echo "false")
    ```
 
 **If `--auto` flag present OR `AUTO_CFG` is true:**

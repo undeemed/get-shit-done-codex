@@ -1,5 +1,5 @@
 <purpose>
-Switch the model profile used by GSD agents. Controls which Claude model each agent uses, balancing quality vs token spend.
+Switch the model profile used by GSD agents. Controls which Codex model each agent uses, balancing quality vs token spend.
 </purpose>
 
 <required_reading>
@@ -23,8 +23,8 @@ if $ARGUMENTS.profile not in ["quality", "balanced", "budget"]:
 Ensure config exists and load current state:
 
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs config-ensure-section
-INIT=$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs state load)
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs config-ensure-section
+INIT=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs state load)
 ```
 
 This creates `.planning/config.json` with defaults if missing and loads current config.

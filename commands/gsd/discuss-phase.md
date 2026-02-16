@@ -25,8 +25,8 @@ Extract implementation decisions that downstream agents need — researcher and 
 </objective>
 
 <execution_context>
-@~/.claude/get-shit-done/workflows/discuss-phase.md
-@~/.claude/get-shit-done/templates/context.md
+@~/.codex/get-shit-done/workflows/discuss-phase.md
+@~/.codex/get-shit-done/templates/context.md
 </execution_context>
 
 <context>
@@ -70,7 +70,7 @@ Generate 3-4 **phase-specific** gray areas, not generic categories.
 - If more → ask 4 more, check again
 - After all areas → "Ready to create context?"
 
-**Do NOT ask about (Claude handles these):**
+**Do NOT ask about (Codex handles these):**
 - Technical implementation
 - Architecture choices
 - Performance concerns

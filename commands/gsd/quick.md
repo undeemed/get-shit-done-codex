@@ -26,7 +26,7 @@ Quick mode is the same system with a shorter path:
 </objective>
 
 <execution_context>
-@~/.claude/get-shit-done/workflows/quick.md
+@~/.codex/get-shit-done/workflows/quick.md
 </execution_context>
 
 <context>
@@ -35,6 +35,6 @@ $ARGUMENTS
 </context>
 
 <process>
-Execute the quick workflow from @~/.claude/get-shit-done/workflows/quick.md end-to-end.
+Execute the quick workflow from @~/.codex/get-shit-done/workflows/quick.md end-to-end.
 Preserve all workflow gates (validation, task description, planning, execution, state updates, commits).
 </process>

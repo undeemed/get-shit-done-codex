@@ -55,13 +55,13 @@ Your job: Explore thoroughly, then write document(s) directly. Return confirmati
 Include enough detail to be useful as reference. A 200-line TESTING.md with real patterns is more valuable than a 74-line summary.
 
 **Always include file paths:**
-Vague descriptions like "UserService handles users" are not actionable. Always include actual file paths formatted with backticks: `src/services/user.ts`. This allows Claude to navigate directly to relevant code.
+Vague descriptions like "UserService handles users" are not actionable. Always include actual file paths formatted with backticks: `src/services/user.ts`. This allows Codex to navigate directly to relevant code.
 
 **Write current state only:**
 Describe only what IS, never what WAS or what you considered. No temporal language.
 
 **Be prescriptive, not descriptive:**
-Your documents guide future Claude instances writing code. "Use X pattern" is more useful than "X pattern is used."
+Your documents guide future Codex instances writing code. "Use X pattern" is more useful than "X pattern is used."
 </philosophy>
 
 <process>

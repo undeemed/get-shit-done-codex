@@ -12,7 +12,7 @@ Read all files referenced by the invoking prompt's execution_context before star
 **Load progress context (with file contents to avoid redundant reads):**
 
 ```bash
-INIT_RAW=$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs init progress --include state,roadmap,project,config)
+INIT_RAW=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs init progress --include state,roadmap,project,config)
 # Large payloads are written to a tmpfile — output starts with @file:/path
 if [[ "$INIT_RAW" == @file:* ]]; then
   INIT_FILE="${INIT_RAW#@file:}"
@@ -62,7 +62,7 @@ No additional file reads needed.
 **Get comprehensive roadmap analysis (replaces manual parsing):**
 
 ```bash
-ROADMAP=$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs roadmap analyze)
+ROADMAP=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs roadmap analyze)
 ```
 
 This returns structured JSON with:
@@ -81,7 +81,7 @@ Use this instead of manually reading/parsing ROADMAP.md.
 - Find the 2-3 most recent SUMMARY.md files
 - Use `summary-extract` for efficient parsing:
   ```bash
-  node ~/.claude/get-shit-done/bin/gsd-tools.cjs summary-extract <path> --fields one_liner
+  node ~/.codex/get-shit-done/bin/gsd-tools.cjs summary-extract <path> --fields one_liner
   ```
 - This shows "what we've been working on"
   </step>
@@ -101,7 +101,7 @@ Use this instead of manually reading/parsing ROADMAP.md.
 
 ```bash
 # Get formatted progress bar
-PROGRESS_BAR=$(node ~/.claude/get-shit-done/bin/gsd-tools.cjs progress bar --raw)
+PROGRESS_BAR=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs progress bar --raw)
 ```
 
 Present:
@@ -238,7 +238,7 @@ Check if `{phase_num}-CONTEXT.md` exists in phase directory.
 
 **Also available:**
 - `/gsd:plan-phase {phase}` — skip discussion, plan directly
-- `/gsd:list-phase-assumptions {phase}` — see Claude's assumptions
+- `/gsd:list-phase-assumptions {phase}` — see Codex's assumptions
 
 ---
 ```

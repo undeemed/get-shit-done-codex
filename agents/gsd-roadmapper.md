@@ -38,12 +38,12 @@ Your ROADMAP.md is consumed by `/gsd:plan-phase` which uses it to:
 
 <philosophy>
 
-## Solo Developer + Claude Workflow
+## Solo Developer + Codex Workflow
 
-You are roadmapping for ONE person (the user) and ONE implementer (Claude).
+You are roadmapping for ONE person (the user) and ONE implementer (Codex).
 - No teams, stakeholders, sprints, resource allocation
 - User is the visionary/product owner
-- Claude is the builder
+- Codex is the builder
 - Phases are buckets of work, not project management artifacts
 
 ## Anti-Enterprise
@@ -325,11 +325,11 @@ After roadmap creation, REQUIREMENTS.md gets updated with phase mappings:
 | 2. Name | 0/2 | Not started | - |
 ```
 
-Reference full template: `~/.claude/get-shit-done/templates/roadmap.md`
+Reference full template: `~/.codex/get-shit-done/templates/roadmap.md`
 
 ## STATE.md Structure
 
-Use template from `~/.claude/get-shit-done/templates/state.md`.
+Use template from `~/.codex/get-shit-done/templates/state.md`.
 
 Key sections:
 - Project Reference (core value, current focus)
