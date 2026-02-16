@@ -9,25 +9,12 @@ const { spawn } = require('child_process');
 
 const homeDir = os.homedir();
 const cwd = process.cwd();
-
-// Detect runtime config directory (supports Claude, OpenCode, Gemini)
-function detectConfigDir(baseDir) {
-  for (const dir of ['.config/opencode', '.opencode', '.gemini', '.claude']) {
-    if (fs.existsSync(path.join(baseDir, dir, 'get-shit-done', 'VERSION'))) {
-      return path.join(baseDir, dir);
-    }
-  }
-  return path.join(baseDir, '.claude');
-}
-
-const globalConfigDir = detectConfigDir(homeDir);
-const projectConfigDir = detectConfigDir(cwd);
-const cacheDir = path.join(globalConfigDir, 'cache');
+const cacheDir = path.join(homeDir, '.codex', 'cache');
 const cacheFile = path.join(cacheDir, 'gsd-update-check.json');
 
 // VERSION file locations (check project first, then global)
-const projectVersionFile = path.join(projectConfigDir, 'get-shit-done', 'VERSION');
-const globalVersionFile = path.join(globalConfigDir, 'get-shit-done', 'VERSION');
+const projectVersionFile = path.join(cwd, 'get-shit-done', 'VERSION');
+const globalVersionFile = path.join(homeDir, '.codex', 'get-shit-done', 'VERSION');
 
 // Ensure cache directory exists
 if (!fs.existsSync(cacheDir)) {
@@ -45,17 +32,21 @@ const child = spawn(process.execPath, ['-e', `
 
   // Check project directory first (local install), then global
   let installed = '0.0.0';
+  const readInstalledVersion = (versionFilePath) => {
+    const raw = fs.readFileSync(versionFilePath, 'utf8');
+    return (raw.split(/\\r?\\n/)[0] || '').trim() || '0.0.0';
+  };
   try {
     if (fs.existsSync(projectVersionFile)) {
-      installed = fs.readFileSync(projectVersionFile, 'utf8').trim();
+      installed = readInstalledVersion(projectVersionFile);
     } else if (fs.existsSync(globalVersionFile)) {
-      installed = fs.readFileSync(globalVersionFile, 'utf8').trim();
+      installed = readInstalledVersion(globalVersionFile);
     }
   } catch (e) {}
 
   let latest = null;
   try {
-    latest = execSync('npm view get-shit-done-cc version', { encoding: 'utf8', timeout: 10000, windowsHide: true }).trim();
+    latest = execSync('npm view @undeemed/get-shit-done-codex version', { encoding: 'utf8', timeout: 10000, windowsHide: true }).trim();
   } catch (e) {}
 
   const result = {

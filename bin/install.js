@@ -4,16 +4,20 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const readline = require('readline');
+const { execSync } = require('child_process');
 
-// Colors
 const cyan = '\x1b[36m';
 const green = '\x1b[32m';
 const yellow = '\x1b[33m';
 const dim = '\x1b[2m';
 const reset = '\x1b[0m';
 
-// Get version from package.json
 const pkg = require('../package.json');
+const NPM_PACKAGE = pkg.name;
+const NPM_PACKAGE_LATEST = `${NPM_PACKAGE}@latest`;
+const UPSTREAM_PACKAGE = 'get-shit-done-cc';
+const UPSTREAM_REPO = 'https://github.com/glittercowboy/get-shit-done';
+const FORK_REPO = 'https://github.com/undeemed/get-shit-done-codex';
 
 const banner = `
 ${green}   ██████╗ ███████╗██████╗
@@ -24,11 +28,10 @@ ${green}   ██████╗ ███████╗██████╗
     ╚═════╝ ╚══════╝╚═════╝${reset}
 
    Get Shit Done ${dim}v${pkg.version}${reset}
-   A meta - prompting, context engineering and spec - driven
-   development system for OpenAI Codex CLI originally by TÂCHES.
+   A meta-prompting, context engineering, and spec-driven
+   development system for OpenAI Codex CLI.
 `;
 
-// Parse args
 const args = process.argv.slice(2);
 const hasGlobal = args.includes('--global') || args.includes('-g');
 const hasLocal = args.includes('--local') || args.includes('-l');
@@ -36,56 +39,55 @@ const hasHelp = args.includes('--help') || args.includes('-h');
 
 console.log(banner);
 
-// Show help if requested
 if (hasHelp) {
-  console.log(`  ${yellow} Usage:${reset} npx get - shit - done - codex[options]
+  console.log(`  ${yellow}Usage:${reset} npx ${NPM_PACKAGE} [options]
 
-  ${yellow} Options:${reset}
-    ${cyan} -g, --global${reset}              Install globally(to ~/.codex/)
-    ${cyan} -l, --local${reset}               Install locally(to current directory)
-    ${cyan} -h, --help${reset}                Show this help message
+  ${yellow}Options:${reset}
+    ${cyan}-g, --global${reset}              Install globally (to ~/.codex/)
+    ${cyan}-l, --local${reset}               Install locally (to current directory)
+    ${cyan}-h, --help${reset}                Show this help message
 
-  ${yellow} Examples:${reset}
-    ${dim}# Install globally to ~/.codex directory${reset}
-    npx get - shit - done - codex--global
+  ${yellow}Examples:${reset}
+    ${dim}# Install globally${reset}
+    npx ${NPM_PACKAGE} --global
 
     ${dim}# Install to current project only${reset}
-    npx get - shit - done - codex--local
+    npx ${NPM_PACKAGE} --local
 
-  ${yellow} Notes:${reset}
-    For codex - cli, this installer:
-- Creates / updates AGENTS.md in the target directory
-  - Copies the get - shit - done skill and commands
-    - Global install goes to ~/.codex/(inherited by all projects)
-      - Local install puts files in current directory
+  ${yellow}Notes:${reset}
+    - Installs AGENTS.md into the target directory
+    - Installs GSD prompt commands into prompts/
+    - Installs get-shit-done/ workflow files
 `);
   process.exit(0);
 }
 
-/**
- * Apply content replacements for Codex CLI compatibility
- */
 function applyReplacements(content, pathPrefix) {
-  // Path replacements
-  content = content.replace(/~\/\.claude\//g, pathPrefix);
-  content = content.replace(/\.claude\//g, pathPrefix.replace('~/', ''));
+  const runtimeRelativePrefix = pathPrefix.replace('~/', '');
+  const explicitRelativePrefix = runtimeRelativePrefix === './'
+    ? './'
+    : `./${runtimeRelativePrefix}`;
 
-  // Claude → Codex naming
+  // Replace explicit relative/global patterns first to avoid producing "././".
+  content = content.replace(/\.\/\.claude\//g, explicitRelativePrefix);
+  content = content.replace(/~\/\.claude\//g, '~/.codex/');
+  content = content.replace(/\.claude\//g, runtimeRelativePrefix);
+
   content = content.replace(/Claude Code/g, 'Codex CLI');
   content = content.replace(/Claude/g, 'Codex');
 
-  // Command format: /gsd:name → /prompts:gsd-name (Codex CLI custom prompts format)
   content = content.replace(/\/gsd:/g, '/prompts:gsd-');
+
+  // Keep update workflows pointed to this fork's npm package/repo.
+  content = content.replace(new RegExp(UPSTREAM_PACKAGE, 'g'), NPM_PACKAGE);
+  content = content.replace(new RegExp(UPSTREAM_REPO.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), FORK_REPO);
+  content = content.replace(/npmjs\.com\/package\/get-shit-done-cc/g, `npmjs.com/package/${encodeURIComponent(NPM_PACKAGE)}`);
 
   return content;
 }
 
-/**
- * Recursively copy directory, replacing paths in .md files
- */
 function copyWithPathReplacement(srcDir, destDir, pathPrefix) {
   fs.mkdirSync(destDir, { recursive: true });
-
   const entries = fs.readdirSync(srcDir, { withFileTypes: true });
 
   for (const entry of entries) {
@@ -94,118 +96,122 @@ function copyWithPathReplacement(srcDir, destDir, pathPrefix) {
 
     if (entry.isDirectory()) {
       copyWithPathReplacement(srcPath, destPath, pathPrefix);
-    } else if (entry.name.endsWith('.md')) {
-      let content = fs.readFileSync(srcPath, 'utf8');
-      content = applyReplacements(content, pathPrefix);
-      fs.writeFileSync(destPath, content);
-    } else {
-      fs.copyFileSync(srcPath, destPath);
+      continue;
     }
+
+    if (entry.name.endsWith('.md')) {
+      const content = fs.readFileSync(srcPath, 'utf8');
+      fs.writeFileSync(destPath, applyReplacements(content, pathPrefix), 'utf8');
+      continue;
+    }
+
+    fs.copyFileSync(srcPath, destPath);
   }
 }
 
-/**
- * Install to the specified directory
- */
+function writeVersionFile(destDir, isGlobal) {
+  const versionFile = path.join(destDir, 'VERSION');
+  const installType = isGlobal ? 'GLOBAL' : 'LOCAL';
+  fs.writeFileSync(versionFile, `${pkg.version}\n${installType}\n`, 'utf8');
+}
+
+function showCachedVersionWarning() {
+  try {
+    const latest = execSync(`npm view ${NPM_PACKAGE} version`, {
+      encoding: 'utf8',
+      timeout: 4000,
+      stdio: ['ignore', 'pipe', 'ignore']
+    }).trim();
+    if (latest && latest !== pkg.version) {
+      console.log(`  ${yellow}Update available:${reset} v${pkg.version} -> v${latest}`);
+      console.log(`  Run ${cyan}npx ${NPM_PACKAGE_LATEST}${reset} to install the latest release.\n`);
+    }
+  } catch (_) {
+    // Offline or npm unavailable - skip.
+  }
+}
+
 function install(isGlobal) {
   const src = path.join(__dirname, '..');
-  const codexDir = isGlobal
-    ? path.join(os.homedir(), '.codex')
-    : process.cwd();
+  const codexDir = isGlobal ? path.join(os.homedir(), '.codex') : process.cwd();
+  const locationLabel = isGlobal ? '~/.codex' : '.';
+  const pathPrefix = isGlobal ? '~/.codex/' : './';
 
-  const locationLabel = isGlobal
-    ? '~/.codex'
-    : '.';
-
-  // Path prefix for file references
-  const pathPrefix = isGlobal
-    ? '~/.codex/'
-    : './';
-
-  console.log(`  Installing to ${cyan}${locationLabel}${reset} \n`);
-
-  // Create target directory if needed
+  console.log(`  Installing to ${cyan}${locationLabel}${reset}\n`);
   fs.mkdirSync(codexDir, { recursive: true });
 
-  // Copy AGENTS.md
   const agentsSrc = path.join(src, 'AGENTS.md');
   const agentsDest = path.join(codexDir, 'AGENTS.md');
-  let agentsContent = fs.readFileSync(agentsSrc, 'utf8');
-  agentsContent = applyReplacements(agentsContent, pathPrefix);
-  fs.writeFileSync(agentsDest, agentsContent);
+  const agentsContent = applyReplacements(fs.readFileSync(agentsSrc, 'utf8'), pathPrefix);
+  fs.writeFileSync(agentsDest, agentsContent, 'utf8');
   console.log(`  ${green}✓${reset} Installed AGENTS.md`);
 
-  // Create prompts directory (Codex CLI uses prompts/ for custom slash commands)
   const promptsDir = path.join(codexDir, 'prompts');
   fs.mkdirSync(promptsDir, { recursive: true });
 
-  // Copy commands/gsd as prompts (flatten the structure for Codex CLI)
-  // Codex CLI expects prompts/command-name.md format
   const gsdSrc = path.join(src, 'commands', 'gsd');
   const entries = fs.readdirSync(gsdSrc);
-  for (const entry of entries) {
-    if (entry.endsWith('.md')) {
-      const srcPath = path.join(gsdSrc, entry);
-      // Convert to gsd-command format (e.g., help.md -> gsd-help.md)
-      const destName = 'gsd-' + entry;
-      const destPath = path.join(promptsDir, destName);
-      let content = fs.readFileSync(srcPath, 'utf8');
-      content = applyReplacements(content, pathPrefix);
-      fs.writeFileSync(destPath, content);
-    }
+  const markdownEntries = entries.filter((entry) => entry.endsWith('.md'));
+  for (const entry of markdownEntries) {
+    const srcPath = path.join(gsdSrc, entry);
+    const destPath = path.join(promptsDir, `gsd-${entry}`);
+    const content = applyReplacements(fs.readFileSync(srcPath, 'utf8'), pathPrefix);
+    fs.writeFileSync(destPath, content, 'utf8');
   }
-  console.log(`  ${green}✓${reset} Installed prompts / gsd -*.md(${entries.filter(e => e.endsWith('.md')).length} commands)`);
+  console.log(`  ${green}✓${reset} Installed prompts/gsd-*.md (${markdownEntries.length} commands)`);
 
-  // Copy get-shit-done skill with path replacement
   const skillSrc = path.join(src, 'get-shit-done');
   const skillDest = path.join(codexDir, 'get-shit-done');
   copyWithPathReplacement(skillSrc, skillDest, pathPrefix);
-  console.log(`  ${green}✓${reset} Installed get - shit - done`);
+  writeVersionFile(skillDest, isGlobal);
+  console.log(`  ${green}✓${reset} Installed get-shit-done/ workflow files`);
+  console.log(`  ${green}✓${reset} Wrote get-shit-done/VERSION (${pkg.version})`);
 
   console.log(`
-  ${green} Done!${reset} 
-  
-  ${yellow}For Codex CLI:${reset}
-- AGENTS.md is at ${cyan}${codexDir}/AGENTS.md${reset}
-  - Slash commands are in ${cyan}${codexDir} /prompts/${reset}
-  
-  ${yellow}Getting Started:${reset}
-1. Run ${cyan}codex${reset} to start the Codex CLI
-2. Type ${cyan}/${reset} to see available commands
-3. Start with ${cyan}/prompts:gsd-new-project${reset} to initialize a project
+  ${green}Done!${reset}
 
-  ${dim}Commands use / prompts: gsd - name format(e.g., /prompts:gsd-help)${reset}
+  ${yellow}For Codex CLI:${reset}
+  - AGENTS.md: ${cyan}${codexDir}/AGENTS.md${reset}
+  - Prompt commands: ${cyan}${codexDir}/prompts/${reset}
+
+  ${yellow}Getting Started:${reset}
+  1. Run ${cyan}codex${reset}
+  2. Use ${cyan}/prompts:gsd-help${reset} to list commands
+  3. Start with ${cyan}/prompts:gsd-new-project${reset}
+
+  ${yellow}Staying Updated:${reset}
+  - In Codex: ${cyan}/prompts:gsd-update${reset}
+  - In terminal: ${cyan}npx ${NPM_PACKAGE_LATEST}${reset}
 `);
 }
 
-/**
- * Prompt for install location
- */
 function promptLocation() {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
   });
 
-  console.log(`  ${yellow}Where would you like to install ? ${reset}
+  console.log(`  ${yellow}Where would you like to install?${reset}
 
-  ${cyan} 1${reset}) Global ${dim} (~/.codex)${reset} - available in all projects
-  ${cyan} 2${reset}) Local  ${dim} (.)${reset} - this project only
+  ${cyan}1${reset}) Global ${dim}(~/.codex)${reset} - available in all projects
+  ${cyan}2${reset}) Local  ${dim}(.)${reset} - this project only
 `);
 
-  rl.question(`  Choice ${dim} [1]${reset}: `, (answer) => {
+  rl.question(`  Choice ${dim}[1]${reset}: `, (answer) => {
     rl.close();
     const choice = answer.trim() || '1';
-    const isGlobal = choice !== '2';
-    install(isGlobal);
+    install(choice !== '2');
   });
 }
 
-// Main
+showCachedVersionWarning();
+
 if (hasGlobal && hasLocal) {
-  console.error(`  ${yellow}Cannot specify both--global and--local${reset} `);
+  console.error(`  ${yellow}Cannot specify both --global and --local${reset}`);
   process.exit(1);
-} else if (hasGlobal) {
+}
+
+if (hasGlobal) {
   install(true);
 } else if (hasLocal) {
   install(false);
