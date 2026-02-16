@@ -6,6 +6,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+- GitHub Actions OIDC publish workflow at `.github/workflows/publish.yml` for npm Trusted Publisher support.
+- README instructions for npm Trusted Publisher setup values.
+
 ## [1.20.2] - 2026-02-16
 
 ### Changed
