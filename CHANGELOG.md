@@ -6,25 +6,68 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.20.6] - 2025-02-23
+
 ### Added
-- GitHub Actions OIDC publish workflow at `.github/workflows/publish.yml` for npm Trusted Publisher support.
-- README instructions for npm Trusted Publisher setup values.
+- Context window monitor hook with WARNING/CRITICAL alerts when agent context usage exceeds thresholds
+- Nyquist validation layer in plan-phase pipeline to catch quality issues before execution
+- Option highlighting and gray area looping in discuss-phase for clearer preference capture
+
+### Changed
+- Refactored installer tools into 11 domain modules for maintainability
+
+### Fixed
+- Auto-advance chain no longer breaks when skills fail to resolve inside Task subagents
+- Gemini CLI workflows and templates no longer incorrectly convert to TOML format
+- Universal phase number parsing handles all formats consistently (decimal phases, plain numbers)
+
+## [1.20.5] - 2026-02-19
+
+### Fixed
+- `/gsd:health --repair` now creates timestamped backup before regenerating STATE.md (#657)
+
+### Changed
+- Subagents now discover and load project CODEX.md and skills at spawn time for better project context (#671, #672)
+- Improved context loading reliability in spawned agents
+
+## [1.20.4] - 2026-02-17
+
+### Fixed
+- Executor agents now update ROADMAP.md and REQUIREMENTS.md after each plan completes — previously both documents stayed unchecked throughout milestone execution
+- New `requirements mark-complete` CLI command enables per-plan requirement tracking instead of waiting for phase completion
+- Executor final commit includes ROADMAP.md and REQUIREMENTS.md
+
+## [1.20.3] - 2026-02-16
+
+### Fixed
+- Milestone audit now cross-references three independent sources (VERIFICATION.md + SUMMARY frontmatter + REQUIREMENTS.md traceability) instead of single-source phase status checks
+- Orphaned requirements (in traceability table but absent from all phase VERIFICATIONs) detected and forced to `unsatisfied`
+- Integration checker receives milestone requirement IDs and maps findings to affected requirements
+- `complete-milestone` gates on requirements completion before archival — surfaces unchecked requirements with proceed/audit/abort options
+- `plan-milestone-gaps` updates REQUIREMENTS.md traceability table (phase assignments, checkbox resets, coverage count) and includes it in commit
+- Gemini CLI: escape `${VAR}` shell variables in agent bodies to prevent template validation failures
 
 ## [1.20.2] - 2026-02-16
 
+### Fixed
+- Requirements tracking chain now strips bracket syntax (`[REQ-01, REQ-02]` → `REQ-01, REQ-02`) across all agents
+- Verifier cross-references requirement IDs from PLAN frontmatter instead of only grepping REQUIREMENTS.md by phase number
+- Orphaned requirements (mapped to phase in REQUIREMENTS.md but unclaimed by any plan) are detected and flagged
+
 ### Changed
-- Clarified Codex runtime support across docs and installer output: this fork supports both Codex CLI and Codex Desktop.
-- Updated package metadata description to explicitly include Desktop compatibility.
+- All `requirements` references across planner, templates, and workflows enforce MUST/REQUIRED/CRITICAL language — no more passive suggestions
+- Plan checker now **fails** (blocking, not warning) when any roadmap requirement is absent from all plans
+- Researcher receives phase-specific requirement IDs and must output a `<phase_requirements>` mapping table
+- Phase requirement IDs extracted from ROADMAP and passed through full chain: researcher → planner → checker → executor → verifier
+- Verification report requirements table expanded with Source Plan, Description, and Evidence columns
 
 ## [1.20.1] - 2026-02-16
 
-### Changed
-- Codex installer now writes `get-shit-done/VERSION` so `/prompts:gsd-update` can correctly detect local/global installed version.
-- Installer replacement logic now maps upstream package/repo references to this fork, so update workflows target `@undeemed/get-shit-done-codex` instead of `get-shit-done-cc`.
-- README updated with Codex-specific update guidance and notification paths.
-
-### Added
-- Installer now warns users when a newer npm version is available and shows the exact upgrade command.
+### Fixed
+- Auto-mode (`--auto`) now survives context compaction by persisting `workflow.auto_advance` to config.json on disk
+- Checkpoints no longer block auto-mode: human-verify auto-approves, decision auto-selects first option (human-action still stops for auth gates)
+- Plan-phase now passes `--auto` flag when spawning execute-phase
+- Auto-advance clears on milestone complete to prevent runaway chains
 
 ## [1.20.0] - 2026-02-15
 
@@ -116,7 +159,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `/gsd:update` workflow now notifies about backed-up local patches and suggests `/gsd:reapply-patches`
 
 ### Fixed
-- Added workaround for Codex CLI `classifyHandoffIfNeeded` bug that causes false agent failures — execute-phase and quick workflows now spot-check actual output before reporting failure
+- Added workaround for Codex Code `classifyHandoffIfNeeded` bug that causes false agent failures — execute-phase and quick workflows now spot-check actual output before reporting failure
 
 ## [1.16.0] - 2026-02-08
 
@@ -197,7 +240,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [1.11.2] - 2026-02-05
 
 ### Added
-- Security section in README with Codex CLI deny rules for sensitive files
+- Security section in README with Codex Code deny rules for sensitive files
 
 ### Changed
 - Install respects `attribution.commit` setting for OpenCode compatibility (#286)
@@ -237,7 +280,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 - Native Gemini CLI support — install with `--gemini` flag or select from interactive menu
-- New `--all` flag to install for Codex CLI, OpenCode, and Gemini simultaneously
+- New `--all` flag to install for Codex Code, OpenCode, and Gemini simultaneously
 
 ### Fixed
 - Context bar now shows 100% at actual 80% limit (was scaling incorrectly)
@@ -286,9 +329,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [1.9.6] - 2026-01-22
 
 ### Added
-- Interactive runtime selection: installer now prompts to choose Codex CLI, OpenCode, or both
+- Interactive runtime selection: installer now prompts to choose Codex Code, OpenCode, or both
 - Native OpenCode support: `--opencode` flag converts GSD to OpenCode format automatically
-- `--both` flag to install for both Codex CLI and OpenCode in one command
+- `--both` flag to install for both Codex Code and OpenCode in one command
 - Auto-configures `~/.opencode.json` permissions for seamless GSD doc access
 
 ### Changed
@@ -298,7 +341,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [1.9.5] - 2025-01-22
 
 ### Fixed
-- Subagents can now access MCP tools (Context7, etc.) - workaround for Codex CLI bug #13898
+- Subagents can now access MCP tools (Context7, etc.) - workaround for Codex Code bug #13898
 - Installer: Escape/Ctrl+C now cancels instead of installing globally
 - Installer: Fixed hook paths on Windows
 - Removed stray backticks in `/gsd:new-project` output
@@ -980,7 +1023,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [1.3.26] - 2026-01-06
 
 ### Added
-- Codex CLI marketplace plugin support
+- Codex Code marketplace plugin support
 
 ### Fixed
 - Phase artifacts now committed when created
@@ -1197,7 +1240,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [1.2.0] - 2025-12-15
 
 ### Changed
-- Research workflow implemented as Codex CLI context injection
+- Research workflow implemented as Codex Code context injection
 
 ## [1.1.2] - 2025-12-15
 
@@ -1291,7 +1334,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - YOLO mode for autonomous execution
 - Interactive mode with checkpoints
 
-[Unreleased]: https://github.com/glittercowboy/get-shit-done/compare/v1.20.0...HEAD
+[Unreleased]: https://github.com/glittercowboy/get-shit-done/compare/v1.20.6...HEAD
+[1.20.6]: https://github.com/glittercowboy/get-shit-done/releases/tag/v1.20.6
+[1.20.5]: https://github.com/glittercowboy/get-shit-done/releases/tag/v1.20.5
+[1.20.4]: https://github.com/glittercowboy/get-shit-done/releases/tag/v1.20.4
+[1.20.3]: https://github.com/glittercowboy/get-shit-done/releases/tag/v1.20.3
+[1.20.2]: https://github.com/glittercowboy/get-shit-done/releases/tag/v1.20.2
+[1.20.1]: https://github.com/glittercowboy/get-shit-done/releases/tag/v1.20.1
 [1.20.0]: https://github.com/glittercowboy/get-shit-done/releases/tag/v1.20.0
 [1.19.2]: https://github.com/glittercowboy/get-shit-done/releases/tag/v1.19.2
 [1.19.1]: https://github.com/glittercowboy/get-shit-done/releases/tag/v1.19.1

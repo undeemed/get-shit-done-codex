@@ -203,11 +203,11 @@ The original repository contains:
 - Best practices and examples
 - Architecture and design principles
 
-**Note:** The original README is written for Claude Code. When following it, remember that this fork uses:
+**Note:** The original README is written for Codex Code. When following it, remember that this fork uses:
 
 - `/prompts:gsd-*` command format (instead of `/gsd:*`)
-- OpenAI Codex CLI & Desktop (instead of Claude Code)
-- `~/.codex/` directory (instead of `~/.claude/`)
+- OpenAI Codex CLI & Desktop (instead of Codex Code)
+- `~/.codex/` directory (instead of `~/.codex/`)
 
 ## Keywords
 

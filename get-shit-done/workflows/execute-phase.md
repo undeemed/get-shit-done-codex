@@ -106,7 +106,7 @@ Execute each wave in sequence. Within a wave: parallel if `PARALLELIZATION=true`
      prompt="
        <objective>
        Execute plan {plan_number} of phase {phase_number}-{phase_name}.
-       Commit each task atomically. Create SUMMARY.md. Update STATE.md.
+       Commit each task atomically. Create SUMMARY.md. Update STATE.md and ROADMAP.md.
        </objective>
 
        <execution_context>
@@ -118,9 +118,11 @@ Execute each wave in sequence. Within a wave: parallel if `PARALLELIZATION=true`
 
        <files_to_read>
        Read these files at execution start using the Read tool:
-       - Plan: {phase_dir}/{plan_file}
-       - State: .planning/STATE.md
-       - Config: .planning/config.json (if exists)
+       - {phase_dir}/{plan_file} (Plan)
+       - .planning/STATE.md (State)
+       - .planning/config.json (Config, if exists)
+       - ./CODEX.md (Project instructions, if exists — follow project-specific guidelines and coding conventions)
+       - .agents/skills/ (Project skills, if exists — list skills, read SKILL.md for each, follow relevant rules during implementation)
        </files_to_read>
 
        <success_criteria>
@@ -128,6 +130,7 @@ Execute each wave in sequence. Within a wave: parallel if `PARALLELIZATION=true`
        - [ ] Each task committed individually
        - [ ] SUMMARY.md created in plan directory
        - [ ] STATE.md updated with position and decisions
+       - [ ] ROADMAP.md updated with plan progress (via `roadmap update-plan-progress`)
        </success_criteria>
      "
    )
@@ -162,7 +165,7 @@ Execute each wave in sequence. Within a wave: parallel if `PARALLELIZATION=true`
 
 5. **Handle failures:**
 
-   **Known Codex CLI bug (classifyHandoffIfNeeded):** If an agent reports "failed" with error containing `classifyHandoffIfNeeded is not defined`, this is a Codex CLI runtime bug — not a GSD or agent issue. The error fires in the completion handler AFTER all tool calls finish. In this case: run the same spot-checks as step 4 (SUMMARY.md exists, git commits present, no Self-Check: FAILED). If spot-checks PASS → treat as **successful**. If spot-checks FAIL → treat as real failure below.
+   **Known Codex Code bug (classifyHandoffIfNeeded):** If an agent reports "failed" with error containing `classifyHandoffIfNeeded is not defined`, this is a Codex Code runtime bug — not a GSD or agent issue. The error fires in the completion handler AFTER all tool calls finish. In this case: run the same spot-checks as step 4 (SUMMARY.md exists, git commits present, no Self-Check: FAILED). If spot-checks PASS → treat as **successful**. If spot-checks FAIL → treat as real failure below.
 
    For real failures: report which plan failed → ask "Continue?" or "Stop?" → if continue, dependent plans may also fail. If stop, partial completion report.
 
@@ -174,7 +177,19 @@ Execute each wave in sequence. Within a wave: parallel if `PARALLELIZATION=true`
 <step name="checkpoint_handling">
 Plans with `autonomous: false` require user interaction.
 
-**Flow:**
+**Auto-mode checkpoint handling:**
+
+Read auto-advance config:
+```bash
+AUTO_CFG=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs config-get workflow.auto_advance 2>/dev/null || echo "false")
+```
+
+When executor returns a checkpoint AND `AUTO_CFG` is `"true"`:
+- **human-verify** → Auto-spawn continuation agent with `{user_response}` = `"approved"`. Log `⚡ Auto-approved checkpoint`.
+- **decision** → Auto-spawn continuation agent with `{user_response}` = first option from checkpoint details. Log `⚡ Auto-selected: [option]`.
+- **human-action** → Present to user (existing behavior below). Auth gates cannot be automated.
+
+**Standard flow (not auto-mode, or human-action type):**
 
 1. Spawn agent for checkpoint plan
 2. Agent runs until checkpoint task or auth gate → returns structured state
@@ -279,12 +294,19 @@ node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs(phase-${PARENT_PHASE}
 <step name="verify_phase_goal">
 Verify phase achieved its GOAL, not just completed tasks.
 
+```bash
+PHASE_REQ_IDS=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs roadmap get-phase "${PHASE_NUMBER}" | jq -r '.section' | grep -i "Requirements:" | sed 's/.*Requirements:\*\*\s*//' | sed 's/[\[\]]//g')
+```
+
 ```
 Task(
   prompt="Verify phase {phase_number} goal achievement.
 Phase directory: {phase_dir}
 Phase goal: {goal from ROADMAP.md}
-Check must_haves against actual codebase. Create VERIFICATION.md.",
+Phase requirement IDs: {phase_req_ids}
+Check must_haves against actual codebase.
+Cross-reference requirement IDs from PLAN frontmatter against REQUIREMENTS.md — every ID MUST be accounted for.
+Create VERIFICATION.md.",
   subagent_type="gsd-verifier",
   model="{verifier_model}"
 )
@@ -353,13 +375,36 @@ The CLI handles:
 Extract from result: `next_phase`, `next_phase_name`, `is_last_phase`.
 
 ```bash
-node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs(phase-{X}): complete phase execution" --files .planning/ROADMAP.md .planning/STATE.md .planning/REQUIREMENTS.md .planning/phases/{phase_dir}/*-VERIFICATION.md
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs(phase-{X}): complete phase execution" --files .planning/ROADMAP.md .planning/STATE.md .planning/REQUIREMENTS.md {phase_dir}/*-VERIFICATION.md
 ```
 </step>
 
 <step name="offer_next">
 
 **Exception:** If `gaps_found`, the `verify_phase_goal` step already presents the gap-closure path (`/gsd:plan-phase {X} --gaps`). No additional routing needed — skip auto-advance.
+
+**No-transition check (spawned by auto-advance chain):**
+
+Parse `--no-transition` flag from $ARGUMENTS.
+
+**If `--no-transition` flag present:**
+
+Execute-phase was spawned by plan-phase's auto-advance. Do NOT run transition.md.
+After verification passes and roadmap is updated, return completion status to parent:
+
+```
+## PHASE COMPLETE
+
+Phase: ${PHASE_NUMBER} - ${PHASE_NAME}
+Plans: ${completed_count}/${total_count}
+Verification: {Passed | Gaps Found}
+
+[Include aggregate_results output]
+```
+
+STOP. Do not proceed to auto-advance or transition.
+
+**If `--no-transition` flag is NOT present:**
 
 **Auto-advance detection:**
 
@@ -394,7 +439,7 @@ Orchestrator: ~10-15% context. Subagents: fresh 200k each. No polling (Task bloc
 </context_efficiency>
 
 <failure_handling>
-- **classifyHandoffIfNeeded false failure:** Agent reports "failed" but error is `classifyHandoffIfNeeded is not defined` → Codex CLI bug, not GSD. Spot-check (SUMMARY exists, commits present) → if pass, treat as success
+- **classifyHandoffIfNeeded false failure:** Agent reports "failed" but error is `classifyHandoffIfNeeded is not defined` → Codex Code bug, not GSD. Spot-check (SUMMARY exists, commits present) → if pass, treat as success
 - **Agent fails mid-plan:** Missing SUMMARY.md → report, ask user how to proceed
 - **Dependency chain breaks:** Wave 1 fails → Wave 2 dependents likely fail → user chooses attempt or skip
 - **All agents in wave fail:** Systemic issue → stop, report for investigation

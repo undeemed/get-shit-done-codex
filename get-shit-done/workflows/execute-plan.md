@@ -12,19 +12,13 @@ Read config.json for planning behavior settings.
 <process>
 
 <step name="init_context" priority="first">
-Load execution context (uses `init execute-phase` for full context, including file contents):
+Load execution context (paths only to minimize orchestrator context):
 
 ```bash
-INIT=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs init execute-phase "${PHASE}" --include state,config)
+INIT=$(node ~/.codex/get-shit-done/bin/gsd-tools.cjs init execute-phase "${PHASE}")
 ```
 
-Extract from init JSON: `executor_model`, `commit_docs`, `phase_dir`, `phase_number`, `plans`, `summaries`, `incomplete_plans`.
-
-**File contents (from --include):** `state_content`, `config_content`. Access with:
-```bash
-STATE_CONTENT=$(echo "$INIT" | jq -r '.state_content // empty')
-CONFIG_CONTENT=$(echo "$INIT" | jq -r '.config_content // empty')
-```
+Extract from init JSON: `executor_model`, `commit_docs`, `phase_dir`, `phase_number`, `plans`, `summaries`, `incomplete_plans`, `state_path`, `config_path`.
 
 If `.planning/` missing: error.
 </step>
@@ -40,7 +34,7 @@ Find first PLAN without matching SUMMARY. Decimal phases supported (`01.1-hotfix
 
 ```bash
 PHASE=$(echo "$PLAN_PATH" | grep -oE '[0-9]+(\.[0-9]+)?-[0-9]+')
-# config_content already loaded via --include config in init_context
+# config settings can be fetched via gsd-tools config-get if needed
 ```
 
 <if mode="yolo">
@@ -112,7 +106,7 @@ Pattern B only (verify-only checkpoints). Skip for A/C.
    - Check `git log --oneline --all --grep="{phase}-{plan}"` returns ≥1 commit
    - Append `## Self-Check: PASSED` or `## Self-Check: FAILED` to SUMMARY
 
-   **Known Codex CLI bug (classifyHandoffIfNeeded):** If any segment agent reports "failed" with `classifyHandoffIfNeeded is not defined`, this is a Codex CLI runtime bug — not a real failure. Run spot-checks; if they pass, treat as successful.
+   **Known Codex Code bug (classifyHandoffIfNeeded):** If any segment agent reports "failed" with `classifyHandoffIfNeeded is not defined`, this is a Codex Code runtime bug — not a real failure. Run spot-checks; if they pass, treat as successful.
 
 
 
@@ -322,7 +316,7 @@ If user_setup exists: create `{phase}-USER-SETUP.md` using template `~/.codex/ge
 <step name="create_summary">
 Create `{phase}-{plan}-SUMMARY.md` at `.planning/phases/XX-name/`. Use `~/.codex/get-shit-done/templates/summary.md`.
 
-**Frontmatter:** phase, plan, subsystem, tags | requires/provides/affects | tech-stack.added/patterns | key-files.created/modified | key-decisions | duration ($DURATION), completed ($PLAN_END_TIME date).
+**Frontmatter:** phase, plan, subsystem, tags | requires/provides/affects | tech-stack.added/patterns | key-files.created/modified | key-decisions | requirements-completed (**MUST** copy `requirements` array from PLAN.md frontmatter verbatim) | duration ($DURATION), completed ($PLAN_END_TIME date).
 
 Title: `# Phase [X] Plan [Y]: [Name] Summary`
 
@@ -386,11 +380,21 @@ node ~/.codex/get-shit-done/bin/gsd-tools.cjs roadmap update-plan-progress "${PH
 Counts PLAN vs SUMMARY files on disk. Updates progress table row with correct count and status (`In Progress` or `Complete` with date).
 </step>
 
+<step name="update_requirements">
+Mark completed requirements from the PLAN.md frontmatter `requirements:` field:
+
+```bash
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs requirements mark-complete ${REQ_IDS}
+```
+
+Extract requirement IDs from the plan's frontmatter (e.g., `requirements: [AUTH-01, AUTH-02]`). If no requirements field, skip.
+</step>
+
 <step name="git_commit_metadata">
 Task code already committed per-task. Commit plan metadata:
 
 ```bash
-node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs({phase}-{plan}): complete [plan-name] plan" --files .planning/phases/XX-name/{phase}-{plan}-SUMMARY.md .planning/STATE.md .planning/ROADMAP.md
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs({phase}-{plan}): complete [plan-name] plan" --files .planning/phases/XX-name/{phase}-{plan}-SUMMARY.md .planning/STATE.md .planning/ROADMAP.md .planning/REQUIREMENTS.md
 ```
 </step>
 
