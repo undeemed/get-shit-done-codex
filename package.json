@@ -1,8 +1,7 @@
 {
   "name": "@undeemed/get-shit-done-codex",
-  "version": "1.20.4",
-  "description": "Get Shit Done for Codex — meta-prompting, context engineering, and multi-agent orchestration system for OpenAI Codex CLI & Desktop. Solves context rot with hierarchical planning and fresh subagent windows.",
-  "type": "commonjs",
+  "version": "1.20.7",
+  "description": "A meta-prompting, context engineering and spec-driven development system for OpenAI Codex (CLI and Desktop). Fork of get-shit-done by TÂCHES, adapted for Codex by undeemed.",
   "bin": {
     "get-shit-done-codex": "bin/install.js"
   },
@@ -22,27 +21,11 @@
     "openai",
     "codex",
     "codex-cli",
-    "codex-desktop",
-    "codex-app",
-    "openai-codex",
     "ai",
-    "ai-coding",
-    "ai-agents",
     "meta-prompting",
     "context-engineering",
-    "context-rot",
     "spec-driven-development",
-    "agents",
-    "subagent",
-    "multi-agent",
-    "get-shit-done",
-    "gsd",
-    "prompt-engineering",
-    "ai-workflow",
-    "developer-tools",
-    "dev-tools",
-    "productivity",
-    "code-generation"
+    "agents"
   ],
   "author": "undeemed <jerry.x0930@gmail.com>",
   "contributors": [
@@ -67,6 +50,6 @@
   "scripts": {
     "build:hooks": "node scripts/build-hooks.js",
     "prepublishOnly": "npm run build:hooks",
-    "test": "node --test get-shit-done/bin/gsd-tools.test.cjs"
+    "test": "node --test tests/*.test.cjs"
   }
 }
