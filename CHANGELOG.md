@@ -6,6 +6,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.22.1] - 2026-02-26
+
+### Fixed
+
+- **config.toml parse error** — `:schema` → `#:schema` (missing comment prefix caused Codex to fail on startup)
+- Replaced all `/clear` references (50+ occurrences, 27 files) with platform-agnostic session language — `/clear` does not exist in either Codex Desktop or CLI
+- USER-GUIDE.md troubleshooting now documents both Desktop ("New worktree") and CLI (`/new`) session management
+
 ## [1.22.0] - 2026-02-26
 
 ### Changed
