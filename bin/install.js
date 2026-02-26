@@ -109,7 +109,7 @@ function applyReplacements(content, pathPrefix) {
   content = content.replace(/Codex CLI/g, 'Codex CLI');
   content = content.replace(/Codex/g, 'Codex');
 
-  content = content.replace(/\/gsd:/g, '/prompts:gsd-');
+  content = content.replace(/\/gsd:([a-z0-9-]*)/gi, (_, cmd) => `$gsd-${cmd.toLowerCase()}`);
 
   // Keep update workflows pointed to this fork's npm package/repo.
   content = content.replace(new RegExp(UPSTREAM_PACKAGE, 'g'), NPM_PACKAGE);
@@ -512,14 +512,15 @@ function installCore(isGlobal, migrationPlan, applyMigration, done = () => {}, t
     console.log(`  ${green}✓${reset} Installed get-shit-done/ workflow files`);
     console.log(`  ${green}✓${reset} Wrote get-shit-done/VERSION (${pkg.version})`);
 
+    const displayRoot = locationLabel.endsWith('/') ? locationLabel.slice(0, -1) : locationLabel;
     console.log(`
   ${green}Done!${reset}
 
   ${yellow}For Codex (CLI + Desktop):${reset}
-  - AGENTS.md: ${cyan}${codexDir}/AGENTS.md${reset}
-  - Native skills: ${cyan}${codexDir}/skills/gsd-*/SKILL.md${reset}
-  - Config: ${cyan}${codexDir}/.codex/config.toml${reset}
-  - Agent defs: ${cyan}${codexDir}/agents/gsd-*.md${reset}
+  - AGENTS.md: ${cyan}${displayRoot}/AGENTS.md${reset}
+  - Native skills: ${cyan}${displayRoot}/skills/gsd-*/SKILL.md${reset}
+  - Config: ${cyan}${displayRoot}/.codex/config.toml${reset}
+  - Agent defs: ${cyan}${displayRoot}/agents/gsd-*.md${reset}
 
   ${yellow}Getting Started:${reset}
   1. Run ${cyan}codex${reset} (CLI) or ${cyan}codex app${reset} (Desktop)
