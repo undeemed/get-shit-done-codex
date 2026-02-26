@@ -5,7 +5,7 @@ A meta-prompting, context engineering and spec-driven development system for [Op
 Fork of [get-shit-done](https://github.com/taches/get-shit-done) by TÂCHES, adapted for Codex CLI by [undeemed](https://github.com/undeemed).
 
 > [!CAUTION]
-> Codex is now supported upstream. This fork remains focused on Codex-specific UX, compatibility, and cutting-edge experimental features.
+> Codex is now supported upstream. This fork remains focused on Codex-specific UX, compatibility, and experimental features for personal use.
 
 [![CI](https://github.com/undeemed/get-shit-done-codex/actions/workflows/ci.yml/badge.svg)](https://github.com/undeemed/get-shit-done-codex/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/%40undeemed%2Fget-shit-done-codex?style=flat-square)](https://www.npmjs.com/package/@undeemed/get-shit-done-codex)
