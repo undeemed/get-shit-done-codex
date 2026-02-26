@@ -6,6 +6,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.23.1] - 2026-02-26
+
+### Fixed
+
+- Installer output now shows `~/.codex/` paths instead of absolute paths in the Done banner
+- Fixed `/gsd:` → `/prompts:gsd-` conversion leaving legacy prompt references in installed workflow files — now converts directly to `$gsd-*` skill notation
+- Removed stale Tests/Commands/Agents static badges from README
+
 ## [1.23.0] - 2026-02-26
 
 ### Added
