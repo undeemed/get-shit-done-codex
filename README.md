@@ -11,9 +11,6 @@ Fork of [get-shit-done](https://github.com/taches/get-shit-done) by TÂCHES, ada
 [![npm version](https://img.shields.io/npm/v/%40undeemed%2Fget-shit-done-codex?style=flat-square)](https://www.npmjs.com/package/@undeemed/get-shit-done-codex)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 ![npm Downloads](https://img.shields.io/npm/dt/@undeemed/get-shit-done-codex?style=flat-square)
-![Tests](https://img.shields.io/badge/tests-133%20passing-brightgreen?style=flat-square)
-![Commands](https://img.shields.io/badge/commands-31-blue?style=flat-square)
-![Agents](https://img.shields.io/badge/agents-11-blue?style=flat-square)
 
 ## What This Does
 
