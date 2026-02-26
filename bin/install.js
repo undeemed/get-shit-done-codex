@@ -558,7 +558,7 @@ function installCore(isGlobal, mode, migrationPlan, applyMigration) {
     applyMigrationPlan(migrationPlan);
   }
 
-  const agentsSrc = path.join(src, 'AGENTS.md');
+  const agentsSrc = path.join(src, 'get-shit-done', 'AGENTS.md');
   const agentsDest = path.join(codexDir, 'AGENTS.md');
   let agentsContent = applyReplacements(fs.readFileSync(agentsSrc, 'utf8'), pathPrefix);
   agentsContent = adaptAgentsForCodexMode(agentsContent, mode);
