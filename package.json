@@ -16,7 +16,6 @@
     "agents",
     "hooks/dist",
     "scripts",
-    "AGENTS.md",
     ".codex"
   ],
   "keywords": [
