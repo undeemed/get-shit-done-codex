@@ -14,11 +14,7 @@ Fork of [get-shit-done](https://github.com/taches/get-shit-done) by TÂCHES, ada
 
 ## What This Does
 
-get-shit-done-codex (GSD) solves context rot — the quality degradation that happens as AI fills its context window. It structures your project through specs and plans so Codex CLI has what it needs to build reliably.
-
-**The problem:** AI assistants lose quality as conversations grow. Context gets polluted, requirements get forgotten, work becomes inconsistent.
-
-**The solution:** Hierarchical planning with fresh context windows. Each task runs in isolation with exactly the context it needs—no degradation from accumulated garbage.
+GSD solves **context rot** — the quality degradation that happens as AI fills its context window. It structures your project through specs and plans so each task runs in a fresh context with exactly what it needs. No accumulated garbage, no forgotten requirements.
 
 ## What Changed In This Fork
 
@@ -65,7 +61,7 @@ The installer distributes everything GSD needs:
 - **`skills/gsd-*/SKILL.md`** — native Codex skill commands
 - **`get-shit-done/`** — workflow files, templates, and references
 
-On first run, Codex will prompt you to **trust the project** so the config takes effect (one-time, one-click).
+On first run, Codex may prompt you to **trust the project** so the config takes effect (one-time, one-click).
 
 > [!NOTE]
 > `.codex/config.toml` is non-destructive — the installer skips it if you already have one, so your customizations are preserved on updates.

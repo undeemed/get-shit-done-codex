@@ -598,6 +598,11 @@ function cmdValidateHealth(cwd, options, raw) {
     }
   }
 
+  // ─── Hint: incomplete $gsd-new-project ────────────────────────────────────
+  if (!fs.existsSync(projectPath) && !fs.existsSync(roadmapPath) && !fs.existsSync(statePath)) {
+    addIssue('info', 'I002', '$gsd-new-project has not been completed yet — finish it to create PROJECT.md, ROADMAP.md, and STATE.md', 'Run $gsd-new-project and complete the full flow (questions → research → requirements → roadmap)');
+  }
+
   // ─── Check 5: config.json valid JSON + valid schema ───────────────────────
   if (!fs.existsSync(configPath)) {
     addIssue('warning', 'W003', 'config.json not found', 'Run $gsd-health --repair to create with defaults', true);
