@@ -1,5 +1,5 @@
 <purpose>
-Create all phases necessary to close gaps identified by `/gsd:audit-milestone`. Reads MILESTONE-AUDIT.md, groups gaps into logical phases, creates phase entries in ROADMAP.md, and offers to plan each phase. One command creates all fix phases — no manual `/gsd:add-phase` per gap.
+Create all phases necessary to close gaps identified by `$gsd-audit-milestone`. Reads MILESTONE-AUDIT.md, groups gaps into logical phases, creates phase entries in ROADMAP.md, and offers to plan each phase. One command creates all fix phases — no manual `$gsd-add-phase` per gap.
 </purpose>
 
 <required_reading>
@@ -22,7 +22,7 @@ Parse YAML frontmatter to extract structured gaps:
 
 If no audit file exists or has no gaps, error:
 ```
-No audit gaps found. Run `/gsd:audit-milestone` first.
+No audit gaps found. Run `$gsd-audit-milestone` first.
 ```
 
 ## 2. Prioritize Gaps
@@ -123,19 +123,34 @@ Add new phases to current milestone:
 ...
 ```
 
-## 7. Create Phase Directories
+## 7. Update REQUIREMENTS.md Traceability Table (REQUIRED)
+
+For each REQ-ID assigned to a gap closure phase:
+- Update the Phase column to reflect the new gap closure phase
+- Reset Status to `Pending`
+
+Reset checked-off requirements the audit found unsatisfied:
+- Change `[x]` → `[ ]` for any requirement marked unsatisfied in the audit
+- Update coverage count at top of REQUIREMENTS.md
+
+```bash
+# Verify traceability table reflects gap closure assignments
+grep -c "Pending" .planning/REQUIREMENTS.md
+```
+
+## 8. Create Phase Directories
 
 ```bash
 mkdir -p ".planning/phases/{NN}-{name}"
 ```
 
-## 8. Commit Roadmap Update
+## 9. Commit Roadmap and Requirements Update
 
 ```bash
-node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs(roadmap): add gap closure phases {N}-{M}" --files .planning/ROADMAP.md
+node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs(roadmap): add gap closure phases {N}-{M}" --files .planning/ROADMAP.md .planning/REQUIREMENTS.md
 ```
 
-## 9. Offer Next Steps
+## 10. Offer Next Steps
 
 ```markdown
 ## ✓ Gap Closure Phases Created
@@ -149,22 +164,22 @@ node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs(roadmap): add gap clo
 
 **Plan first gap closure phase**
 
-`/gsd:plan-phase {N}`
+`$gsd-plan-phase {N}`
 
 <sub>`/clear` first → fresh context window</sub>
 
 ---
 
 **Also available:**
-- `/gsd:execute-phase {N}` — if plans already exist
+- `$gsd-execute-phase {N}` — if plans already exist
 - `cat .planning/ROADMAP.md` — see updated roadmap
 
 ---
 
 **After all gap phases complete:**
 
-`/gsd:audit-milestone` — re-audit to verify gaps closed
-`/gsd:complete-milestone {version}` — archive when audit passes
+`$gsd-audit-milestone` — re-audit to verify gaps closed
+`$gsd-complete-milestone {version}` — archive when audit passes
 ```
 
 </process>
@@ -250,7 +265,10 @@ becomes:
 - [ ] Gaps grouped into logical phases
 - [ ] User confirmed phase plan
 - [ ] ROADMAP.md updated with new phases
+- [ ] REQUIREMENTS.md traceability table updated with gap closure phase assignments
+- [ ] Unsatisfied requirement checkboxes reset (`[x]` → `[ ]`)
+- [ ] Coverage count updated in REQUIREMENTS.md
 - [ ] Phase directories created
-- [ ] Changes committed
-- [ ] User knows to run `/gsd:plan-phase` next
+- [ ] Changes committed (includes REQUIREMENTS.md)
+- [ ] User knows to run `$gsd-plan-phase` next
 </success_criteria>

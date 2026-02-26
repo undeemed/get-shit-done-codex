@@ -48,6 +48,12 @@ This returns all phases with plan/summary counts and disk status. Use this to ve
 - All phases complete (all plans have summaries)? Check `disk_status === 'complete'` for each.
 - `progress_percent` should be 100%.
 
+**Requirements completion check (REQUIRED before presenting):**
+
+Parse REQUIREMENTS.md traceability table:
+- Count total v1 requirements vs checked-off (`[x]`) requirements
+- Identify any non-Complete rows in the traceability table
+
 Present:
 
 ```
@@ -60,7 +66,24 @@ Includes:
 - Phase 4: Polish (1/1 plan complete)
 
 Total: {phase_count} phases, {total_plans} plans, all complete
+Requirements: {N}/{M} v1 requirements checked off
 ```
+
+**If requirements incomplete** (N < M):
+
+```
+⚠ Unchecked Requirements:
+
+- [ ] {REQ-ID}: {description} (Phase {X})
+- [ ] {REQ-ID}: {description} (Phase {Y})
+```
+
+MUST present 3 options:
+1. **Proceed anyway** — mark milestone complete with known gaps
+2. **Run audit first** — `$gsd-audit-milestone` to assess gap severity
+3. **Abort** — return to development
+
+If user selects "Proceed anyway": note incomplete requirements in MILESTONES.md under `### Known Gaps` with REQ-IDs and descriptions.
 
 <config-check>
 
@@ -371,7 +394,7 @@ mv .planning/phases/{phase-dir} .planning/milestones/v[X.Y]-phases/
 ```
 Verify: `✅ Phase directories archived to .planning/milestones/v[X.Y]-phases/`
 
-If "Skip": Phase directories remain in `.planning/phases/` as raw execution history. Use `/gsd:cleanup` later to archive retroactively.
+If "Skip": Phase directories remain in `.planning/phases/` as raw execution history. Use `$gsd-cleanup` later to archive retroactively.
 
 After archival, the AI still handles:
 - Reorganizing ROADMAP.md with milestone grouping (requires judgment)
@@ -411,6 +434,67 @@ After `milestone complete` has archived, reorganize ROADMAP.md with milestone gr
 ```bash
 rm .planning/ROADMAP.md
 rm .planning/REQUIREMENTS.md
+```
+
+</step>
+
+<step name="write_retrospective">
+
+**Append to living retrospective:**
+
+Check for existing retrospective:
+```bash
+ls .planning/RETROSPECTIVE.md 2>/dev/null
+```
+
+**If exists:** Read the file, append new milestone section before the "## Cross-Milestone Trends" section.
+
+**If doesn't exist:** Create from template at `~/.claude/get-shit-done/templates/retrospective.md`.
+
+**Gather retrospective data:**
+
+1. From SUMMARY.md files: Extract key deliverables, one-liners, tech decisions
+2. From VERIFICATION.md files: Extract verification scores, gaps found
+3. From UAT.md files: Extract test results, issues found
+4. From git log: Count commits, calculate timeline
+5. From the milestone work: Reflect on what worked and what didn't
+
+**Write the milestone section:**
+
+```markdown
+## Milestone: v{version} — {name}
+
+**Shipped:** {date}
+**Phases:** {phase_count} | **Plans:** {plan_count}
+
+### What Was Built
+{Extract from SUMMARY.md one-liners}
+
+### What Worked
+{Patterns that led to smooth execution}
+
+### What Was Inefficient
+{Missed opportunities, rework, bottlenecks}
+
+### Patterns Established
+{New conventions discovered during this milestone}
+
+### Key Lessons
+{Specific, actionable takeaways}
+
+### Cost Observations
+- Model mix: {X}% opus, {Y}% sonnet, {Z}% haiku
+- Sessions: {count}
+- Notable: {efficiency observation}
+```
+
+**Update cross-milestone trends:**
+
+If the "## Cross-Milestone Trends" section exists, update the tables with new data from this milestone.
+
+**Commit:**
+```bash
+node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs: update retrospective for v${VERSION}" --files .planning/RETROSPECTIVE.md
 ```
 
 </step>
@@ -622,7 +706,7 @@ Tag: v[X.Y]
 
 **Start Next Milestone** — questioning → research → requirements → roadmap
 
-`/gsd:new-milestone`
+`$gsd-new-milestone`
 
 <sub>`/clear` first → fresh context window</sub>
 
@@ -669,6 +753,11 @@ Milestone completion is successful when:
 - [ ] STATE.md updated with fresh project reference
 - [ ] Git tag created (v[X.Y])
 - [ ] Milestone commit made (includes archive files and deletion)
-- [ ] User knows next step (/gsd:new-milestone)
+- [ ] Requirements completion checked against REQUIREMENTS.md traceability table
+- [ ] Incomplete requirements surfaced with proceed/audit/abort options
+- [ ] Known gaps recorded in MILESTONES.md if user proceeded with incomplete requirements
+- [ ] RETROSPECTIVE.md updated with milestone section
+- [ ] Cross-milestone trends updated
+- [ ] User knows next step ($gsd-new-milestone)
 
 </success_criteria>
