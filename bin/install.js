@@ -560,10 +560,15 @@ function installCore(isGlobal, mode, migrationPlan, applyMigration) {
 
   const agentsSrc = path.join(src, 'get-shit-done', 'AGENTS.md');
   const agentsDest = path.join(codexDir, 'AGENTS.md');
+  const agentsExisted = fs.existsSync(agentsDest);
   let agentsContent = applyReplacements(fs.readFileSync(agentsSrc, 'utf8'), pathPrefix);
   agentsContent = adaptAgentsForCodexMode(agentsContent, mode);
   fs.writeFileSync(agentsDest, agentsContent, 'utf8');
-  console.log(`  ${green}✓${reset} Installed AGENTS.md`);
+  if (isGlobal && agentsExisted) {
+    console.log(`  ${yellow}⚠${reset} Overwrote existing AGENTS.md ${dim}(global)${reset}`);
+  } else {
+    console.log(`  ${green}✓${reset} Installed AGENTS.md`);
+  }
 
   const configInstalled = installConfig(src, codexDir, pathPrefix);
   if (configInstalled) {
