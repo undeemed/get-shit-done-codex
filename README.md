@@ -7,10 +7,10 @@ Fork of [get-shit-done](https://github.com/taches/get-shit-done) by TÂCHES, ada
 > [!CAUTION]
 > Codex is now supported upstream. This fork remains focused on Codex-specific UX, compatibility, and experimental features for personal use.
 
-[![CI](https://img.shields.io/github/actions/workflow/status/undeemed/get-shit-done-codex/ci.yml?style=flat-square&label=CI)](https://github.com/undeemed/get-shit-done-codex/actions/workflows/ci.yml)
-[![npm version](https://img.shields.io/npm/v/%40undeemed%2Fget-shit-done-codex?style=flat-square)](https://www.npmjs.com/package/@undeemed/get-shit-done-codex)
-[![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
-![npm Downloads](https://img.shields.io/npm/dt/@undeemed/get-shit-done-codex?style=flat-square)
+[![CI](https://img.shields.io/github/actions/workflow/status/undeemed/get-shit-done-codex/ci.yml?style=flat-square&label=CI&color=0d9488)](https://github.com/undeemed/get-shit-done-codex/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/%40undeemed%2Fget-shit-done-codex?style=flat-square&color=4f46e5)](https://www.npmjs.com/package/@undeemed/get-shit-done-codex)
+[![License](https://img.shields.io/badge/license-MIT-d97706?style=flat-square)](LICENSE)
+![npm Downloads](https://img.shields.io/npm/dt/@undeemed/get-shit-done-codex?style=flat-square&color=7c3aed)
 
 ## What This Does
 
