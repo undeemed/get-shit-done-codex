@@ -110,7 +110,7 @@ Always at end of major completions.
 
 `{copy-paste command}`
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ───────────────────────────────────────────────────────────────
 

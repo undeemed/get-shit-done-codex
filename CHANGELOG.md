@@ -1266,7 +1266,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
-- Milestone discussion context persists across /clear
+- Milestone discussion context persists across session resets
 
 ## [1.3.24] - 2026-01-06
 

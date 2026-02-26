@@ -217,7 +217,7 @@ Based on user selection, route to appropriate workflow:
 
   `$gsd-execute-phase {phase}`
 
-  <sub>`/clear` first → fresh context window</sub>
+  <sub>start a new session first → fresh context window</sub>
 
   ---
   ```
@@ -231,7 +231,7 @@ Based on user selection, route to appropriate workflow:
 
   `$gsd-plan-phase [phase-number]`
 
-  <sub>`/clear` first → fresh context window</sub>
+  <sub>start a new session first → fresh context window</sub>
 
   ---
 

@@ -157,52 +157,52 @@ rapid prototyping phases where test infrastructure isn't the focus.
 
 ### Core Workflow
 
-| Command | Purpose | When to Use |
-|---------|---------|-------------|
-| `$gsd-new-project` | Full project init: questions, research, requirements, roadmap | Start of a new project |
-| `$gsd-new-project --auto @idea.md` | Automated init from document | Have a PRD or idea doc ready |
-| `$gsd-discuss-phase [N]` | Capture implementation decisions | Before planning, to shape how it gets built |
-| `$gsd-plan-phase [N]` | Research + plan + verify | Before executing a phase |
-| `$gsd-execute-phase <N>` | Execute all plans in parallel waves | After planning is complete |
-| `$gsd-verify-work [N]` | Manual UAT with auto-diagnosis | After execution completes |
-| `$gsd-audit-milestone` | Verify milestone met its definition of done | Before completing milestone |
-| `$gsd-complete-milestone` | Archive milestone, tag release | All phases verified |
-| `$gsd-new-milestone [name]` | Start next version cycle | After completing a milestone |
+| Command                            | Purpose                                                       | When to Use                                 |
+| ---------------------------------- | ------------------------------------------------------------- | ------------------------------------------- |
+| `$gsd-new-project`                 | Full project init: questions, research, requirements, roadmap | Start of a new project                      |
+| `$gsd-new-project --auto @idea.md` | Automated init from document                                  | Have a PRD or idea doc ready                |
+| `$gsd-discuss-phase [N]`           | Capture implementation decisions                              | Before planning, to shape how it gets built |
+| `$gsd-plan-phase [N]`              | Research + plan + verify                                      | Before executing a phase                    |
+| `$gsd-execute-phase <N>`           | Execute all plans in parallel waves                           | After planning is complete                  |
+| `$gsd-verify-work [N]`             | Manual UAT with auto-diagnosis                                | After execution completes                   |
+| `$gsd-audit-milestone`             | Verify milestone met its definition of done                   | Before completing milestone                 |
+| `$gsd-complete-milestone`          | Archive milestone, tag release                                | All phases verified                         |
+| `$gsd-new-milestone [name]`        | Start next version cycle                                      | After completing a milestone                |
 
 ### Navigation
 
-| Command | Purpose | When to Use |
-|---------|---------|-------------|
-| `$gsd-progress` | Show status and next steps | Anytime -- "where am I?" |
-| `$gsd-resume-work` | Restore full context from last session | Starting a new session |
-| `$gsd-pause-work` | Save context handoff | Stopping mid-phase |
-| `$gsd-help` | Show all commands | Quick reference |
-| `$gsd-update` | Update GSD with changelog preview | Check for new versions |
-| `$gsd-join-discord` | Open Discord community invite | Questions or community |
+| Command             | Purpose                                | When to Use              |
+| ------------------- | -------------------------------------- | ------------------------ |
+| `$gsd-progress`     | Show status and next steps             | Anytime -- "where am I?" |
+| `$gsd-resume-work`  | Restore full context from last session | Starting a new session   |
+| `$gsd-pause-work`   | Save context handoff                   | Stopping mid-phase       |
+| `$gsd-help`         | Show all commands                      | Quick reference          |
+| `$gsd-update`       | Update GSD with changelog preview      | Check for new versions   |
+| `$gsd-join-discord` | Open Discord community invite          | Questions or community   |
 
 ### Phase Management
 
-| Command | Purpose | When to Use |
-|---------|---------|-------------|
-| `$gsd-add-phase` | Append new phase to roadmap | Scope grows after initial planning |
-| `$gsd-insert-phase [N]` | Insert urgent work (decimal numbering) | Urgent fix mid-milestone |
-| `$gsd-remove-phase [N]` | Remove future phase and renumber | Descoping a feature |
-| `$gsd-list-phase-assumptions [N]` | Preview Codex's intended approach | Before planning, to validate direction |
-| `$gsd-plan-milestone-gaps` | Create phases for audit gaps | After audit finds missing items |
-| `$gsd-research-phase [N]` | Deep ecosystem research only | Complex or unfamiliar domain |
+| Command                           | Purpose                                | When to Use                            |
+| --------------------------------- | -------------------------------------- | -------------------------------------- |
+| `$gsd-add-phase`                  | Append new phase to roadmap            | Scope grows after initial planning     |
+| `$gsd-insert-phase [N]`           | Insert urgent work (decimal numbering) | Urgent fix mid-milestone               |
+| `$gsd-remove-phase [N]`           | Remove future phase and renumber       | Descoping a feature                    |
+| `$gsd-list-phase-assumptions [N]` | Preview Codex's intended approach      | Before planning, to validate direction |
+| `$gsd-plan-milestone-gaps`        | Create phases for audit gaps           | After audit finds missing items        |
+| `$gsd-research-phase [N]`         | Deep ecosystem research only           | Complex or unfamiliar domain           |
 
 ### Brownfield & Utilities
 
-| Command | Purpose | When to Use |
-|---------|---------|-------------|
-| `$gsd-map-codebase` | Analyze existing codebase | Before `$gsd-new-project` on existing code |
-| `$gsd-quick` | Ad-hoc task with GSD guarantees | Bug fixes, small features, config changes |
-| `$gsd-debug [desc]` | Systematic debugging with persistent state | When something breaks |
-| `$gsd-add-todo [desc]` | Capture an idea for later | Think of something during a session |
-| `$gsd-check-todos` | List pending todos | Review captured ideas |
-| `$gsd-settings` | Configure workflow toggles and model profile | Change model, toggle agents |
-| `$gsd-set-profile <profile>` | Quick profile switch | Change cost/quality tradeoff |
-| `$gsd-reapply-patches` | Restore local modifications after update | After `$gsd-update` if you had local edits |
+| Command                      | Purpose                                      | When to Use                                |
+| ---------------------------- | -------------------------------------------- | ------------------------------------------ |
+| `$gsd-map-codebase`          | Analyze existing codebase                    | Before `$gsd-new-project` on existing code |
+| `$gsd-quick`                 | Ad-hoc task with GSD guarantees              | Bug fixes, small features, config changes  |
+| `$gsd-debug [desc]`          | Systematic debugging with persistent state   | When something breaks                      |
+| `$gsd-add-todo [desc]`       | Capture an idea for later                    | Think of something during a session        |
+| `$gsd-check-todos`           | List pending todos                           | Review captured ideas                      |
+| `$gsd-settings`              | Configure workflow toggles and model profile | Change model, toggle agents                |
+| `$gsd-set-profile <profile>` | Quick profile switch                         | Change cost/quality tradeoff               |
+| `$gsd-reapply-patches`       | Restore local modifications after update     | After `$gsd-update` if you had local edits |
 
 ---
 
@@ -237,67 +237,68 @@ GSD stores project settings in `.planning/config.json`. Configure during `$gsd-n
 
 ### Core Settings
 
-| Setting | Options | Default | What it Controls |
-|---------|---------|---------|------------------|
-| `mode` | `interactive`, `yolo` | `interactive` | `yolo` auto-approves decisions; `interactive` confirms at each step |
-| `depth` | `quick`, `standard`, `comprehensive` | `standard` | Planning thoroughness: 3-5, 5-8, or 8-12 phases |
-| `model_profile` | `quality`, `balanced`, `budget` | `balanced` | Model tier for each agent (see table below) |
+| Setting         | Options                              | Default       | What it Controls                                                    |
+| --------------- | ------------------------------------ | ------------- | ------------------------------------------------------------------- |
+| `mode`          | `interactive`, `yolo`                | `interactive` | `yolo` auto-approves decisions; `interactive` confirms at each step |
+| `depth`         | `quick`, `standard`, `comprehensive` | `standard`    | Planning thoroughness: 3-5, 5-8, or 8-12 phases                     |
+| `model_profile` | `quality`, `balanced`, `budget`      | `balanced`    | Model tier for each agent (see table below)                         |
 
 ### Planning Settings
 
-| Setting | Options | Default | What it Controls |
-|---------|---------|---------|------------------|
-| `planning.commit_docs` | `true`, `false` | `true` | Whether `.planning/` files are committed to git |
+| Setting                      | Options         | Default | What it Controls                                            |
+| ---------------------------- | --------------- | ------- | ----------------------------------------------------------- |
+| `planning.commit_docs`       | `true`, `false` | `true`  | Whether `.planning/` files are committed to git             |
 | `planning.search_gitignored` | `true`, `false` | `false` | Add `--no-ignore` to broad searches to include `.planning/` |
 
 > **Note:** If `.planning/` is in `.gitignore`, `commit_docs` is automatically `false` regardless of the config value.
 
 ### Workflow Toggles
 
-| Setting | Options | Default | What it Controls |
-|---------|---------|---------|------------------|
-| `workflow.research` | `true`, `false` | `true` | Domain investigation before planning |
-| `workflow.plan_check` | `true`, `false` | `true` | Plan verification loop (up to 3 iterations) |
-| `workflow.verifier` | `true`, `false` | `true` | Post-execution verification against phase goals |
-| `workflow.nyquist_validation` | `true`, `false` | `true` | Validation architecture research during plan-phase; 8th plan-check dimension |
+| Setting                       | Options         | Default | What it Controls                                                             |
+| ----------------------------- | --------------- | ------- | ---------------------------------------------------------------------------- |
+| `workflow.research`           | `true`, `false` | `true`  | Domain investigation before planning                                         |
+| `workflow.plan_check`         | `true`, `false` | `true`  | Plan verification loop (up to 3 iterations)                                  |
+| `workflow.verifier`           | `true`, `false` | `true`  | Post-execution verification against phase goals                              |
+| `workflow.nyquist_validation` | `true`, `false` | `true`  | Validation architecture research during plan-phase; 8th plan-check dimension |
 
 Disable these to speed up phases in familiar domains or when conserving tokens.
 
 ### Git Branching
 
-| Setting | Options | Default | What it Controls |
-|---------|---------|---------|------------------|
-| `git.branching_strategy` | `none`, `phase`, `milestone` | `none` | When and how branches are created |
-| `git.phase_branch_template` | Template string | `gsd/phase-{phase}-{slug}` | Branch name for phase strategy |
-| `git.milestone_branch_template` | Template string | `gsd/{milestone}-{slug}` | Branch name for milestone strategy |
+| Setting                         | Options                      | Default                    | What it Controls                   |
+| ------------------------------- | ---------------------------- | -------------------------- | ---------------------------------- |
+| `git.branching_strategy`        | `none`, `phase`, `milestone` | `none`                     | When and how branches are created  |
+| `git.phase_branch_template`     | Template string              | `gsd/phase-{phase}-{slug}` | Branch name for phase strategy     |
+| `git.milestone_branch_template` | Template string              | `gsd/{milestone}-{slug}`   | Branch name for milestone strategy |
 
 **Branching strategies explained:**
 
-| Strategy | Creates Branch | Scope | Best For |
-|----------|---------------|-------|----------|
-| `none` | Never | N/A | Solo development, simple projects |
-| `phase` | At each `execute-phase` | One phase per branch | Code review per phase, granular rollback |
-| `milestone` | At first `execute-phase` | All phases share one branch | Release branches, PR per version |
+| Strategy    | Creates Branch           | Scope                       | Best For                                 |
+| ----------- | ------------------------ | --------------------------- | ---------------------------------------- |
+| `none`      | Never                    | N/A                         | Solo development, simple projects        |
+| `phase`     | At each `execute-phase`  | One phase per branch        | Code review per phase, granular rollback |
+| `milestone` | At first `execute-phase` | All phases share one branch | Release branches, PR per version         |
 
 **Template variables:** `{phase}` = zero-padded number (e.g., "03"), `{slug}` = lowercase hyphenated name, `{milestone}` = version (e.g., "v1.0").
 
 ### Model Profiles (Per-Agent Breakdown)
 
-| Agent | `quality` | `balanced` | `budget` |
-|-------|-----------|------------|----------|
-| gsd-planner | Opus | Opus | Sonnet |
-| gsd-roadmapper | Opus | Sonnet | Sonnet |
-| gsd-executor | Opus | Sonnet | Sonnet |
-| gsd-phase-researcher | Opus | Sonnet | Haiku |
-| gsd-project-researcher | Opus | Sonnet | Haiku |
-| gsd-research-synthesizer | Sonnet | Sonnet | Haiku |
-| gsd-debugger | Opus | Sonnet | Sonnet |
-| gsd-codebase-mapper | Sonnet | Haiku | Haiku |
-| gsd-verifier | Sonnet | Sonnet | Haiku |
-| gsd-plan-checker | Sonnet | Sonnet | Haiku |
-| gsd-integration-checker | Sonnet | Sonnet | Haiku |
+| Agent                    | `quality` | `balanced` | `budget` |
+| ------------------------ | --------- | ---------- | -------- |
+| gsd-planner              | Opus      | Opus       | Sonnet   |
+| gsd-roadmapper           | Opus      | Sonnet     | Sonnet   |
+| gsd-executor             | Opus      | Sonnet     | Sonnet   |
+| gsd-phase-researcher     | Opus      | Sonnet     | Haiku    |
+| gsd-project-researcher   | Opus      | Sonnet     | Haiku    |
+| gsd-research-synthesizer | Sonnet    | Sonnet     | Haiku    |
+| gsd-debugger             | Opus      | Sonnet     | Sonnet   |
+| gsd-codebase-mapper      | Sonnet    | Haiku      | Haiku    |
+| gsd-verifier             | Sonnet    | Sonnet     | Haiku    |
+| gsd-plan-checker         | Sonnet    | Sonnet     | Haiku    |
+| gsd-integration-checker  | Sonnet    | Sonnet     | Haiku    |
 
 **Profile philosophy:**
+
 - **quality** -- Opus for all decision-making agents, Sonnet for read-only verification. Use when quota is available and the work is critical.
 - **balanced** -- Opus only for planning (where architecture decisions happen), Sonnet for everything else. The default for good reason.
 - **budget** -- Sonnet for anything that writes code, Haiku for research and verification. Use for high-volume work or less critical phases.
@@ -311,12 +312,12 @@ Disable these to speed up phases in familiar domains or when conserving tokens.
 ```bash
 codex --dangerously-skip-permissions
 $gsd-new-project            # Answer questions, configure, approve roadmap
-/clear
+# start a new session
 $gsd-discuss-phase 1        # Lock in your preferences
 $gsd-plan-phase 1           # Research + plan + verify
 $gsd-execute-phase 1        # Parallel execution
 $gsd-verify-work 1          # Manual UAT
-/clear
+# start a new session
 $gsd-discuss-phase 2        # Repeat for each phase
 ...
 $gsd-audit-milestone        # Check everything shipped
@@ -327,7 +328,7 @@ $gsd-complete-milestone     # Archive, tag, done
 
 ```bash
 $gsd-new-project --auto @prd.md   # Auto-runs research/requirements/roadmap from your doc
-/clear
+# start a new session
 $gsd-discuss-phase 1               # Normal flow from here
 ```
 
@@ -364,11 +365,11 @@ $gsd-complete-milestone     # Archive, tag, done
 
 ### Speed vs Quality Presets
 
-| Scenario | Mode | Depth | Profile | Research | Plan Check | Verifier |
-|----------|------|-------|---------|----------|------------|----------|
-| Prototyping | `yolo` | `quick` | `budget` | off | off | off |
-| Normal dev | `interactive` | `standard` | `balanced` | on | on | on |
-| Production | `interactive` | `comprehensive` | `quality` | on | on | on |
+| Scenario    | Mode          | Depth           | Profile    | Research | Plan Check | Verifier |
+| ----------- | ------------- | --------------- | ---------- | -------- | ---------- | -------- |
+| Prototyping | `yolo`        | `quick`         | `budget`   | off      | off        | off      |
+| Normal dev  | `interactive` | `standard`      | `balanced` | on       | on         | on       |
+| Production  | `interactive` | `comprehensive` | `quality`  | on       | on         | on       |
 
 ### Mid-Milestone Scope Changes
 
@@ -390,7 +391,7 @@ You ran `$gsd-new-project` but `.planning/PROJECT.md` already exists. This is a 
 
 ### Context Degradation During Long Sessions
 
-Clear your context window between major commands: `/clear` in Codex CLI. GSD is designed around fresh contexts -- every subagent gets a clean 200K window. If quality is dropping in the main session, clear and use `$gsd-resume-work` or `$gsd-progress` to restore state.
+Start a new session between major commands (Desktop: use "New worktree", CLI: type `/new`). GSD is designed around fresh contexts -- every subagent gets a clean 200K window. If quality is dropping in the main session, start fresh and use `$gsd-resume-work` or `$gsd-progress` to restore state.
 
 ### Plans Seem Wrong or Misaligned
 
@@ -428,17 +429,17 @@ A known workaround exists for a Codex CLI classification bug. GSD's orchestrator
 
 ## Recovery Quick Reference
 
-| Problem | Solution |
-|---------|----------|
-| Lost context / new session | `$gsd-resume-work` or `$gsd-progress` |
-| Phase went wrong | `git revert` the phase commits, then re-plan |
-| Need to change scope | `$gsd-add-phase`, `$gsd-insert-phase`, or `$gsd-remove-phase` |
-| Milestone audit found gaps | `$gsd-plan-milestone-gaps` |
-| Something broke | `$gsd-debug "description"` |
-| Quick targeted fix | `$gsd-quick` |
-| Plan doesn't match your vision | `$gsd-discuss-phase [N]` then re-plan |
-| Costs running high | `$gsd-set-profile budget` and `$gsd-settings` to toggle agents off |
-| Update broke local changes | `$gsd-reapply-patches` |
+| Problem                        | Solution                                                           |
+| ------------------------------ | ------------------------------------------------------------------ |
+| Lost context / new session     | `$gsd-resume-work` or `$gsd-progress`                              |
+| Phase went wrong               | `git revert` the phase commits, then re-plan                       |
+| Need to change scope           | `$gsd-add-phase`, `$gsd-insert-phase`, or `$gsd-remove-phase`      |
+| Milestone audit found gaps     | `$gsd-plan-milestone-gaps`                                         |
+| Something broke                | `$gsd-debug "description"`                                         |
+| Quick targeted fix             | `$gsd-quick`                                                       |
+| Plan doesn't match your vision | `$gsd-discuss-phase [N]` then re-plan                              |
+| Costs running high             | `$gsd-set-profile budget` and `$gsd-settings` to toggle agents off |
+| Update broke local changes     | `$gsd-reapply-patches`                                             |
 
 ---
 

@@ -1,5 +1,5 @@
 <purpose>
-Validate built features through conversational testing with persistent state. Creates UAT.md that tracks test progress, survives /clear, and feeds gaps into $gsd-plan-phase --gaps.
+Validate built features through conversational testing with persistent state. Creates UAT.md that tracks test progress, survives session resets, and feeds gaps into $gsd-plan-phase --gaps.
 
 User tests, Codex records. One test at a time. Plain text responses.
 </purpose>
@@ -511,7 +511,7 @@ Plans verified and ready for execution.
 
 **Execute fixes** — run fix plans
 
-`/clear` then `$gsd-execute-phase {phase} --gaps-only`
+start a new session, then `$gsd-execute-phase {phase} --gaps-only`
 
 ───────────────────────────────────────────────────────────────
 ```

@@ -94,7 +94,7 @@ Project state updated: .planning/STATE.md
 
 `$gsd-plan-phase {decimal_phase}`
 
-<sub>`/clear` first -> fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 

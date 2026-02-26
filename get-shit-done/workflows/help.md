@@ -33,12 +33,14 @@ $gsd-new-project → $gsd-plan-phase → $gsd-execute-phase → repeat
 Initialize new project through unified flow.
 
 One command takes you from idea to ready-for-planning:
+
 - Deep questioning to understand what you're building
 - Optional domain research (spawns 4 parallel researcher agents)
 - Requirements definition with v1/v2/out-of-scope scoping
 - Roadmap creation with phase breakdown and success criteria
 
 Creates all `.planning/` artifacts:
+
 - `PROJECT.md` — vision and requirements
 - `config.json` — workflow mode (interactive/yolo)
 - `research/` — domain research (if selected)
@@ -119,6 +121,7 @@ Usage: `$gsd-execute-phase 5`
 Execute small, ad-hoc tasks with GSD guarantees but skip optional agents.
 
 Quick mode uses the same system with a shorter path:
+
 - Spawns planner + executor (skips researcher, checker, verifier)
 - Quick tasks live in `.planning/quick/` separate from planned phases
 - Updates STATE.md tracking (not ROADMAP.md)
@@ -226,7 +229,7 @@ Systematic debugging with persistent state across context resets.
 - Gathers symptoms through adaptive questioning
 - Creates `.planning/debug/[slug].md` to track investigation
 - Investigates using scientific method (evidence → hypothesis → test)
-- Survives `/clear` — run `$gsd-debug` with no args to resume
+- Survives session resets — run `$gsd-debug` with no args to resume
 - Archives resolved issues to `.planning/debug/resolved/`
 
 Usage: `$gsd-debug "login button doesn't work"`
@@ -406,19 +409,23 @@ Change anytime by editing `.planning/config.json`
 Configure how planning artifacts are managed in `.planning/config.json`:
 
 **`planning.commit_docs`** (default: `true`)
+
 - `true`: Planning artifacts committed to git (standard workflow)
 - `false`: Planning artifacts kept local-only, not committed
 
 When `commit_docs: false`:
+
 - Add `.planning/` to your `.gitignore`
 - Useful for OSS contributions, client projects, or keeping planning private
 - All planning files still work normally, just not tracked in git
 
 **`planning.search_gitignored`** (default: `false`)
+
 - `true`: Add `--no-ignore` to broad ripgrep searches
 - Only needed when `.planning/` is gitignored and you want project-wide searches to include it
 
 Example config:
+
 ```json
 {
   "planning": {
@@ -434,9 +441,9 @@ Example config:
 
 ```
 $gsd-new-project        # Unified flow: questioning → research → requirements → roadmap
-/clear
+# start a new session
 $gsd-plan-phase 1       # Create plans for first phase
-/clear
+# start a new session
 $gsd-execute-phase 1    # Execute all plans in phase
 ```
 
@@ -458,7 +465,7 @@ $gsd-execute-phase 5.1
 
 ```
 $gsd-complete-milestone 1.0.0
-/clear
+# start a new session
 $gsd-new-milestone  # Start next milestone (questioning → research → requirements → roadmap)
 ```
 
@@ -476,7 +483,7 @@ $gsd-check-todos api             # Filter by area
 ```
 $gsd-debug "form submission fails silently"  # Start debug session
 # ... investigation happens, context fills up ...
-/clear
+# start a new session
 $gsd-debug                                    # Resume from where you left off
 ```
 
@@ -486,4 +493,4 @@ $gsd-debug                                    # Resume from where you left off
 - Read `.planning/STATE.md` for current context
 - Check `.planning/ROADMAP.md` for phase status
 - Run `$gsd-progress` to check where you're up to
-</reference>
+  </reference>
