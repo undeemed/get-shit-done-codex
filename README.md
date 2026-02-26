@@ -21,10 +21,13 @@ get-shit-done-codex (GSD) solves context rot — the quality degradation that ha
 
 ## What Changed In This Fork
 
-- **AGENTS-first for Codex:** `AGENTS.md` is the primary behavior contract . [Agent.md > Skills.md](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals)
+- **AGENTS-first for Codex:** `AGENTS.md` is the primary behavior contract. [Agent.md > Skills.md](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals)
 - **Two command surfaces:** choose native skills (`$gsd-*`) or prompt aliases (`/prompts:gsd-*`).
-- **Installer integrity checks:** `--verify` audits installation health, `--repair` restores missing artifacts.
-- **Mode-aware installs:** installer adapts `AGENTS.md` and command guidance to your chosen mode.
+- **Full config distribution:** installer ships `.codex/config.toml` (multi-agent, feature flags, MCP servers) and 11 rich `agents/*.md` sub-agent definitions — everything needed for multi-agent orchestration out of the box.
+- **Sub-agent linking:** each agent role in `config.toml` uses `developer_instructions` to load its full role definition from `agents/gsd-*.md` at runtime — no manual wiring needed.
+- **Overwrite protection:** `config.toml` is never overwritten on reinstall. `AGENTS.md` prompts for confirmation on global installs.
+- **Installer integrity checks:** `--verify` audits `AGENTS.md`, `config.toml`, agent definitions, command surfaces, and version metadata. `--repair` restores missing artifacts.
+- **One-click trust:** Codex prompts to trust the project on first run so the config takes effect.
 
 ## Installation
 
@@ -247,6 +250,26 @@ Every stage uses a thin orchestrator that spawns specialized agents:
 - **Verification** — Verifier checks codebase against goals, debuggers diagnose failures
 
 The orchestrator stays at 30-40% context. The work happens in fresh subagent contexts.
+
+### Sub-Agent Roles
+
+GSD ships 11 specialized agent definitions in `agents/gsd-*.md`, each wired into `config.toml` via `developer_instructions`:
+
+| Agent                      | Role                                                       |
+| -------------------------- | ---------------------------------------------------------- |
+| `gsd-planner`              | Draft atomic PLAN.md files with tasks and success criteria |
+| `gsd-executor`             | Execute plans with atomic commits and verification         |
+| `gsd-verifier`             | Goal-backward verification that outcomes are delivered     |
+| `gsd-debugger`             | Hypothesis testing, root cause isolation, fix proposals    |
+| `gsd-phase-researcher`     | Research implementation patterns for planners              |
+| `gsd-project-researcher`   | Ecosystem research for roadmap creation                    |
+| `gsd-research-synthesizer` | Synthesize parallel research into actionable inputs        |
+| `gsd-plan-checker`         | Stress-test plan quality and requirement coverage          |
+| `gsd-codebase-mapper`      | Map stack, architecture, and conventions                   |
+| `gsd-roadmapper`           | Turn requirements into phased roadmaps                     |
+| `gsd-integration-checker`  | Verify cross-phase wiring and e2e behavior                 |
+
+Each agent gets its full role definition (700+ lines) loaded at spawn time — no context wasted on the orchestrator.
 
 ### Atomic Git Commits
 
