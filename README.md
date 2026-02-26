@@ -16,6 +16,32 @@ Fork of [get-shit-done](https://github.com/taches/get-shit-done) by TÂCHES, ada
 
 GSD solves **context rot** — the quality degradation that happens as AI fills its context window. It structures your project through specs and plans so each task runs in a fresh context with exactly what it needs. No accumulated garbage, no forgotten requirements.
 
+```mermaid
+graph TB
+  subgraph codex["GSD-Codex"]
+    direction TB
+    A["AGENTS.md<br/><i>behavior contract</i>"] --> O["Thin Orchestrator<br/><i>30-40% context</i>"]
+    C[".codex/config.toml<br/><i>agent roles + flags</i>"] --> O
+    O -->|"spawn"| S1["gsd-planner<br/><i>fresh 200k context</i>"]
+    O -->|"spawn"| S2["gsd-executor<br/><i>fresh 200k context</i>"]
+    O -->|"spawn"| S3["gsd-verifier<br/><i>fresh 200k context</i>"]
+    S1 -.->|"agents/gsd-planner.md<br/>loaded at spawn"| D1["700+ line<br/>role definition"]
+    S2 -.->|"agents/gsd-executor.md"| D2["700+ line<br/>role definition"]
+    S3 -.->|"agents/gsd-verifier.md"| D3["700+ line<br/>role definition"]
+  end
+
+  style codex fill:#1a1a2e,stroke:#00d4ff,color:#e0e0e0
+  style A fill:#0d2137,stroke:#00d4ff,color:#e0e0e0
+  style C fill:#0d2137,stroke:#00d4ff,color:#e0e0e0
+  style O fill:#162447,stroke:#00d4ff,color:#e0e0e0
+  style S1 fill:#1f4068,stroke:#1b998b,color:#e0e0e0
+  style S2 fill:#1f4068,stroke:#1b998b,color:#e0e0e0
+  style S3 fill:#1f4068,stroke:#1b998b,color:#e0e0e0
+  style D1 fill:#0d2137,stroke:#444,color:#999
+  style D2 fill:#0d2137,stroke:#444,color:#999
+  style D3 fill:#0d2137,stroke:#444,color:#999
+```
+
 ## What Changed In This Fork
 
 - **AGENTS-first for Codex:** `AGENTS.md` is the primary behavior contract. [Agent.md > Skills.md](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals)
