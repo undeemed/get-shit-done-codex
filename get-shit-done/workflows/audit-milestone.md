@@ -198,7 +198,7 @@ All requirements covered. Cross-phase integration verified. E2E flows complete.
 
 $gsd-complete-milestone {version}
 
-<sub>/clear first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ───────────────────────────────────────────────────────────────
 
@@ -235,7 +235,7 @@ $gsd-complete-milestone {version}
 
 $gsd-plan-milestone-gaps
 
-<sub>/clear first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ───────────────────────────────────────────────────────────────
 
@@ -277,7 +277,7 @@ $gsd-complete-milestone {version}
 
 $gsd-plan-milestone-gaps
 
-<sub>/clear first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ───────────────────────────────────────────────────────────────
 </offer_next>

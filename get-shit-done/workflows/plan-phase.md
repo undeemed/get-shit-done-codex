@@ -450,7 +450,7 @@ Verification: {Passed | Passed with override | Skipped}
 
 $gsd-execute-phase {X}
 
-<sub>/clear first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ───────────────────────────────────────────────────────────────
 

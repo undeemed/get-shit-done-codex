@@ -1063,7 +1063,7 @@ Exit skill and invoke SlashCommand("$gsd-discuss-phase 1 --auto")
 
 $gsd-discuss-phase 1 — gather context and clarify approach
 
-<sub>/clear first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 

@@ -399,7 +399,7 @@ Created: .planning/phases/${PADDED_PHASE}-${SLUG}/${PADDED_PHASE}-CONTEXT.md
 
 `$gsd-plan-phase ${PHASE}`
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 
@@ -505,7 +505,7 @@ Task(
   Auto-advance pipeline finished: discuss → plan → execute
 
   Next: $gsd-discuss-phase ${NEXT_PHASE} --auto
-  <sub>/clear first → fresh context window</sub>
+  <sub>start a new session first → fresh context window</sub>
   ```
 - **PLANNING COMPLETE** → Planning done, execution didn't complete:
   ```

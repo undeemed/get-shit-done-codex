@@ -427,7 +427,7 @@ ls -1 .planning/phases/[current-phase-dir]/*-SUMMARY.md 2>/dev/null | wc -l
 | summaries = plans, current < highest phase | **B: Phase done** | Show completion, suggest `$gsd-plan-phase {Z+1}` + `$gsd-verify-work {Z}` + `$gsd-discuss-phase {Z+1}` |
 | summaries = plans, current = highest phase | **C: Milestone done** | Show banner, suggest `$gsd-complete-milestone` + `$gsd-verify-work` + `$gsd-add-phase` |
 
-All routes: `/clear` first for fresh context.
+All routes: start a new session first for fresh context.
 </step>
 
 </process>

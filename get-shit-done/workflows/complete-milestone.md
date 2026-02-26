@@ -731,7 +731,7 @@ Tag: v[X.Y]
 
 `$gsd-new-milestone`
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 

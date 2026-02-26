@@ -156,7 +156,7 @@ skipped: [N]
 - Commit file
 - Present summary with next steps
 
-**Resume after /clear:**
+**Resume after session reset:**
 1. Read frontmatter → know phase and status
 2. Read Current Test → know where we are
 3. Find first [pending] result → continue from there

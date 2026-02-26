@@ -13,7 +13,7 @@ Standard format for presenting next steps after completing a command or workflow
 
 `{command to copy-paste}`
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 
@@ -29,7 +29,7 @@ Standard format for presenting next steps after completing a command or workflow
 1. **Always show what it is** — name + description, never just a command path
 2. **Pull context from source** — ROADMAP.md for phases, PLAN.md `<objective>` for plans
 3. **Command in inline code** — backticks, easy to copy-paste, renders as clickable link
-4. **`/clear` explanation** — always include, keeps it concise but explains why
+4. **New session reminder** — always include, keeps it concise but explains why
 5. **"Also available" not "Other options"** — sounds more app-like
 6. **Visual separators** — `---` above and below to make it stand out
 
@@ -46,7 +46,7 @@ Standard format for presenting next steps after completing a command or workflow
 
 `$gsd-execute-phase 2`
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 
@@ -71,7 +71,7 @@ Add note that this is the last plan and what comes after:
 
 `$gsd-execute-phase 2`
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 
@@ -93,7 +93,7 @@ Add note that this is the last plan and what comes after:
 
 `$gsd-plan-phase 2`
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 
@@ -122,7 +122,7 @@ Show completion status before next action:
 
 `$gsd-plan-phase 3`
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 
@@ -151,7 +151,7 @@ When there's no clear primary action:
 
 **To research unknowns:** `$gsd-research-phase 3`
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 ```
@@ -171,7 +171,7 @@ All 4 phases shipped
 
 `$gsd-new-milestone`
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 ```
@@ -182,6 +182,7 @@ All 4 phases shipped
 
 ```markdown
 ### Phase 2: Authentication
+
 **Goal**: JWT login flow with refresh tokens
 ```
 
@@ -191,6 +192,7 @@ Extract: `**Phase 2: Authentication** — JWT login flow with refresh tokens`
 
 ```markdown
 Plans:
+
 - [ ] 02-03: Add refresh token rotation
 ```
 
@@ -213,18 +215,18 @@ Extract: `**02-03: Refresh Token Rotation** — Add /api/auth/refresh with slidi
 ```
 ## To Continue
 
-Run `/clear`, then paste:
+Start a new session, then paste:
 $gsd-execute-phase 2
 ```
 
 User has no idea what 02-03 is about.
 
-### Don't: Missing /clear explanation
+### Don't: Missing session reset explanation
 
 ```
 `$gsd-plan-phase 3`
 
-Run /clear first.
+Start a new session first.
 ```
 
 Doesn't explain why. User might skip it.
@@ -241,9 +243,13 @@ Sounds like an afterthought. Use "Also available:" instead.
 ### Don't: Fenced code blocks for commands
 
 ```
+
 ```
+
 $gsd-plan-phase 3
+
 ```
+
 ```
 
 Fenced blocks inside templates create nesting ambiguity. Use inline backticks instead.

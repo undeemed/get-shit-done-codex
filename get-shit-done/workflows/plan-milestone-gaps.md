@@ -166,7 +166,7 @@ node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs(roadmap): add gap clo
 
 `$gsd-plan-phase {N}`
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 
