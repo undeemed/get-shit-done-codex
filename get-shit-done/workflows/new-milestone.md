@@ -348,7 +348,7 @@ node ~/.codex/get-shit-done/bin/gsd-tools.cjs commit "docs: create milestone v[X
 
 `$gsd-discuss-phase [N]` — gather context and clarify approach
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 Also: `$gsd-plan-phase [N]` — skip discussion, plan directly
 ```

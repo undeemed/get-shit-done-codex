@@ -409,7 +409,7 @@ Exit skill and invoke SlashCommand("$gsd-discuss-phase [X+1] --auto")
 
 `$gsd-discuss-phase [X+1]` — gather context and clarify approach
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 
@@ -434,7 +434,7 @@ Exit skill and invoke SlashCommand("$gsd-discuss-phase [X+1] --auto")
 
 `$gsd-plan-phase [X+1]`
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 
@@ -480,7 +480,7 @@ Exit skill and invoke SlashCommand("$gsd-complete-milestone {version}")
 
 `$gsd-complete-milestone {version}`
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 

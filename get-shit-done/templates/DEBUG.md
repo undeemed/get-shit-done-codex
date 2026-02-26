@@ -32,7 +32,7 @@ reproduction: [how to trigger]
 started: [when it broke / always broken]
 
 ## Eliminated
-<!-- APPEND only - prevents re-investigating after /clear -->
+<!-- APPEND only - prevents re-investigating after a session reset -->
 
 - hypothesis: [theory that was wrong]
   evidence: [what disproved it]
@@ -68,7 +68,7 @@ files_changed: []
 **Current Focus:**
 - OVERWRITE entirely on each update
 - Always reflects what Codex is doing RIGHT NOW
-- If Codex reads this after /clear, it knows exactly where to resume
+- If Codex reads this after a session reset, it knows exactly where to resume
 - Fields: hypothesis, test, expecting, next_action
 
 **Symptoms:**
@@ -81,7 +81,7 @@ files_changed: []
 - APPEND only - never remove entries
 - Prevents re-investigating dead ends after context reset
 - Each entry: hypothesis, evidence that disproved it, timestamp
-- Critical for efficiency across /clear boundaries
+- Critical for efficiency across session boundaries
 
 **Evidence:**
 - APPEND only - never remove entries
@@ -140,7 +140,7 @@ files_changed: []
 
 <resume_behavior>
 
-When Codex reads this file after /clear:
+When Codex reads this file after a session reset:
 
 1. Parse frontmatter → know status
 2. Read Current Focus → know exactly what was happening

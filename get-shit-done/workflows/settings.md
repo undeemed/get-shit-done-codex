@@ -79,7 +79,7 @@ AskUserQuestion([
     header: "Auto",
     multiSelect: false,
     options: [
-      { label: "No (Recommended)", description: "Manual /clear + paste between stages" },
+      { label: "No (Recommended)", description: "Manual new session + paste between stages" },
       { label: "Yes", description: "Chain stages via Task() subagents (same isolation)" }
     ]
   },

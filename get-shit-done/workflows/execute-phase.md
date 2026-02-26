@@ -327,7 +327,7 @@ All automated checks passed. {N} items need human testing:
 
 `$gsd-plan-phase {X} --gaps`
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 Also: `cat {phase_dir}/{phase_num}-VERIFICATION.md` — full report
 Also: `$gsd-verify-work {X}` — manual testing first

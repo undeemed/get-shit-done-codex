@@ -809,7 +809,7 @@ gathering -> investigating -> fixing -> verifying -> resolved
 
 ## Resume Behavior
 
-When reading debug file after /clear:
+When reading debug file after session reset:
 1. Parse frontmatter -> know status
 2. Read Current Focus -> know exactly what was happening
 3. Read Eliminated -> know what NOT to retry
@@ -894,7 +894,7 @@ Gather symptoms through questioning. Update file after EACH answer.
   - Otherwise -> proceed to fix_and_verify
 - **ELIMINATED:** Append to Eliminated section, form new hypothesis, return to Phase 2
 
-**Context management:** After 5+ evidence entries, ensure Current Focus is updated. Suggest "/clear - run $gsd-debug to resume" if context filling up.
+**Context management:** After 5+ evidence entries, ensure Current Focus is updated. Suggest "start a new session — run $gsd-debug to resume" if context filling up.
 </step>
 
 <step name="resume_from_file">
@@ -1191,7 +1191,7 @@ Check for mode flags in prompt context:
 - [ ] Current Focus always reflects NOW
 - [ ] Evidence appended for every finding
 - [ ] Eliminated prevents re-investigation
-- [ ] Can resume perfectly from any /clear
+- [ ] Can resume perfectly from any session reset
 - [ ] Root cause confirmed with evidence before fixing
 - [ ] Fix verified against original symptoms
 - [ ] Appropriate return format based on mode

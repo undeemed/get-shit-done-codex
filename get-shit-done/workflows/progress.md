@@ -193,7 +193,7 @@ Read its `<objective>` section.
 
 `$gsd-execute-phase {phase}`
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 ```
@@ -216,7 +216,7 @@ Check if `{phase_num}-CONTEXT.md` exists in phase directory.
 
 `$gsd-plan-phase {phase-number}`
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 ```
@@ -232,7 +232,7 @@ Check if `{phase_num}-CONTEXT.md` exists in phase directory.
 
 `$gsd-discuss-phase {phase}` — gather context and clarify approach
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 
@@ -258,7 +258,7 @@ UAT.md exists with gaps (diagnosed issues). User needs to plan fixes.
 
 `$gsd-plan-phase {phase} --gaps`
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 
@@ -305,7 +305,7 @@ Read ROADMAP.md to get the next phase's name and goal.
 
 `$gsd-discuss-phase {Z+1}` — gather context and clarify approach
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 
@@ -333,7 +333,7 @@ All {N} phases finished!
 
 `$gsd-complete-milestone`
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 
@@ -364,7 +364,7 @@ Ready to plan the next milestone.
 
 `$gsd-new-milestone`
 
-<sub>`/clear` first → fresh context window</sub>
+<sub>start a new session first → fresh context window</sub>
 
 ---
 ```
