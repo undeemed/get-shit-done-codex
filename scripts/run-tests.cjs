@@ -1,29 +1,43 @@
 #!/usr/bin/env node
-// Cross-platform test runner — resolves test file globs via Node
-// instead of relying on shell expansion (which fails on Windows PowerShell/cmd).
-// Propagates NODE_V8_COVERAGE so c8 collects coverage from the child process.
-'use strict';
 
-const { readdirSync } = require('fs');
-const { join } = require('path');
-const { execFileSync } = require('child_process');
+const fs = require("node:fs");
+const path = require("node:path");
+const { spawnSync } = require("node:child_process");
 
-const testDir = join(__dirname, '..', 'tests');
-const files = readdirSync(testDir)
-  .filter(f => f.endsWith('.test.cjs'))
-  .sort()
-  .map(f => join('tests', f));
+function collectTests(dir) {
+  if (!fs.existsSync(dir)) return [];
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  const files = [];
 
-if (files.length === 0) {
-  console.error('No test files found in tests/');
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...collectTests(fullPath));
+      continue;
+    }
+    if (entry.isFile() && entry.name.endsWith(".test.cjs")) {
+      files.push(fullPath);
+    }
+  }
+
+  return files;
+}
+
+const withCoverage = process.argv.includes("--coverage");
+const testFiles = collectTests(path.resolve(__dirname, "..", "tests")).sort();
+
+if (testFiles.length === 0) {
+  console.error("No test files found in ./tests");
   process.exit(1);
 }
 
-try {
-  execFileSync(process.execPath, ['--test', ...files], {
-    stdio: 'inherit',
-    env: { ...process.env },
-  });
-} catch (err) {
-  process.exit(err.status || 1);
+const args = [];
+if (withCoverage) args.push("--experimental-test-coverage");
+args.push("--test", ...testFiles);
+
+const result = spawnSync(process.execPath, args, { stdio: "inherit" });
+if (result.error) {
+  console.error(result.error.message);
+  process.exit(1);
 }
+process.exit(result.status ?? 1);
