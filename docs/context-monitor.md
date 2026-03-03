@@ -1,6 +1,6 @@
 # Context Window Monitor
 
-A post-tool hook (`PostToolUse` for Claude Code, `AfterTool` for Gemini CLI) that warns the agent when context window usage is high.
+A PostToolUse hook for Codex CLI that warns the agent when context window usage is high.
 
 ## Problem
 
@@ -8,22 +8,23 @@ The statusline shows context usage to the **user**, but the **agent** has no awa
 
 ## How It Works
 
-1. The statusline hook writes context metrics to `/tmp/claude-ctx-{session_id}.json`
+1. The statusline hook writes context metrics to `/tmp/codex-ctx-{session_id}.json`
 2. After each tool use, the context monitor reads these metrics
 3. When remaining context drops below thresholds, it injects a warning as `additionalContext`
 4. The agent receives the warning in its conversation and can act accordingly
 
 ## Thresholds
 
-| Level | Remaining | Agent Behavior |
-|-------|-----------|----------------|
-| Normal | > 35% | No warning |
-| WARNING | <= 35% | Wrap up current task, avoid starting new complex work |
-| CRITICAL | <= 25% | Stop immediately, save state (`/gsd:pause-work`) |
+| Level    | Remaining | Agent Behavior                                        |
+| -------- | --------- | ----------------------------------------------------- |
+| Normal   | > 35%     | No warning                                            |
+| WARNING  | <= 35%    | Wrap up current task, avoid starting new complex work |
+| CRITICAL | <= 25%    | Stop immediately, save state (`/gsd:pause-work`)      |
 
 ## Debounce
 
 To avoid spamming the agent with repeated warnings:
+
 - First warning always fires immediately
 - Subsequent warnings require 5 tool uses between them
 - Severity escalation (WARNING -> CRITICAL) bypasses debounce
@@ -34,10 +35,10 @@ To avoid spamming the agent with repeated warnings:
 Statusline Hook (gsd-statusline.js)
     | writes
     v
-/tmp/claude-ctx-{session_id}.json
+/tmp/codex-ctx-{session_id}.json
     ^ reads
     |
-Context Monitor (gsd-context-monitor.js, PostToolUse/AfterTool)
+Context Monitor (gsd-context-monitor.js, PostToolUse)
     | injects
     v
 additionalContext -> Agent sees warning
@@ -60,51 +61,19 @@ GSD's `/gsd:pause-work` command saves execution state. The WARNING message sugge
 
 ## Setup
 
-Both hooks are automatically registered during `npx get-shit-done-cc` installation:
+Both hooks are automatically registered during `npx get-shit-done-codex` installation:
 
-- **Statusline** (writes bridge file): Registered as `statusLine` in settings.json
-- **Context Monitor** (reads bridge file): Registered as `PostToolUse` hook in settings.json (`AfterTool` for Gemini)
+- **Statusline** (writes bridge file): Registered as `statusLine` in config.toml
+- **Context Monitor** (reads bridge file): Registered as `PostToolUse` hook in config.toml
 
-Manual registration in `~/.claude/settings.json` (Claude Code):
+Manual registration in `~/.codex/config.toml`:
 
-```json
-{
-  "statusLine": {
-    "type": "command",
-    "command": "node ~/.claude/hooks/gsd-statusline.js"
-  },
-  "hooks": {
-    "PostToolUse": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node ~/.claude/hooks/gsd-context-monitor.js"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
+```toml
+[hooks.PostToolUse]
+command = "node ~/.codex/hooks/gsd-context-monitor.js"
 
-For Gemini CLI (`~/.gemini/settings.json`), use `AfterTool` instead of `PostToolUse`:
-
-```json
-{
-  "hooks": {
-    "AfterTool": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node ~/.gemini/hooks/gsd-context-monitor.js"
-          }
-        ]
-      }
-    ]
-  }
-}
+[statusLine]
+command = "node ~/.codex/hooks/gsd-statusline.js"
 ```
 
 ## Safety

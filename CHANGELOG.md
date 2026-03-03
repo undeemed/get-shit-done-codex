@@ -6,6 +6,26 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.24.0] - 2026-03-03
+
+### Added
+
+- **E2E sandboxed test** (`tests/e2e-sandboxed.test.cjs`) — 63 assertions across 13 command categories: config, state, phases, scaffolding, frontmatter, verification, history, progress, todos, git commits, init commands, roadmap, and validation
+- Upstream sync: ported missing Codex-specific functions from upstream `install.js` — multi-agent configuration (`installCodexConfig`), patch management (`backupLocalPatches`, `reapplyPatches`), manifest tracking, cleanup utilities, and verify/repair pipeline
+
+### Changed
+
+- **Codex-only conversion** — all docs, hooks, core library, and tests converted to Codex-only:
+  - `docs/context-monitor.md` — full rewrite: `~/.claude` → `~/.codex`, `settings.json` → `config.toml`, bridge files → `codex-ctx-`
+  - `docs/USER-GUIDE.md` — model names Opus/Sonnet/Haiku → o3/o4-mini/gpt-4.1-nano
+  - `get-shit-done/bin/lib/core.cjs` — model profiles updated to OpenAI equivalents
+  - `hooks/gsd-context-monitor.js` — removed Gemini fallback, Codex-only bridge file names
+  - `hooks/gsd-statusline.js` — bridge file name `claude-ctx-` → `codex-ctx-`
+  - `tests/phase.test.cjs` — path references `~/.claude` → `~/.codex`
+  - `tests/codex-config.test.cjs` — renamed `convertClaudeAgentToCodexAgent` → `convertAgentToCodexFormat`
+- Renamed installer functions: `convertClaudeAgentToCodexAgent` → `convertAgentToCodexFormat`, `convertClaudeCommandToCodexSkill` → `convertCommandToCodexSkill`
+- Removed Gemini/OpenCode-only CHANGELOG entries that don't apply to this fork
+
 ## [1.23.1] - 2026-02-26
 
 ### Fixed
@@ -97,7 +117,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Fixed
 
 - Auto-advance chain no longer breaks when skills fail to resolve inside Task subagents
-- Gemini CLI workflows and templates no longer incorrectly convert to TOML format
 - Universal phase number parsing handles all formats consistently (decimal phases, plain numbers)
 
 ## [1.20.5] - 2026-02-19
@@ -128,7 +147,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Integration checker receives milestone requirement IDs and maps findings to affected requirements
 - `complete-milestone` gates on requirements completion before archival — surfaces unchecked requirements with proceed/audit/abort options
 - `plan-milestone-gaps` updates REQUIREMENTS.md traceability table (phase assignments, checkbox resets, coverage count) and includes it in commit
-- Gemini CLI: escape `${VAR}` shell variables in agent bodies to prevent template validation failures
 
 ## [1.20.2] - 2026-02-16
 
@@ -167,7 +185,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Fixed
 
 - Plans created without user context — `$gsd-plan-phase` warns when no CONTEXT.md exists, `$gsd-discuss-phase` warns when plans already exist (#253)
-- OpenCode installer converts `general-purpose` subagent type to OpenCode's `general`
 - `$gsd-complete-milestone` respects `commit_docs` setting when merging branches
 - Phase directories tracked in git via `.gitkeep` files
 
@@ -185,7 +202,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
-- OpenCode local installs now write config to `./.opencode/` instead of overwriting global `~/.config/opencode/`
 - Large JSON payloads write to temp files to prevent truncation in tool calls
 - Phase heading matching now supports `####` depth
 - Phase padding normalized in insert command
@@ -224,7 +240,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - UAT gaps and debug sessions now auto-resolve after gap-closure phase execution (#580)
 - Fall back to ROADMAP.md when phase directory missing (#521)
-- Template hook paths for OpenCode/Gemini runtimes (#585)
 - Accept both `##` and `###` phase headers, detect malformed ROADMAPs (#598, #599)
 - Use `{phase_num}` instead of ambiguous `{phase}` for filenames (#601)
 - Add package.json to prevent ESM inheritance issues (#602)
@@ -307,8 +322,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
-- Installer no longer deletes opencode.json on JSONC parse errors — now handles comments, trailing commas, and BOM correctly (#474)
-
 ## [1.13.0] - 2026-02-08
 
 ### Added
@@ -356,8 +369,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
-- Install respects `attribution.commit` setting for OpenCode compatibility (#286)
-
 ### Fixed
 
 - **CRITICAL:** Prevent API keys from being committed via `$gsd-map-codebase` (#429)
@@ -369,8 +380,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Statusline crash handling, color validation, git staging rules
 - Statusline.js reference updated during install (#330)
 - Parallelization config setting now respected (#379)
+
 - ASCII box-drawing vs text content with diacritics (#289)
-- Removed broken gsd-gemini link (404)
 
 ## [1.11.1] - 2026-01-31
 
@@ -387,18 +398,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - CONTEXT.md from `$gsd-discuss-phase` now properly flows to all downstream agents (researcher, planner, checker, revision loop)
 
-## [1.10.1] - 2025-01-30
-
-### Fixed
-
-- Gemini CLI agent loading errors that prevented commands from executing
-
 ## [1.10.0] - 2026-01-29
-
-### Added
-
-- Native Gemini CLI support — install with `--gemini` flag or select from interactive menu
-- New `--all` flag to install for Codex Code, OpenCode, and Gemini simultaneously
 
 ### Fixed
 
@@ -447,21 +447,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Context file detection now matches filename variants (handles both `CONTEXT.md` and `{phase}-CONTEXT.md` patterns)
 
 ## [1.9.7] - 2026-01-22
-
-### Fixed
-
-- OpenCode installer now uses correct XDG-compliant config path (`~/.config/opencode/`) instead of `~/.opencode/`
-- OpenCode commands use flat structure (`command/gsd-help.md`) matching OpenCode's expected format
-- OpenCode permissions written to `~/.config/opencode/opencode.json`
-
-## [1.9.6] - 2026-01-22
-
-### Added
-
-- Interactive runtime selection: installer now prompts to choose Codex Code, OpenCode, or both
-- Native OpenCode support: `--opencode` flag converts GSD to OpenCode format automatically
-- `--both` flag to install for both Codex Code and OpenCode in one command
-- Auto-configures `~/.opencode.json` permissions for seamless GSD doc access
 
 ### Changed
 

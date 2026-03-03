@@ -31,7 +31,7 @@ process.stdin.on('end', () => {
       // The monitor reads this file to inject agent-facing warnings when context is low.
       if (session) {
         try {
-          const bridgePath = path.join(os.tmpdir(), `claude-ctx-${session}.json`);
+          const bridgePath = path.join(os.tmpdir(), `codex-ctx-${session}.json`);
           const bridgeData = JSON.stringify({
             session_id: session,
             remaining_percentage: remaining,

@@ -16,17 +16,17 @@ function toPosixPath(p) {
 // ─── Model Profile Table ─────────────────────────────────────────────────────
 
 const MODEL_PROFILES = {
-  'gsd-planner':              { quality: 'opus', balanced: 'opus',   budget: 'sonnet' },
-  'gsd-roadmapper':           { quality: 'opus', balanced: 'sonnet', budget: 'sonnet' },
-  'gsd-executor':             { quality: 'opus', balanced: 'sonnet', budget: 'sonnet' },
-  'gsd-phase-researcher':     { quality: 'opus', balanced: 'sonnet', budget: 'haiku' },
-  'gsd-project-researcher':   { quality: 'opus', balanced: 'sonnet', budget: 'haiku' },
-  'gsd-research-synthesizer': { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku' },
-  'gsd-debugger':             { quality: 'opus', balanced: 'sonnet', budget: 'sonnet' },
-  'gsd-codebase-mapper':      { quality: 'sonnet', balanced: 'haiku', budget: 'haiku' },
-  'gsd-verifier':             { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku' },
-  'gsd-plan-checker':         { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku' },
-  'gsd-integration-checker':  { quality: 'sonnet', balanced: 'sonnet', budget: 'haiku' },
+  'gsd-planner':              { quality: 'o3', balanced: 'o3',      budget: 'o4-mini' },
+  'gsd-roadmapper':           { quality: 'o3', balanced: 'o4-mini', budget: 'o4-mini' },
+  'gsd-executor':             { quality: 'o3', balanced: 'o4-mini', budget: 'o4-mini' },
+  'gsd-phase-researcher':     { quality: 'o3', balanced: 'o4-mini', budget: 'gpt-4.1-nano' },
+  'gsd-project-researcher':   { quality: 'o3', balanced: 'o4-mini', budget: 'gpt-4.1-nano' },
+  'gsd-research-synthesizer': { quality: 'o4-mini', balanced: 'o4-mini', budget: 'gpt-4.1-nano' },
+  'gsd-debugger':             { quality: 'o3', balanced: 'o4-mini', budget: 'o4-mini' },
+  'gsd-codebase-mapper':      { quality: 'o4-mini', balanced: 'gpt-4.1-nano', budget: 'gpt-4.1-nano' },
+  'gsd-verifier':             { quality: 'o4-mini', balanced: 'o4-mini', budget: 'gpt-4.1-nano' },
+  'gsd-plan-checker':         { quality: 'o4-mini', balanced: 'o4-mini', budget: 'gpt-4.1-nano' },
+  'gsd-integration-checker':  { quality: 'o4-mini', balanced: 'o4-mini', budget: 'gpt-4.1-nano' },
 };
 
 // ─── Output helpers ───────────────────────────────────────────────────────────
@@ -36,7 +36,7 @@ function output(result, raw, rawValue) {
     process.stdout.write(String(rawValue));
   } else {
     const json = JSON.stringify(result, null, 2);
-    // Large payloads exceed Claude Code's Bash tool buffer (~50KB).
+    // Large payloads exceed Codex CLI's tool buffer (~50KB).
     // Write to tmpfile and output the path prefixed with @file: so callers can detect it.
     if (json.length > 50000) {
       const tmpPath = path.join(require('os').tmpdir(), `gsd-${Date.now()}.json`);
@@ -361,15 +361,15 @@ function resolveModelInternal(cwd, agentType) {
   // Check per-agent override first
   const override = config.model_overrides?.[agentType];
   if (override) {
-    return override === 'opus' ? 'inherit' : override;
+    return override === 'o3' ? 'inherit' : override;
   }
 
   // Fall back to profile lookup
   const profile = config.model_profile || 'balanced';
   const agentModels = MODEL_PROFILES[agentType];
-  if (!agentModels) return 'sonnet';
-  const resolved = agentModels[profile] || agentModels['balanced'] || 'sonnet';
-  return resolved === 'opus' ? 'inherit' : resolved;
+  if (!agentModels) return 'o4-mini';
+  const resolved = agentModels[profile] || agentModels['balanced'] || 'o4-mini';
+  return resolved === 'o3' ? 'inherit' : resolved;
 }
 
 // ─── Misc utilities ───────────────────────────────────────────────────────────

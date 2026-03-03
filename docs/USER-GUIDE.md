@@ -100,7 +100,7 @@ A detailed reference for workflows, troubleshooting, and configuration. For quic
 ### Validation Architecture (Nyquist Layer)
 
 During plan-phase research, GSD now maps automated test coverage to each phase
-requirement before any code is written. This ensures that when Claude's executor
+requirement before any code is written. This ensures that when Codex's executor
 commits a task, a feedback mechanism already exists to verify it within seconds.
 
 The researcher detects your existing test infrastructure, maps each requirement to
@@ -283,25 +283,25 @@ Disable these to speed up phases in familiar domains or when conserving tokens.
 
 ### Model Profiles (Per-Agent Breakdown)
 
-| Agent                    | `quality` | `balanced` | `budget` |
-| ------------------------ | --------- | ---------- | -------- |
-| gsd-planner              | Opus      | Opus       | Sonnet   |
-| gsd-roadmapper           | Opus      | Sonnet     | Sonnet   |
-| gsd-executor             | Opus      | Sonnet     | Sonnet   |
-| gsd-phase-researcher     | Opus      | Sonnet     | Haiku    |
-| gsd-project-researcher   | Opus      | Sonnet     | Haiku    |
-| gsd-research-synthesizer | Sonnet    | Sonnet     | Haiku    |
-| gsd-debugger             | Opus      | Sonnet     | Sonnet   |
-| gsd-codebase-mapper      | Sonnet    | Haiku      | Haiku    |
-| gsd-verifier             | Sonnet    | Sonnet     | Haiku    |
-| gsd-plan-checker         | Sonnet    | Sonnet     | Haiku    |
-| gsd-integration-checker  | Sonnet    | Sonnet     | Haiku    |
+| Agent                    | `quality` | `balanced`   | `budget`     |
+| ------------------------ | --------- | ------------ | ------------ |
+| gsd-planner              | o3        | o3           | o4-mini      |
+| gsd-roadmapper           | o3        | o4-mini      | o4-mini      |
+| gsd-executor             | o3        | o4-mini      | o4-mini      |
+| gsd-phase-researcher     | o3        | o4-mini      | gpt-4.1-nano |
+| gsd-project-researcher   | o3        | o4-mini      | gpt-4.1-nano |
+| gsd-research-synthesizer | o4-mini   | o4-mini      | gpt-4.1-nano |
+| gsd-debugger             | o3        | o4-mini      | o4-mini      |
+| gsd-codebase-mapper      | o4-mini   | gpt-4.1-nano | gpt-4.1-nano |
+| gsd-verifier             | o4-mini   | o4-mini      | gpt-4.1-nano |
+| gsd-plan-checker         | o4-mini   | o4-mini      | gpt-4.1-nano |
+| gsd-integration-checker  | o4-mini   | o4-mini      | gpt-4.1-nano |
 
 **Profile philosophy:**
 
-- **quality** -- Opus for all decision-making agents, Sonnet for read-only verification. Use when quota is available and the work is critical.
-- **balanced** -- Opus only for planning (where architecture decisions happen), Sonnet for everything else. The default for good reason.
-- **budget** -- Sonnet for anything that writes code, Haiku for research and verification. Use for high-volume work or less critical phases.
+- **quality** -- o3 for all decision-making agents, o4-mini for read-only verification. Use when quota is available and the work is critical.
+- **balanced** -- o3 only for planning (where architecture decisions happen), o4-mini for everything else. The default for good reason.
+- **budget** -- o4-mini for anything that writes code, gpt-4.1-nano for research and verification. Use for high-volume work or less critical phases.
 
 ---
 
