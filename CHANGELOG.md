@@ -30,7 +30,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - `requirements mark-complete` usage
   - diagnosing `commit_docs` behavior from project and user defaults
 
-## [1.24.1] - 2026-03-03
+## [1.24.2] - 2026-03-03
 
 ### Changed
 
