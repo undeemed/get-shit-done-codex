@@ -16,18 +16,21 @@ function toPosixPath(p) {
 // ─── Model Profile Table ─────────────────────────────────────────────────────
 
 const MODEL_PROFILES = {
-  'gsd-planner':              { quality: 'o3', balanced: 'o3',      budget: 'o4-mini' },
-  'gsd-roadmapper':           { quality: 'o3', balanced: 'o4-mini', budget: 'o4-mini' },
-  'gsd-executor':             { quality: 'o3', balanced: 'o4-mini', budget: 'o4-mini' },
-  'gsd-phase-researcher':     { quality: 'o3', balanced: 'o4-mini', budget: 'gpt-4.1-nano' },
-  'gsd-project-researcher':   { quality: 'o3', balanced: 'o4-mini', budget: 'gpt-4.1-nano' },
-  'gsd-research-synthesizer': { quality: 'o4-mini', balanced: 'o4-mini', budget: 'gpt-4.1-nano' },
-  'gsd-debugger':             { quality: 'o3', balanced: 'o4-mini', budget: 'o4-mini' },
-  'gsd-codebase-mapper':      { quality: 'o4-mini', balanced: 'gpt-4.1-nano', budget: 'gpt-4.1-nano' },
-  'gsd-verifier':             { quality: 'o4-mini', balanced: 'o4-mini', budget: 'gpt-4.1-nano' },
-  'gsd-plan-checker':         { quality: 'o4-mini', balanced: 'o4-mini', budget: 'gpt-4.1-nano' },
-  'gsd-integration-checker':  { quality: 'o4-mini', balanced: 'o4-mini', budget: 'gpt-4.1-nano' },
+  //                              quality                          balanced                         budget
+  'gsd-planner':              { quality: { m: 'gpt-5.3-codex', t: 'high' },   balanced: { m: 'gpt-5.3-codex', t: 'high' },   budget: { m: 'gpt-5.3-codex', t: 'medium' } },
+  'gsd-roadmapper':           { quality: { m: 'gpt-5.3-codex', t: 'high' },   balanced: { m: 'gpt-5.3-codex', t: 'medium' }, budget: { m: 'gpt-5.3-codex', t: 'low' } },
+  'gsd-executor':             { quality: { m: 'gpt-5.3-codex', t: 'high' },   balanced: { m: 'gpt-5.3-codex', t: 'medium' }, budget: { m: 'gpt-5.3-codex', t: 'low' } },
+  'gsd-phase-researcher':     { quality: { m: 'gpt-5.3-codex', t: 'medium' }, balanced: { m: 'gpt-5.3-codex', t: 'low' },    budget: { m: 'gpt-5.3-codex', t: 'low' } },
+  'gsd-project-researcher':   { quality: { m: 'gpt-5.3-codex', t: 'medium' }, balanced: { m: 'gpt-5.3-codex', t: 'low' },    budget: { m: 'gpt-5.3-codex', t: 'low' } },
+  'gsd-research-synthesizer': { quality: { m: 'gpt-5.3-codex', t: 'medium' }, balanced: { m: 'gpt-5.3-codex', t: 'low' },    budget: { m: 'gpt-5.3-codex', t: 'low' } },
+  'gsd-debugger':             { quality: { m: 'gpt-5.3-codex', t: 'high' },   balanced: { m: 'gpt-5.3-codex', t: 'high' },   budget: { m: 'gpt-5.3-codex', t: 'medium' } },
+  'gsd-codebase-mapper':      { quality: { m: 'gpt-5.3-codex', t: 'low' },    balanced: { m: 'gpt-5.3-codex', t: 'low' },    budget: { m: 'gpt-5.3-codex', t: 'low' } },
+  'gsd-verifier':             { quality: { m: 'gpt-5.3-codex', t: 'medium' }, balanced: { m: 'gpt-5.3-codex', t: 'medium' }, budget: { m: 'gpt-5.3-codex', t: 'low' } },
+  'gsd-plan-checker':         { quality: { m: 'gpt-5.3-codex', t: 'medium' }, balanced: { m: 'gpt-5.3-codex', t: 'low' },    budget: { m: 'gpt-5.3-codex', t: 'low' } },
+  'gsd-integration-checker':  { quality: { m: 'gpt-5.3-codex', t: 'medium' }, balanced: { m: 'gpt-5.3-codex', t: 'low' },    budget: { m: 'gpt-5.3-codex', t: 'low' } },
 };
+
+const DEFAULT_ENTRY = { m: 'gpt-5.3-codex', t: 'medium' };
 
 // ─── Output helpers ───────────────────────────────────────────────────────────
 
@@ -361,15 +364,19 @@ function resolveModelInternal(cwd, agentType) {
   // Check per-agent override first
   const override = config.model_overrides?.[agentType];
   if (override) {
-    return override === 'o3' ? 'inherit' : override;
+    // Override can be a string (thinking level) or { m, t } object
+    if (typeof override === 'string') {
+      return { model: 'inherit', thinking: override === 'high' || override === 'medium' || override === 'low' ? override : 'medium' };
+    }
+    return { model: 'inherit', thinking: override.t || 'medium' };
   }
 
   // Fall back to profile lookup
   const profile = config.model_profile || 'balanced';
   const agentModels = MODEL_PROFILES[agentType];
-  if (!agentModels) return 'o4-mini';
-  const resolved = agentModels[profile] || agentModels['balanced'] || 'o4-mini';
-  return resolved === 'o3' ? 'inherit' : resolved;
+  if (!agentModels) return { model: 'inherit', thinking: 'medium' };
+  const entry = agentModels[profile] || agentModels['balanced'] || DEFAULT_ENTRY;
+  return { model: 'inherit', thinking: entry.t };
 }
 
 // ─── Misc utilities ───────────────────────────────────────────────────────────

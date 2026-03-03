@@ -82,9 +82,9 @@ describe('loadConfig', () => {
 
   // Bug: loadConfig previously omitted model_overrides from return value
   test('returns model_overrides when present (REG-01)', () => {
-    writeConfig({ model_overrides: { 'gsd-executor': 'o3' } });
+    writeConfig({ model_overrides: { 'gsd-executor': 'gpt-5.3-codex' } });
     const config = loadConfig(tmpDir);
-    assert.deepStrictEqual(config.model_overrides, { 'gsd-executor': 'o3' });
+    assert.deepStrictEqual(config.model_overrides, { 'gsd-executor': 'gpt-5.3-codex' });
   });
 
   test('returns model_overrides as null when not in config', () => {
@@ -144,60 +144,73 @@ describe('resolveModelInternal', () => {
   }
 
   describe('model profile structural validation', () => {
-    test('all known agents resolve to a valid string for each profile', () => {
+    test('all known agents resolve to { model, thinking } for each profile', () => {
       const knownAgents = ['gsd-planner', 'gsd-executor', 'gsd-phase-researcher', 'gsd-codebase-mapper'];
       const profiles = ['quality', 'balanced', 'budget'];
-      const validValues = ['inherit', 'o4-mini', 'gpt-4.1-nano', 'o3'];
+      const validThinking = ['high', 'medium', 'low'];
 
       for (const profile of profiles) {
         writeConfig({ model_profile: profile });
         for (const agent of knownAgents) {
           const result = resolveModelInternal(tmpDir, agent);
+          assert.strictEqual(result.model, 'inherit',
+            `profile=${profile} agent=${agent} model should be inherit`);
           assert.ok(
-            validValues.includes(result),
-            `profile=${profile} agent=${agent} returned unexpected value: ${result}`
+            validThinking.includes(result.thinking),
+            `profile=${profile} agent=${agent} thinking=${result.thinking} not valid`
           );
         }
       }
     });
+
+    test('planner gets high thinking in balanced, mapper gets low', () => {
+      writeConfig({ model_profile: 'balanced' });
+      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-planner').thinking, 'high');
+      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-codebase-mapper').thinking, 'low');
+    });
+
+    test('debugger gets high thinking even in balanced', () => {
+      writeConfig({ model_profile: 'balanced' });
+      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-debugger').thinking, 'high');
+    });
   });
 
   describe('override precedence', () => {
-    test('per-agent override takes precedence over profile', () => {
+    test('per-agent thinking override takes precedence over profile', () => {
       writeConfig({
         model_profile: 'balanced',
-        model_overrides: { 'gsd-executor': 'gpt-4.1-nano' },
+        model_overrides: { 'gsd-executor': 'high' },
       });
-      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-executor'), 'gpt-4.1-nano');
-    });
-
-    test('o3 override resolves to inherit', () => {
-      writeConfig({
-        model_overrides: { 'gsd-executor': 'o3' },
-      });
-      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-executor'), 'inherit');
+      const result = resolveModelInternal(tmpDir, 'gsd-executor');
+      assert.strictEqual(result.thinking, 'high');
     });
 
     test('agents not in override fall back to profile', () => {
       writeConfig({
         model_profile: 'quality',
-        model_overrides: { 'gsd-executor': 'gpt-4.1-nano' },
+        model_overrides: { 'gsd-executor': 'low' },
       });
-      // gsd-planner not overridden, should use quality profile -> o3 -> inherit
-      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-planner'), 'inherit');
+      // gsd-planner not overridden, should use quality profile -> high
+      const result = resolveModelInternal(tmpDir, 'gsd-planner');
+      assert.strictEqual(result.model, 'inherit');
+      assert.strictEqual(result.thinking, 'high');
     });
   });
 
   describe('edge cases', () => {
-    test('returns o4-mini for unknown agent type', () => {
+    test('returns medium thinking for unknown agent type', () => {
       writeConfig({ model_profile: 'balanced' });
-      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-nonexistent'), 'o4-mini');
+      const result = resolveModelInternal(tmpDir, 'gsd-nonexistent');
+      assert.strictEqual(result.model, 'inherit');
+      assert.strictEqual(result.thinking, 'medium');
     });
 
     test('defaults to balanced profile when model_profile missing', () => {
       writeConfig({});
-      // balanced profile, gsd-planner -> o3 -> inherit
-      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-planner'), 'inherit');
+      // balanced profile, gsd-planner -> high thinking
+      const result = resolveModelInternal(tmpDir, 'gsd-planner');
+      assert.strictEqual(result.model, 'inherit');
+      assert.strictEqual(result.thinking, 'high');
     });
   });
 });
