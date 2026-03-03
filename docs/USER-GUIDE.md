@@ -427,6 +427,15 @@ Since v1.17, the installer backs up locally modified files to `gsd-local-patches
 
 A known workaround exists for a Codex CLI classification bug. GSD's orchestrators (execute-phase, quick) spot-check actual output before reporting failure. If you see a failure message but commits were made, check `git log` -- the work may have succeeded.
 
+### `gsd-tools` Scripting and Automation
+
+For shell scripts, CI, or local tooling that call `get-shit-done/bin/gsd-tools.cjs` directly:
+
+- Use `--cwd <project-path>` (or `--cwd=<project-path>`) to run commands against a specific project root.
+- Prefer `state json` when you need stable machine-readable state; use `state-snapshot` for parsed markdown fields.
+- Use `requirements mark-complete REQ-01 REQ-02` to keep requirement checkboxes and traceability rows in sync.
+- If `commit` returns `skipped_commit_docs_false`, check both `.planning/config.json` and `~/.gsd/defaults.json` for `commit_docs`.
+
 ---
 
 ## Recovery Quick Reference

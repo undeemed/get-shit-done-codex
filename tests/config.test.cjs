@@ -305,7 +305,8 @@ describe('config-get command', () => {
     assert.ok(result.success, `Command failed: ${result.error}`);
 
     const output = JSON.parse(result.output);
-    assert.strictEqual(output, 'balanced');
+    const config = readConfig(tmpDir);
+    assert.strictEqual(output, config.model_profile);
   });
 
   test('gets a nested value via dot-notation', () => {

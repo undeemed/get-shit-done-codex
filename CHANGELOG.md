@@ -6,6 +6,30 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Restored `gsd-tools` dispatcher parity with lib commands:
+  - global `--cwd` / `--cwd=` path override parsing and validation
+  - `state json` routing
+  - `requirements mark-complete` routing with proper unknown-subcommand errors
+- Restored state mutation CLI option handling for file-based inputs:
+  - `state add-decision --summary-file --rationale-file`
+  - `state add-blocker --text-file`
+- Fixed test helper regressions in `tests/helpers.cjs`:
+  - robust argv execution for both string and array command forms
+  - restored `createTempGitProject()` export used by git-backed suites
+- Hardened tests against host-level config defaults:
+  - `config-get` top-level expectation now matches generated config value
+  - E2E suite pins `commit_docs=true` before git commit checks
+
+### Docs
+
+- Updated `README.md` and `docs/USER-GUIDE.md` troubleshooting guidance for:
+  - `gsd-tools --cwd` usage
+  - choosing `state json` vs `state-snapshot`
+  - `requirements mark-complete` usage
+  - diagnosing `commit_docs` behavior from project and user defaults
+
 ## [1.24.1] - 2026-03-03
 
 ### Changed

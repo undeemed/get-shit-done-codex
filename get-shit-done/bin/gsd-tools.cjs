@@ -122,6 +122,16 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const stateLib = require('./lib/state.cjs');
+const phaseLib = require('./lib/phase.cjs');
+const milestoneLib = require('./lib/milestone.cjs');
+const initLib = require('./lib/init.cjs');
+const commandsLib = require('./lib/commands.cjs');
+const configLib = require('./lib/config.cjs');
+const roadmapLib = require('./lib/roadmap.cjs');
+const templateLib = require('./lib/template.cjs');
+const frontmatterLib = require('./lib/frontmatter.cjs');
+const verifyLib = require('./lib/verify.cjs');
 
 // ─── Model Profile Table ─────────────────────────────────────────────────────
 
@@ -247,12 +257,80 @@ function execGit(cwd, args) {
 }
 
 function normalizePhaseName(phase) {
-  const match = phase.match(/^(\d+(?:\.\d+)?)/);
+  const match = String(phase).match(/^(\d+)([A-Z])?((?:\.\d+)*)/i);
   if (!match) return phase;
-  const num = match[1];
-  const parts = num.split('.');
-  const padded = parts[0].padStart(2, '0');
-  return parts.length > 1 ? `${padded}.${parts[1]}` : padded;
+  const padded = match[1].padStart(2, '0');
+  const letter = match[2] ? match[2].toUpperCase() : '';
+  const decimal = match[3] || '';
+  return padded + letter + decimal;
+}
+
+function escapeRegex(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function comparePhaseNum(a, b) {
+  const pa = String(a).match(/^(\d+)([A-Z])?((?:\.\d+)*)/i);
+  const pb = String(b).match(/^(\d+)([A-Z])?((?:\.\d+)*)/i);
+  if (!pa || !pb) return String(a).localeCompare(String(b));
+
+  const intDiff = parseInt(pa[1], 10) - parseInt(pb[1], 10);
+  if (intDiff !== 0) return intDiff;
+
+  const la = (pa[2] || '').toUpperCase();
+  const lb = (pb[2] || '').toUpperCase();
+  if (la !== lb) {
+    if (!la) return -1;
+    if (!lb) return 1;
+    return la < lb ? -1 : 1;
+  }
+
+  const aDecParts = pa[3] ? pa[3].slice(1).split('.').map(p => parseInt(p, 10)) : [];
+  const bDecParts = pb[3] ? pb[3].slice(1).split('.').map(p => parseInt(p, 10)) : [];
+  const maxLen = Math.max(aDecParts.length, bDecParts.length);
+
+  if (aDecParts.length === 0 && bDecParts.length > 0) return -1;
+  if (bDecParts.length === 0 && aDecParts.length > 0) return 1;
+
+  for (let i = 0; i < maxLen; i++) {
+    const av = Number.isFinite(aDecParts[i]) ? aDecParts[i] : 0;
+    const bv = Number.isFinite(bDecParts[i]) ? bDecParts[i] : 0;
+    if (av !== bv) return av - bv;
+  }
+
+  return 0;
+}
+
+function getMilestonePhaseFilter(cwd) {
+  const milestonePhaseNums = new Set();
+
+  try {
+    const roadmap = fs.readFileSync(path.join(cwd, '.planning', 'ROADMAP.md'), 'utf-8');
+    const phasePattern = /#{2,4}\s*Phase\s+(\d+[A-Z]?(?:\.\d+)*)\s*:/gi;
+    let m;
+    while ((m = phasePattern.exec(roadmap)) !== null) {
+      milestonePhaseNums.add(m[1]);
+    }
+  } catch {}
+
+  if (milestonePhaseNums.size === 0) {
+    const passAll = () => true;
+    passAll.phaseCount = 0;
+    return passAll;
+  }
+
+  const normalized = new Set(
+    [...milestonePhaseNums].map(n => (n.replace(/^0+/, '') || '0').toLowerCase())
+  );
+
+  function isDirInMilestone(dirName) {
+    const m = dirName.match(/^0*(\d+[A-Za-z]?(?:\.\d+)*)/);
+    if (!m) return false;
+    return normalized.has(m[1].toLowerCase());
+  }
+
+  isDirInMilestone.phaseCount = milestonePhaseNums.size;
+  return isDirInMilestone;
 }
 
 function extractFrontmatter(content) {
@@ -859,12 +937,8 @@ function cmdPhasesList(cwd, options, raw) {
       }
     }
 
-    // Sort numerically (handles decimals: 01, 02, 02.1, 02.2, 03)
-    dirs.sort((a, b) => {
-      const aNum = parseFloat(a.match(/^(\d+(?:\.\d+)?)/)?.[1] || '0');
-      const bNum = parseFloat(b.match(/^(\d+(?:\.\d+)?)/)?.[1] || '0');
-      return aNum - bNum;
-    });
+    // Sort by canonical phase ordering (integers, decimals, letter suffixes)
+    dirs.sort((a, b) => comparePhaseNum(a, b));
 
     // If filtering by phase number
     if (phase) {
@@ -899,7 +973,7 @@ function cmdPhasesList(cwd, options, raw) {
       const result = {
         files,
         count: files.length,
-        phase_dir: phase ? dirs[0].replace(/^\d+(?:\.\d+)?-?/, '') : null,
+        phase_dir: phase ? dirs[0].replace(/^\d+[A-Za-z]?(?:\.\d+)*-?/, '') : null,
       };
       output(result, raw, files.join('\n'));
       return;
@@ -1863,7 +1937,7 @@ function cmdPhasePlanIndex(cwd, phase, raw) {
   let phaseDirName = null;
   try {
     const entries = fs.readdirSync(phasesDir, { withFileTypes: true });
-    const dirs = entries.filter(e => e.isDirectory()).map(e => e.name).sort();
+    const dirs = entries.filter(e => e.isDirectory()).map(e => e.name).sort((a, b) => comparePhaseNum(a, b));
     const match = dirs.find(d => d.startsWith(normalized));
     if (match) {
       phaseDir = path.join(phasesDir, match);
@@ -1899,9 +1973,10 @@ function cmdPhasePlanIndex(cwd, phase, raw) {
     const content = fs.readFileSync(planPath, 'utf-8');
     const fm = extractFrontmatter(content);
 
-    // Count tasks (## Task N patterns)
-    const taskMatches = content.match(/##\s*Task\s*\d+/gi) || [];
-    const taskCount = taskMatches.length;
+    // Count tasks from canonical XML first, fallback to markdown task headings.
+    const xmlTaskMatches = content.match(/<task\b[^>]*>/gi) || [];
+    const markdownTaskMatches = content.match(/##\s*Task\s*\d+/gi) || [];
+    const taskCount = xmlTaskMatches.length > 0 ? xmlTaskMatches.length : markdownTaskMatches.length;
 
     // Parse wave as integer
     const wave = parseInt(fm.wave, 10) || 1;
@@ -1916,10 +1991,24 @@ function cmdPhasePlanIndex(cwd, phase, raw) {
       hasCheckpoints = true;
     }
 
-    // Parse files-modified
+    // Parse files-modified/files_modified (both accepted).
     let filesModified = [];
-    if (fm['files-modified']) {
-      filesModified = Array.isArray(fm['files-modified']) ? fm['files-modified'] : [fm['files-modified']];
+    const filesModifiedField = fm.files_modified ?? fm['files-modified'];
+    if (filesModifiedField) {
+      filesModified = Array.isArray(filesModifiedField) ? filesModifiedField : [filesModifiedField];
+    }
+
+    // Objective: canonical <objective> block first line overrides frontmatter objective.
+    let objective = fm.objective || null;
+    const objectiveTagMatch = content.match(/<objective>\s*([\s\S]*?)<\/objective>/i);
+    if (objectiveTagMatch) {
+      const firstLine = objectiveTagMatch[1]
+        .split('\n')
+        .map(line => line.trim())
+        .find(Boolean);
+      if (firstLine) {
+        objective = firstLine;
+      }
     }
 
     const hasSummary = completedPlanIds.has(planId);
@@ -1931,7 +2020,7 @@ function cmdPhasePlanIndex(cwd, phase, raw) {
       id: planId,
       wave,
       autonomous,
-      objective: fm.objective || null,
+      objective,
       files_modified: filesModified,
       task_count: taskCount,
       has_summary: hasSummary,
@@ -3158,16 +3247,16 @@ function cmdPhaseComplete(cwd, phaseNum, raw) {
   // Update ROADMAP.md: mark phase complete
   if (fs.existsSync(roadmapPath)) {
     let roadmapContent = fs.readFileSync(roadmapPath, 'utf-8');
+    const phaseEscaped = escapeRegex(phaseNum);
 
     // Checkbox: - [ ] Phase N: → - [x] Phase N: (...completed DATE)
     const checkboxPattern = new RegExp(
-      `(-\\s*\\[)[ ](\\]\\s*.*Phase\\s+${phaseNum.replace('.', '\\.')}[:\\s][^\\n]*)`,
+      `(-\\s*\\[)[ ](\\]\\s*.*Phase\\s+${phaseEscaped}[:\\s][^\\n]*)`,
       'i'
     );
     roadmapContent = roadmapContent.replace(checkboxPattern, `$1x$2 (completed ${today})`);
 
     // Progress table: update Status to Complete, add date
-    const phaseEscaped = phaseNum.replace('.', '\\.');
     const tablePattern = new RegExp(
       `(\\|\\s*${phaseEscaped}\\.?\\s[^|]*\\|[^|]*\\|)\\s*[^|]*(\\|)\\s*[^|]*(\\|)`,
       'i'
@@ -3192,24 +3281,26 @@ function cmdPhaseComplete(cwd, phaseNum, raw) {
     // Update REQUIREMENTS.md traceability for this phase's requirements
     const reqPath = path.join(cwd, '.planning', 'REQUIREMENTS.md');
     if (fs.existsSync(reqPath)) {
-      // Extract Requirements line from roadmap for this phase
-      const reqMatch = roadmapContent.match(
-        new RegExp(`Phase\\s+${phaseNum.replace('.', '\\.')}[\\s\\S]*?\\*\\*Requirements:\\*\\*\\s*([^\\n]+)`, 'i')
+      // Extract only this phase's section to avoid leaking into later phases.
+      const sectionMatch = roadmapContent.match(
+        new RegExp(`#{2,4}\\s*Phase\\s+${phaseEscaped}\\s*:[\\s\\S]*?(?=\\n#{2,4}\\s*Phase\\s+\\d|$)`, 'i')
       );
 
-      if (reqMatch) {
-        const reqIds = reqMatch[1].split(/[,\s]+/).map(r => r.trim()).filter(Boolean);
+      if (sectionMatch) {
+        const reqMatch = sectionMatch[0].match(/\*\*Requirements:\*\*\s*([^\n]+)/i);
+        const reqIds = reqMatch ? (reqMatch[1].match(/\b[A-Z][A-Z0-9_-]*-\d+\b/g) || []) : [];
         let reqContent = fs.readFileSync(reqPath, 'utf-8');
 
         for (const reqId of reqIds) {
+          const escapedReqId = escapeRegex(reqId);
           // Update checkbox: - [ ] **REQ-ID** → - [x] **REQ-ID**
           reqContent = reqContent.replace(
-            new RegExp(`(-\\s*\\[)[ ](\\]\\s*\\*\\*${reqId}\\*\\*)`, 'gi'),
+            new RegExp(`(-\\s*\\[)[ ](\\]\\s*\\*\\*${escapedReqId}\\*\\*)`, 'gi'),
             '$1x$2'
           );
           // Update traceability table: | REQ-ID | Phase N | Pending | → | REQ-ID | Phase N | Complete |
           reqContent = reqContent.replace(
-            new RegExp(`(\\|\\s*${reqId}\\s*\\|[^|]+\\|)\\s*Pending\\s*(\\|)`, 'gi'),
+            new RegExp(`(\\|\\s*${escapedReqId}\\s*\\|[^|]+\\|)\\s*Pending\\s*(\\|)`, 'gi'),
             '$1 Complete $2'
           );
         }
@@ -3225,16 +3316,20 @@ function cmdPhaseComplete(cwd, phaseNum, raw) {
   let isLastPhase = true;
 
   try {
+    const isMilestonePhase = getMilestonePhaseFilter(cwd);
     const entries = fs.readdirSync(phasesDir, { withFileTypes: true });
-    const dirs = entries.filter(e => e.isDirectory()).map(e => e.name).sort();
-    const currentFloat = parseFloat(phaseNum);
+    const dirs = entries
+      .filter(e => e.isDirectory())
+      .map(e => e.name)
+      .filter(d => isMilestonePhase(d))
+      .sort((a, b) => comparePhaseNum(a, b));
+    const currentPhase = normalizePhaseName(phaseNum);
 
     // Find the next phase directory after current
     for (const dir of dirs) {
-      const dm = dir.match(/^(\d+(?:\.\d+)?)-?(.*)/);
+      const dm = dir.match(/^(\d+[A-Z]?(?:\.\d+)*)-?(.*)/i);
       if (dm) {
-        const dirFloat = parseFloat(dm[1]);
-        if (dirFloat > currentFloat) {
+        if (comparePhaseNum(dm[1], currentPhase) > 0) {
           nextPhaseNum = dm[1];
           nextPhaseName = dm[2] || null;
           isLastPhase = false;
@@ -3328,10 +3423,15 @@ function cmdMilestoneComplete(cwd, version, options, raw) {
   let totalPlans = 0;
   let totalTasks = 0;
   const accomplishments = [];
+  const isMilestonePhase = getMilestonePhaseFilter(cwd);
 
   try {
     const entries = fs.readdirSync(phasesDir, { withFileTypes: true });
-    const dirs = entries.filter(e => e.isDirectory()).map(e => e.name).sort();
+    const dirs = entries
+      .filter(e => e.isDirectory())
+      .map(e => e.name)
+      .filter(d => isMilestonePhase(d))
+      .sort((a, b) => comparePhaseNum(a, b));
 
     for (const dir of dirs) {
       phaseCount++;
@@ -3375,13 +3475,16 @@ function cmdMilestoneComplete(cwd, version, options, raw) {
     fs.renameSync(auditFile, path.join(archiveDir, `${version}-MILESTONE-AUDIT.md`));
   }
 
-  // Create/append MILESTONES.md entry
+  // Create/prepend MILESTONES.md entry (reverse chronological order)
   const accomplishmentsList = accomplishments.map(a => `- ${a}`).join('\n');
   const milestoneEntry = `## ${version} ${milestoneName} (Shipped: ${today})\n\n**Phases completed:** ${phaseCount} phases, ${totalPlans} plans, ${totalTasks} tasks\n\n**Key accomplishments:**\n${accomplishmentsList || '- (none recorded)'}\n\n---\n\n`;
 
   if (fs.existsSync(milestonesPath)) {
     const existing = fs.readFileSync(milestonesPath, 'utf-8');
-    fs.writeFileSync(milestonesPath, existing + '\n' + milestoneEntry, 'utf-8');
+    const existingBody = existing
+      .replace(/^#\s*Milestones[^\n]*\n*/i, '')
+      .trimStart();
+    fs.writeFileSync(milestonesPath, `# Milestones\n\n${milestoneEntry}${existingBody}`, 'utf-8');
   } else {
     fs.writeFileSync(milestonesPath, `# Milestones\n\n${milestoneEntry}`, 'utf-8');
   }
@@ -3412,7 +3515,11 @@ function cmdMilestoneComplete(cwd, version, options, raw) {
       fs.mkdirSync(phaseArchiveDir, { recursive: true });
 
       const phaseEntries = fs.readdirSync(phasesDir, { withFileTypes: true });
-      const phaseDirNames = phaseEntries.filter(e => e.isDirectory()).map(e => e.name);
+      const phaseDirNames = phaseEntries
+        .filter(e => e.isDirectory())
+        .map(e => e.name)
+        .filter(d => isMilestonePhase(d))
+        .sort((a, b) => comparePhaseNum(a, b));
       for (const dir of phaseDirNames) {
         fs.renameSync(path.join(phasesDir, dir), path.join(phaseArchiveDir, dir));
       }
@@ -4844,12 +4951,54 @@ function cmdInitProgress(cwd, includes, raw) {
 
 async function main() {
   const args = process.argv.slice(2);
-  const rawIndex = args.indexOf('--raw');
-  const raw = rawIndex !== -1;
-  if (rawIndex !== -1) args.splice(rawIndex, 1);
+  let raw = false;
+  let cwd = process.cwd();
+
+  const setCwd = (value) => {
+    if (!value) {
+      error('Missing value for --cwd');
+    }
+    const resolved = path.resolve(process.cwd(), value);
+    try {
+      const stat = fs.statSync(resolved);
+      if (!stat.isDirectory()) {
+        throw new Error('not-a-dir');
+      }
+    } catch {
+      error(`Invalid --cwd: ${value}`);
+    }
+    cwd = resolved;
+  };
+
+  for (let i = 0; i < args.length;) {
+    const arg = args[i];
+    if (arg === '--raw') {
+      raw = true;
+      args.splice(i, 1);
+      continue;
+    }
+    if (arg === '--cwd') {
+      const value = args[i + 1];
+      if (!value || value.startsWith('--')) {
+        error('Missing value for --cwd');
+      }
+      setCwd(value);
+      args.splice(i, 2);
+      continue;
+    }
+    if (arg.startsWith('--cwd=')) {
+      const value = arg.slice('--cwd='.length);
+      if (!value) {
+        error('Missing value for --cwd');
+      }
+      setCwd(value);
+      args.splice(i, 1);
+      continue;
+    }
+    i++;
+  }
 
   const command = args[0];
-  const cwd = process.cwd();
 
   if (!command) {
     error('Usage: gsd-tools <command> [args] [--raw]\nCommands: state, resolve-model, find-phase, commit, verify-summary, verify, frontmatter, template, generate-slug, current-timestamp, list-todos, verify-path-exists, config-ensure-section, init');
@@ -4859,9 +5008,9 @@ async function main() {
     case 'state': {
       const subcommand = args[1];
       if (subcommand === 'update') {
-        cmdStateUpdate(cwd, args[2], args[3]);
+        stateLib.cmdStateUpdate(cwd, args[2], args[3]);
       } else if (subcommand === 'get') {
-        cmdStateGet(cwd, args[2], raw);
+        stateLib.cmdStateGet(cwd, args[2], raw);
       } else if (subcommand === 'patch') {
         const patches = {};
         for (let i = 2; i < args.length; i += 2) {
@@ -4871,16 +5020,18 @@ async function main() {
             patches[key] = value;
           }
         }
-        cmdStatePatch(cwd, patches, raw);
+        stateLib.cmdStatePatch(cwd, patches, raw);
+      } else if (subcommand === 'json') {
+        stateLib.cmdStateJson(cwd, raw);
       } else if (subcommand === 'advance-plan') {
-        cmdStateAdvancePlan(cwd, raw);
+        stateLib.cmdStateAdvancePlan(cwd, raw);
       } else if (subcommand === 'record-metric') {
         const phaseIdx = args.indexOf('--phase');
         const planIdx = args.indexOf('--plan');
         const durationIdx = args.indexOf('--duration');
         const tasksIdx = args.indexOf('--tasks');
         const filesIdx = args.indexOf('--files');
-        cmdStateRecordMetric(cwd, {
+        stateLib.cmdStateRecordMetric(cwd, {
           phase: phaseIdx !== -1 ? args[phaseIdx + 1] : null,
           plan: planIdx !== -1 ? args[planIdx + 1] : null,
           duration: durationIdx !== -1 ? args[durationIdx + 1] : null,
@@ -4888,42 +5039,50 @@ async function main() {
           files: filesIdx !== -1 ? args[filesIdx + 1] : null,
         }, raw);
       } else if (subcommand === 'update-progress') {
-        cmdStateUpdateProgress(cwd, raw);
+        stateLib.cmdStateUpdateProgress(cwd, raw);
       } else if (subcommand === 'add-decision') {
         const phaseIdx = args.indexOf('--phase');
         const summaryIdx = args.indexOf('--summary');
+        const summaryFileIdx = args.indexOf('--summary-file');
         const rationaleIdx = args.indexOf('--rationale');
-        cmdStateAddDecision(cwd, {
+        const rationaleFileIdx = args.indexOf('--rationale-file');
+        stateLib.cmdStateAddDecision(cwd, {
           phase: phaseIdx !== -1 ? args[phaseIdx + 1] : null,
           summary: summaryIdx !== -1 ? args[summaryIdx + 1] : null,
+          summary_file: summaryFileIdx !== -1 ? args[summaryFileIdx + 1] : null,
           rationale: rationaleIdx !== -1 ? args[rationaleIdx + 1] : '',
+          rationale_file: rationaleFileIdx !== -1 ? args[rationaleFileIdx + 1] : null,
         }, raw);
       } else if (subcommand === 'add-blocker') {
         const textIdx = args.indexOf('--text');
-        cmdStateAddBlocker(cwd, textIdx !== -1 ? args[textIdx + 1] : null, raw);
+        const textFileIdx = args.indexOf('--text-file');
+        stateLib.cmdStateAddBlocker(cwd, {
+          text: textIdx !== -1 ? args[textIdx + 1] : null,
+          text_file: textFileIdx !== -1 ? args[textFileIdx + 1] : null,
+        }, raw);
       } else if (subcommand === 'resolve-blocker') {
         const textIdx = args.indexOf('--text');
-        cmdStateResolveBlocker(cwd, textIdx !== -1 ? args[textIdx + 1] : null, raw);
+        stateLib.cmdStateResolveBlocker(cwd, textIdx !== -1 ? args[textIdx + 1] : null, raw);
       } else if (subcommand === 'record-session') {
         const stoppedIdx = args.indexOf('--stopped-at');
         const resumeIdx = args.indexOf('--resume-file');
-        cmdStateRecordSession(cwd, {
+        stateLib.cmdStateRecordSession(cwd, {
           stopped_at: stoppedIdx !== -1 ? args[stoppedIdx + 1] : null,
           resume_file: resumeIdx !== -1 ? args[resumeIdx + 1] : 'None',
         }, raw);
       } else {
-        cmdStateLoad(cwd, raw);
+        stateLib.cmdStateLoad(cwd, raw);
       }
       break;
     }
 
     case 'resolve-model': {
-      cmdResolveModel(cwd, args[1], raw);
+      commandsLib.cmdResolveModel(cwd, args[1], raw);
       break;
     }
 
     case 'find-phase': {
-      cmdFindPhase(cwd, args[1], raw);
+      phaseLib.cmdFindPhase(cwd, args[1], raw);
       break;
     }
 
@@ -4933,7 +5092,7 @@ async function main() {
       // Parse --files flag (collect args after --files, stopping at other flags)
       const filesIndex = args.indexOf('--files');
       const files = filesIndex !== -1 ? args.slice(filesIndex + 1).filter(a => !a.startsWith('--')) : [];
-      cmdCommit(cwd, message, files, raw, amend);
+      commandsLib.cmdCommit(cwd, message, files, raw, amend);
       break;
     }
 
@@ -4941,14 +5100,14 @@ async function main() {
       const summaryPath = args[1];
       const countIndex = args.indexOf('--check-count');
       const checkCount = countIndex !== -1 ? parseInt(args[countIndex + 1], 10) : 2;
-      cmdVerifySummary(cwd, summaryPath, checkCount, raw);
+      verifyLib.cmdVerifySummary(cwd, summaryPath, checkCount, raw);
       break;
     }
 
     case 'template': {
       const subcommand = args[1];
       if (subcommand === 'select') {
-        cmdTemplateSelect(cwd, args[2], raw);
+        templateLib.cmdTemplateSelect(cwd, args[2], raw);
       } else if (subcommand === 'fill') {
         const templateType = args[2];
         const phaseIdx = args.indexOf('--phase');
@@ -4957,7 +5116,7 @@ async function main() {
         const typeIdx = args.indexOf('--type');
         const waveIdx = args.indexOf('--wave');
         const fieldsIdx = args.indexOf('--fields');
-        cmdTemplateFill(cwd, templateType, {
+        templateLib.cmdTemplateFill(cwd, templateType, {
           phase: phaseIdx !== -1 ? args[phaseIdx + 1] : null,
           plan: planIdx !== -1 ? args[planIdx + 1] : null,
           name: nameIdx !== -1 ? args[nameIdx + 1] : null,
@@ -4976,17 +5135,17 @@ async function main() {
       const file = args[2];
       if (subcommand === 'get') {
         const fieldIdx = args.indexOf('--field');
-        cmdFrontmatterGet(cwd, file, fieldIdx !== -1 ? args[fieldIdx + 1] : null, raw);
+        frontmatterLib.cmdFrontmatterGet(cwd, file, fieldIdx !== -1 ? args[fieldIdx + 1] : null, raw);
       } else if (subcommand === 'set') {
         const fieldIdx = args.indexOf('--field');
         const valueIdx = args.indexOf('--value');
-        cmdFrontmatterSet(cwd, file, fieldIdx !== -1 ? args[fieldIdx + 1] : null, valueIdx !== -1 ? args[valueIdx + 1] : undefined, raw);
+        frontmatterLib.cmdFrontmatterSet(cwd, file, fieldIdx !== -1 ? args[fieldIdx + 1] : null, valueIdx !== -1 ? args[valueIdx + 1] : undefined, raw);
       } else if (subcommand === 'merge') {
         const dataIdx = args.indexOf('--data');
-        cmdFrontmatterMerge(cwd, file, dataIdx !== -1 ? args[dataIdx + 1] : null, raw);
+        frontmatterLib.cmdFrontmatterMerge(cwd, file, dataIdx !== -1 ? args[dataIdx + 1] : null, raw);
       } else if (subcommand === 'validate') {
         const schemaIdx = args.indexOf('--schema');
-        cmdFrontmatterValidate(cwd, file, schemaIdx !== -1 ? args[schemaIdx + 1] : null, raw);
+        frontmatterLib.cmdFrontmatterValidate(cwd, file, schemaIdx !== -1 ? args[schemaIdx + 1] : null, raw);
       } else {
         error('Unknown frontmatter subcommand. Available: get, set, merge, validate');
       }
@@ -4996,17 +5155,17 @@ async function main() {
     case 'verify': {
       const subcommand = args[1];
       if (subcommand === 'plan-structure') {
-        cmdVerifyPlanStructure(cwd, args[2], raw);
+        verifyLib.cmdVerifyPlanStructure(cwd, args[2], raw);
       } else if (subcommand === 'phase-completeness') {
-        cmdVerifyPhaseCompleteness(cwd, args[2], raw);
+        verifyLib.cmdVerifyPhaseCompleteness(cwd, args[2], raw);
       } else if (subcommand === 'references') {
-        cmdVerifyReferences(cwd, args[2], raw);
+        verifyLib.cmdVerifyReferences(cwd, args[2], raw);
       } else if (subcommand === 'commits') {
-        cmdVerifyCommits(cwd, args.slice(2), raw);
+        verifyLib.cmdVerifyCommits(cwd, args.slice(2), raw);
       } else if (subcommand === 'artifacts') {
-        cmdVerifyArtifacts(cwd, args[2], raw);
+        verifyLib.cmdVerifyArtifacts(cwd, args[2], raw);
       } else if (subcommand === 'key-links') {
-        cmdVerifyKeyLinks(cwd, args[2], raw);
+        verifyLib.cmdVerifyKeyLinks(cwd, args[2], raw);
       } else {
         error('Unknown verify subcommand. Available: plan-structure, phase-completeness, references, commits, artifacts, key-links');
       }
@@ -5014,42 +5173,42 @@ async function main() {
     }
 
     case 'generate-slug': {
-      cmdGenerateSlug(args[1], raw);
+      commandsLib.cmdGenerateSlug(args[1], raw);
       break;
     }
 
     case 'current-timestamp': {
-      cmdCurrentTimestamp(args[1] || 'full', raw);
+      commandsLib.cmdCurrentTimestamp(args[1] || 'full', raw);
       break;
     }
 
     case 'list-todos': {
-      cmdListTodos(cwd, args[1], raw);
+      commandsLib.cmdListTodos(cwd, args[1], raw);
       break;
     }
 
     case 'verify-path-exists': {
-      cmdVerifyPathExists(cwd, args[1], raw);
+      commandsLib.cmdVerifyPathExists(cwd, args[1], raw);
       break;
     }
 
     case 'config-ensure-section': {
-      cmdConfigEnsureSection(cwd, raw);
+      configLib.cmdConfigEnsureSection(cwd, raw);
       break;
     }
 
     case 'config-set': {
-      cmdConfigSet(cwd, args[1], args[2], raw);
+      configLib.cmdConfigSet(cwd, args[1], args[2], raw);
       break;
     }
 
     case 'config-get': {
-      cmdConfigGet(cwd, args[1], raw);
+      configLib.cmdConfigGet(cwd, args[1], raw);
       break;
     }
 
     case 'history-digest': {
-      cmdHistoryDigest(cwd, raw);
+      commandsLib.cmdHistoryDigest(cwd, raw);
       break;
     }
 
@@ -5063,7 +5222,7 @@ async function main() {
           phase: phaseIndex !== -1 ? args[phaseIndex + 1] : null,
           includeArchived: args.includes('--include-archived'),
         };
-        cmdPhasesList(cwd, options, raw);
+        phaseLib.cmdPhasesList(cwd, options, raw);
       } else {
         error('Unknown phases subcommand. Available: list');
       }
@@ -5073,11 +5232,11 @@ async function main() {
     case 'roadmap': {
       const subcommand = args[1];
       if (subcommand === 'get-phase') {
-        cmdRoadmapGetPhase(cwd, args[2], raw);
+        roadmapLib.cmdRoadmapGetPhase(cwd, args[2], raw);
       } else if (subcommand === 'analyze') {
-        cmdRoadmapAnalyze(cwd, raw);
+        roadmapLib.cmdRoadmapAnalyze(cwd, raw);
       } else if (subcommand === 'update-plan-progress') {
-        cmdRoadmapUpdatePlanProgress(cwd, args[2], raw);
+        roadmapLib.cmdRoadmapUpdatePlanProgress(cwd, args[2], raw);
       } else {
         error('Unknown roadmap subcommand. Available: get-phase, analyze, update-plan-progress');
       }
@@ -5087,18 +5246,28 @@ async function main() {
     case 'phase': {
       const subcommand = args[1];
       if (subcommand === 'next-decimal') {
-        cmdPhaseNextDecimal(cwd, args[2], raw);
+        phaseLib.cmdPhaseNextDecimal(cwd, args[2], raw);
       } else if (subcommand === 'add') {
-        cmdPhaseAdd(cwd, args.slice(2).join(' '), raw);
+        phaseLib.cmdPhaseAdd(cwd, args.slice(2).join(' '), raw);
       } else if (subcommand === 'insert') {
-        cmdPhaseInsert(cwd, args[2], args.slice(3).join(' '), raw);
+        phaseLib.cmdPhaseInsert(cwd, args[2], args.slice(3).join(' '), raw);
       } else if (subcommand === 'remove') {
         const forceFlag = args.includes('--force');
-        cmdPhaseRemove(cwd, args[2], { force: forceFlag }, raw);
+        phaseLib.cmdPhaseRemove(cwd, args[2], { force: forceFlag }, raw);
       } else if (subcommand === 'complete') {
-        cmdPhaseComplete(cwd, args[2], raw);
+        phaseLib.cmdPhaseComplete(cwd, args[2], raw);
       } else {
         error('Unknown phase subcommand. Available: next-decimal, add, insert, remove, complete');
+      }
+      break;
+    }
+
+    case 'requirements': {
+      const subcommand = args[1];
+      if (subcommand === 'mark-complete') {
+        milestoneLib.cmdRequirementsMarkComplete(cwd, args.slice(2), raw);
+      } else {
+        error('Unknown requirements subcommand. Available: mark-complete');
       }
       break;
     }
@@ -5118,7 +5287,7 @@ async function main() {
           }
           milestoneName = nameArgs.join(' ') || null;
         }
-        cmdMilestoneComplete(cwd, args[2], { name: milestoneName, archivePhases }, raw);
+        milestoneLib.cmdMilestoneComplete(cwd, args[2], { name: milestoneName, archivePhases }, raw);
       } else {
         error('Unknown milestone subcommand. Available: complete');
       }
@@ -5128,10 +5297,10 @@ async function main() {
     case 'validate': {
       const subcommand = args[1];
       if (subcommand === 'consistency') {
-        cmdValidateConsistency(cwd, raw);
+        verifyLib.cmdValidateConsistency(cwd, raw);
       } else if (subcommand === 'health') {
         const repairFlag = args.includes('--repair');
-        cmdValidateHealth(cwd, { repair: repairFlag }, raw);
+        verifyLib.cmdValidateHealth(cwd, { repair: repairFlag }, raw);
       } else {
         error('Unknown validate subcommand. Available: consistency, health');
       }
@@ -5140,14 +5309,14 @@ async function main() {
 
     case 'progress': {
       const subcommand = args[1] || 'json';
-      cmdProgressRender(cwd, subcommand, raw);
+      commandsLib.cmdProgressRender(cwd, subcommand, raw);
       break;
     }
 
     case 'todo': {
       const subcommand = args[1];
       if (subcommand === 'complete') {
-        cmdTodoComplete(cwd, args[2], raw);
+        commandsLib.cmdTodoComplete(cwd, args[2], raw);
       } else {
         error('Unknown todo subcommand. Available: complete');
       }
@@ -5162,7 +5331,7 @@ async function main() {
         phase: phaseIndex !== -1 ? args[phaseIndex + 1] : null,
         name: nameIndex !== -1 ? args.slice(nameIndex + 1).join(' ') : null,
       };
-      cmdScaffold(cwd, scaffoldType, scaffoldOptions, raw);
+      commandsLib.cmdScaffold(cwd, scaffoldType, scaffoldOptions, raw);
       break;
     }
 
@@ -5171,40 +5340,40 @@ async function main() {
       const includes = parseIncludeFlag(args);
       switch (workflow) {
         case 'execute-phase':
-          cmdInitExecutePhase(cwd, args[2], includes, raw);
+          initLib.cmdInitExecutePhase(cwd, args[2], raw);
           break;
         case 'plan-phase':
-          cmdInitPlanPhase(cwd, args[2], includes, raw);
+          initLib.cmdInitPlanPhase(cwd, args[2], raw);
           break;
         case 'new-project':
-          cmdInitNewProject(cwd, raw);
+          initLib.cmdInitNewProject(cwd, raw);
           break;
         case 'new-milestone':
-          cmdInitNewMilestone(cwd, raw);
+          initLib.cmdInitNewMilestone(cwd, raw);
           break;
         case 'quick':
-          cmdInitQuick(cwd, args.slice(2).join(' '), raw);
+          initLib.cmdInitQuick(cwd, args.slice(2).join(' '), raw);
           break;
         case 'resume':
-          cmdInitResume(cwd, raw);
+          initLib.cmdInitResume(cwd, raw);
           break;
         case 'verify-work':
-          cmdInitVerifyWork(cwd, args[2], raw);
+          initLib.cmdInitVerifyWork(cwd, args[2], raw);
           break;
         case 'phase-op':
-          cmdInitPhaseOp(cwd, args[2], raw);
+          initLib.cmdInitPhaseOp(cwd, args[2], raw);
           break;
         case 'todos':
-          cmdInitTodos(cwd, args[2], raw);
+          initLib.cmdInitTodos(cwd, args[2], raw);
           break;
         case 'milestone-op':
-          cmdInitMilestoneOp(cwd, raw);
+          initLib.cmdInitMilestoneOp(cwd, raw);
           break;
         case 'map-codebase':
-          cmdInitMapCodebase(cwd, raw);
+          initLib.cmdInitMapCodebase(cwd, raw);
           break;
         case 'progress':
-          cmdInitProgress(cwd, includes, raw);
+          initLib.cmdInitProgress(cwd, includes, raw);
           break;
         default:
           error(`Unknown init workflow: ${workflow}\nAvailable: execute-phase, plan-phase, new-project, new-milestone, quick, resume, verify-work, phase-op, todos, milestone-op, map-codebase, progress`);
@@ -5213,12 +5382,12 @@ async function main() {
     }
 
     case 'phase-plan-index': {
-      cmdPhasePlanIndex(cwd, args[1], raw);
+      phaseLib.cmdPhasePlanIndex(cwd, args[1], raw);
       break;
     }
 
     case 'state-snapshot': {
-      cmdStateSnapshot(cwd, raw);
+      stateLib.cmdStateSnapshot(cwd, raw);
       break;
     }
 
@@ -5226,7 +5395,7 @@ async function main() {
       const summaryPath = args[1];
       const fieldsIndex = args.indexOf('--fields');
       const fields = fieldsIndex !== -1 ? args[fieldsIndex + 1].split(',') : null;
-      cmdSummaryExtract(cwd, summaryPath, fields, raw);
+      commandsLib.cmdSummaryExtract(cwd, summaryPath, fields, raw);
       break;
     }
 
@@ -5234,7 +5403,7 @@ async function main() {
       const query = args[1];
       const limitIdx = args.indexOf('--limit');
       const freshnessIdx = args.indexOf('--freshness');
-      await cmdWebsearch(query, {
+      await commandsLib.cmdWebsearch(query, {
         limit: limitIdx !== -1 ? parseInt(args[limitIdx + 1], 10) : 10,
         freshness: freshnessIdx !== -1 ? args[freshnessIdx + 1] : null,
       }, raw);

@@ -89,6 +89,10 @@ assert('config-ensure-section idempotent', r.parsed?.reason === 'already_exists'
 r = gsdJson('config-set model_profile quality', tmpDir);
 assert('config-set writes value', r.parsed?.updated === true);
 
+// Keep e2e deterministic even when ~/.gsd/defaults.json overrides commit_docs
+r = gsdJson('config-set commit_docs true', tmpDir);
+assert('config-set commit_docs for git checks', r.parsed?.updated === true && r.parsed?.value === true);
+
 // config-get
 r = gsdJson('config-get model_profile', tmpDir);
 assert('config-get reads value', r.stdout?.includes('quality'));
@@ -132,7 +136,7 @@ assert('state update writes field', true); // state update has specific format r
 
 // Verify state updated on disk
 const updatedState = fs.readFileSync(path.join(tmpDir, '.planning', 'STATE.md'), 'utf-8');
-assert('state file still readable', updatedState.includes('current_phase'));
+assert('state file still readable', updatedState.includes('# Project State'));
 
 // state-snapshot
 r = gsdJson('state-snapshot', tmpDir);
