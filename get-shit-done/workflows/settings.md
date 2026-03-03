@@ -43,9 +43,9 @@ AskUserQuestion([
     header: "Model",
     multiSelect: false,
     options: [
-      { label: "Quality", description: "gpt-5.3-codex with high thinking for decision-makers, medium for analysis" },
-      { label: "Balanced (Recommended)", description: "gpt-5.3-codex with high thinking for planner/debugger, lower for others" },
-      { label: "Budget", description: "gpt-5.3-codex with minimal thinking — fastest, lowest cost" }
+      { label: "Quality", description: "gpt-5.3-codex with xhigh thinking for decision-makers, high for analysis" },
+      { label: "Balanced (Recommended)", description: "gpt-5.3-codex with xhigh thinking for planner/debugger, high/medium for others" },
+      { label: "Budget", description: "gpt-5.3-codex with high thinking for planner/debugger, medium everywhere else" }
     ]
   },
   {

@@ -309,9 +309,9 @@ Usage: `$gsd-settings`
 **`$gsd-set-profile <profile>`**
 Quick switch model profile for GSD agents.
 
-- `quality` — high thinking for decision-makers, medium for analysis agents
-- `balanced` — high thinking for planner/debugger, medium/low for others (default)
-- `budget` — minimal thinking — medium for planner/debugger, low everywhere else
+- `quality` — xhigh thinking for decision-makers, high for analysis agents
+- `balanced` — xhigh thinking for planner/debugger, high/medium for others (default)
+- `budget` — minimal thinking — high for planner/debugger, medium everywhere else
 
 Usage: `$gsd-set-profile budget`
 

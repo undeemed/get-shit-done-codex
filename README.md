@@ -268,9 +268,9 @@ All agents use **gpt-5.3-codex** with role-based thinking levels:
 
 | Profile    | Planner/Debugger | Executor/Verifier | Researchers/Mapper |
 | ---------- | ---------------- | ----------------- | ------------------ |
-| `quality`  | 🟢 high          | 🟡 medium         | 🟡 medium/🔵 low   |
-| `balanced` | 🟢 high          | 🟡 medium         | 🔵 low             |
-| `budget`   | 🟡 medium        | 🔵 low            | 🔵 low             |
+| `quality`  | 🔴 xhigh         | 🟢 high           | 🟢 high/🟡 medium  |
+| `balanced` | 🔴 xhigh         | 🟢 high           | 🟡 medium          |
+| `budget`   | 🟢 high          | 🟡 medium         | 🟡 medium          |
 
 Switch profiles: `$gsd-set-profile budget`
 

@@ -58,9 +58,9 @@ Agents will now use:
 Example:
 | Agent | Model | Thinking |
 |-------|-------|----------|
-| gsd-planner | gpt-5.3-codex | high |
-| gsd-executor | gpt-5.3-codex | medium |
-| gsd-verifier | gpt-5.3-codex | medium |
+| gsd-planner | gpt-5.3-codex | xhigh |
+| gsd-executor | gpt-5.3-codex | high |
+| gsd-verifier | gpt-5.3-codex | high |
 | ... | ... | ... |
 
 Next spawned agents will use the new profile.

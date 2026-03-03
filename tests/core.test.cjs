@@ -147,7 +147,7 @@ describe('resolveModelInternal', () => {
     test('all known agents resolve to { model, thinking } for each profile', () => {
       const knownAgents = ['gsd-planner', 'gsd-executor', 'gsd-phase-researcher', 'gsd-codebase-mapper'];
       const profiles = ['quality', 'balanced', 'budget'];
-      const validThinking = ['high', 'medium', 'low'];
+      const validThinking = ['xhigh', 'high', 'medium', 'low'];
 
       for (const profile of profiles) {
         writeConfig({ model_profile: profile });
@@ -163,15 +163,15 @@ describe('resolveModelInternal', () => {
       }
     });
 
-    test('planner gets high thinking in balanced, mapper gets low', () => {
+    test('planner gets xhigh thinking in balanced, mapper gets medium', () => {
       writeConfig({ model_profile: 'balanced' });
-      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-planner').thinking, 'high');
-      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-codebase-mapper').thinking, 'low');
+      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-planner').thinking, 'xhigh');
+      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-codebase-mapper').thinking, 'medium');
     });
 
-    test('debugger gets high thinking even in balanced', () => {
+    test('debugger gets xhigh thinking even in balanced', () => {
       writeConfig({ model_profile: 'balanced' });
-      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-debugger').thinking, 'high');
+      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-debugger').thinking, 'xhigh');
     });
   });
 
@@ -190,27 +190,27 @@ describe('resolveModelInternal', () => {
         model_profile: 'quality',
         model_overrides: { 'gsd-executor': 'low' },
       });
-      // gsd-planner not overridden, should use quality profile -> high
+      // gsd-planner not overridden, should use quality profile -> xhigh
       const result = resolveModelInternal(tmpDir, 'gsd-planner');
       assert.strictEqual(result.model, 'inherit');
-      assert.strictEqual(result.thinking, 'high');
+      assert.strictEqual(result.thinking, 'xhigh');
     });
   });
 
   describe('edge cases', () => {
-    test('returns medium thinking for unknown agent type', () => {
+    test('returns high thinking for unknown agent type', () => {
       writeConfig({ model_profile: 'balanced' });
       const result = resolveModelInternal(tmpDir, 'gsd-nonexistent');
       assert.strictEqual(result.model, 'inherit');
-      assert.strictEqual(result.thinking, 'medium');
+      assert.strictEqual(result.thinking, 'high');
     });
 
     test('defaults to balanced profile when model_profile missing', () => {
       writeConfig({});
-      // balanced profile, gsd-planner -> high thinking
+      // balanced profile, gsd-planner -> xhigh thinking
       const result = resolveModelInternal(tmpDir, 'gsd-planner');
       assert.strictEqual(result.model, 'inherit');
-      assert.strictEqual(result.thinking, 'high');
+      assert.strictEqual(result.thinking, 'xhigh');
     });
   });
 });

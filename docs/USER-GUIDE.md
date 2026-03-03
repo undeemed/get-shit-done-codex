@@ -283,25 +283,27 @@ Disable these to speed up phases in familiar domains or when conserving tokens.
 
 ### Model Profiles (Per-Agent Breakdown)
 
-| Agent                    | `quality` | `balanced`   | `budget`     |
-| ------------------------ | --------- | ------------ | ------------ |
-| gsd-planner              | o3        | o3           | o4-mini      |
-| gsd-roadmapper           | o3        | o4-mini      | o4-mini      |
-| gsd-executor             | o3        | o4-mini      | o4-mini      |
-| gsd-phase-researcher     | o3        | o4-mini      | gpt-4.1-nano |
-| gsd-project-researcher   | o3        | o4-mini      | gpt-4.1-nano |
-| gsd-research-synthesizer | o4-mini   | o4-mini      | gpt-4.1-nano |
-| gsd-debugger             | o3        | o4-mini      | o4-mini      |
-| gsd-codebase-mapper      | o4-mini   | gpt-4.1-nano | gpt-4.1-nano |
-| gsd-verifier             | o4-mini   | o4-mini      | gpt-4.1-nano |
-| gsd-plan-checker         | o4-mini   | o4-mini      | gpt-4.1-nano |
-| gsd-integration-checker  | o4-mini   | o4-mini      | gpt-4.1-nano |
+| Agent                    | `quality` | `balanced` | `budget`  |
+| ------------------------ | --------- | ---------- | --------- |
+| gsd-planner              | 🔴 xhigh  | 🔴 xhigh   | 🟢 high   |
+| gsd-roadmapper           | 🔴 xhigh  | 🟢 high    | 🟡 medium |
+| gsd-executor             | 🔴 xhigh  | 🟢 high    | 🟡 medium |
+| gsd-phase-researcher     | 🟢 high   | 🟡 medium  | 🟡 medium |
+| gsd-project-researcher   | 🟢 high   | 🟡 medium  | 🟡 medium |
+| gsd-research-synthesizer | 🟢 high   | 🟡 medium  | 🟡 medium |
+| gsd-debugger             | 🔴 xhigh  | 🔴 xhigh   | 🟢 high   |
+| gsd-codebase-mapper      | 🟡 medium | 🟡 medium  | 🟡 medium |
+| gsd-verifier             | 🟢 high   | 🟢 high    | 🟡 medium |
+| gsd-plan-checker         | 🟢 high   | 🟡 medium  | 🟡 medium |
+| gsd-integration-checker  | 🟢 high   | 🟡 medium  | 🟡 medium |
+
+All agents use `gpt-5.3-codex`. The thinking level controls reasoning budget per role.
 
 **Profile philosophy:**
 
-- **quality** -- o3 for all decision-making agents, o4-mini for read-only verification. Use when quota is available and the work is critical.
-- **balanced** -- o3 only for planning (where architecture decisions happen), o4-mini for everything else. The default for good reason.
-- **budget** -- o4-mini for anything that writes code, gpt-4.1-nano for research and verification. Use for high-volume work or less critical phases.
+- **quality** -- 🔴 xhigh for all decision-making agents, 🟢 high for analysis/verification. Use when quota is available and the work is critical.
+- **balanced** -- 🔴 xhigh only for planner/debugger (highest-impact decisions), 🟢 high for executor/verifier, 🟡 medium for everything else. The default for good reason.
+- **budget** -- 🟢 high for planner/debugger (always need reasoning), 🟡 medium everywhere else. Use for high-volume work or less critical phases.
 
 ---
 

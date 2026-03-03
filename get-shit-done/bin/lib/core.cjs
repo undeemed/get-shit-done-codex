@@ -16,21 +16,21 @@ function toPosixPath(p) {
 // ─── Model Profile Table ─────────────────────────────────────────────────────
 
 const MODEL_PROFILES = {
-  //                              quality                          balanced                         budget
-  'gsd-planner':              { quality: { m: 'gpt-5.3-codex', t: 'high' },   balanced: { m: 'gpt-5.3-codex', t: 'high' },   budget: { m: 'gpt-5.3-codex', t: 'medium' } },
-  'gsd-roadmapper':           { quality: { m: 'gpt-5.3-codex', t: 'high' },   balanced: { m: 'gpt-5.3-codex', t: 'medium' }, budget: { m: 'gpt-5.3-codex', t: 'low' } },
-  'gsd-executor':             { quality: { m: 'gpt-5.3-codex', t: 'high' },   balanced: { m: 'gpt-5.3-codex', t: 'medium' }, budget: { m: 'gpt-5.3-codex', t: 'low' } },
-  'gsd-phase-researcher':     { quality: { m: 'gpt-5.3-codex', t: 'medium' }, balanced: { m: 'gpt-5.3-codex', t: 'low' },    budget: { m: 'gpt-5.3-codex', t: 'low' } },
-  'gsd-project-researcher':   { quality: { m: 'gpt-5.3-codex', t: 'medium' }, balanced: { m: 'gpt-5.3-codex', t: 'low' },    budget: { m: 'gpt-5.3-codex', t: 'low' } },
-  'gsd-research-synthesizer': { quality: { m: 'gpt-5.3-codex', t: 'medium' }, balanced: { m: 'gpt-5.3-codex', t: 'low' },    budget: { m: 'gpt-5.3-codex', t: 'low' } },
-  'gsd-debugger':             { quality: { m: 'gpt-5.3-codex', t: 'high' },   balanced: { m: 'gpt-5.3-codex', t: 'high' },   budget: { m: 'gpt-5.3-codex', t: 'medium' } },
-  'gsd-codebase-mapper':      { quality: { m: 'gpt-5.3-codex', t: 'low' },    balanced: { m: 'gpt-5.3-codex', t: 'low' },    budget: { m: 'gpt-5.3-codex', t: 'low' } },
-  'gsd-verifier':             { quality: { m: 'gpt-5.3-codex', t: 'medium' }, balanced: { m: 'gpt-5.3-codex', t: 'medium' }, budget: { m: 'gpt-5.3-codex', t: 'low' } },
-  'gsd-plan-checker':         { quality: { m: 'gpt-5.3-codex', t: 'medium' }, balanced: { m: 'gpt-5.3-codex', t: 'low' },    budget: { m: 'gpt-5.3-codex', t: 'low' } },
-  'gsd-integration-checker':  { quality: { m: 'gpt-5.3-codex', t: 'medium' }, balanced: { m: 'gpt-5.3-codex', t: 'low' },    budget: { m: 'gpt-5.3-codex', t: 'low' } },
+  //                              quality                           balanced                          budget
+  'gsd-planner':              { quality: { m: 'gpt-5.3-codex', t: 'xhigh' },  balanced: { m: 'gpt-5.3-codex', t: 'xhigh' },  budget: { m: 'gpt-5.3-codex', t: 'high' } },
+  'gsd-roadmapper':           { quality: { m: 'gpt-5.3-codex', t: 'xhigh' },  balanced: { m: 'gpt-5.3-codex', t: 'high' },   budget: { m: 'gpt-5.3-codex', t: 'medium' } },
+  'gsd-executor':             { quality: { m: 'gpt-5.3-codex', t: 'xhigh' },  balanced: { m: 'gpt-5.3-codex', t: 'high' },   budget: { m: 'gpt-5.3-codex', t: 'medium' } },
+  'gsd-phase-researcher':     { quality: { m: 'gpt-5.3-codex', t: 'high' },   balanced: { m: 'gpt-5.3-codex', t: 'medium' }, budget: { m: 'gpt-5.3-codex', t: 'medium' } },
+  'gsd-project-researcher':   { quality: { m: 'gpt-5.3-codex', t: 'high' },   balanced: { m: 'gpt-5.3-codex', t: 'medium' }, budget: { m: 'gpt-5.3-codex', t: 'medium' } },
+  'gsd-research-synthesizer': { quality: { m: 'gpt-5.3-codex', t: 'high' },   balanced: { m: 'gpt-5.3-codex', t: 'medium' }, budget: { m: 'gpt-5.3-codex', t: 'medium' } },
+  'gsd-debugger':             { quality: { m: 'gpt-5.3-codex', t: 'xhigh' },  balanced: { m: 'gpt-5.3-codex', t: 'xhigh' },  budget: { m: 'gpt-5.3-codex', t: 'high' } },
+  'gsd-codebase-mapper':      { quality: { m: 'gpt-5.3-codex', t: 'medium' }, balanced: { m: 'gpt-5.3-codex', t: 'medium' }, budget: { m: 'gpt-5.3-codex', t: 'medium' } },
+  'gsd-verifier':             { quality: { m: 'gpt-5.3-codex', t: 'high' },   balanced: { m: 'gpt-5.3-codex', t: 'high' },   budget: { m: 'gpt-5.3-codex', t: 'medium' } },
+  'gsd-plan-checker':         { quality: { m: 'gpt-5.3-codex', t: 'high' },   balanced: { m: 'gpt-5.3-codex', t: 'medium' }, budget: { m: 'gpt-5.3-codex', t: 'medium' } },
+  'gsd-integration-checker':  { quality: { m: 'gpt-5.3-codex', t: 'high' },   balanced: { m: 'gpt-5.3-codex', t: 'medium' }, budget: { m: 'gpt-5.3-codex', t: 'medium' } },
 };
 
-const DEFAULT_ENTRY = { m: 'gpt-5.3-codex', t: 'medium' };
+const DEFAULT_ENTRY = { m: 'gpt-5.3-codex', t: 'high' };
 
 // ─── Output helpers ───────────────────────────────────────────────────────────
 
@@ -366,15 +366,15 @@ function resolveModelInternal(cwd, agentType) {
   if (override) {
     // Override can be a string (thinking level) or { m, t } object
     if (typeof override === 'string') {
-      return { model: 'inherit', thinking: override === 'high' || override === 'medium' || override === 'low' ? override : 'medium' };
+      return { model: 'inherit', thinking: override === 'xhigh' || override === 'high' || override === 'medium' || override === 'low' ? override : 'high' };
     }
-    return { model: 'inherit', thinking: override.t || 'medium' };
+    return { model: 'inherit', thinking: override.t || 'high' };
   }
 
   // Fall back to profile lookup
   const profile = config.model_profile || 'balanced';
   const agentModels = MODEL_PROFILES[agentType];
-  if (!agentModels) return { model: 'inherit', thinking: 'medium' };
+  if (!agentModels) return { model: 'inherit', thinking: 'high' };
   const entry = agentModels[profile] || agentModels['balanced'] || DEFAULT_ENTRY;
   return { model: 'inherit', thinking: entry.t };
 }

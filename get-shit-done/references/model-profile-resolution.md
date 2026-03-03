@@ -17,7 +17,7 @@ Default: `balanced` if not set or config missing.
 Look up the agent in the table for the resolved profile. Each entry returns:
 
 ```json
-{ "model": "inherit", "thinking": "high" }
+{ "model": "inherit", "thinking": "xhigh" }
 ```
 
 All agents use `gpt-5.3-codex` (via `"inherit"`). The `thinking` field controls reasoning effort.
@@ -29,7 +29,7 @@ Task(
   prompt="...",
   subagent_type="gsd-planner",
   model="inherit",
-  thinking="{resolved_thinking}"  # "high", "medium", or "low"
+  thinking="{resolved_thinking}"  # "xhigh", "high", "medium", or "low"
 )
 ```
 
