@@ -43,9 +43,9 @@ AskUserQuestion([
     header: "Model",
     multiSelect: false,
     options: [
-      { label: "Quality", description: "o3 everywhere except verification (highest cost)" },
-      { label: "Balanced (Recommended)", description: "o3 for planning, o4-mini for execution/verification" },
-      { label: "Budget", description: "o4-mini for writing, gpt-4.1-nano for research/verification (lowest cost)" }
+      { label: "Quality", description: "gpt-5.3-codex with high thinking for decision-makers, medium for analysis" },
+      { label: "Balanced (Recommended)", description: "gpt-5.3-codex with high thinking for planner/debugger, lower for others" },
+      { label: "Budget", description: "gpt-5.3-codex with minimal thinking — fastest, lowest cost" }
     ]
   },
   {

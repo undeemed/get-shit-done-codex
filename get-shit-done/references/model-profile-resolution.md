@@ -14,21 +14,28 @@ Default: `balanced` if not set or config missing.
 
 @~/.codex/get-shit-done/references/model-profiles.md
 
-Look up the agent in the table for the resolved profile. Pass the model parameter to Task calls:
+Look up the agent in the table for the resolved profile. Each entry returns:
+
+```json
+{ "model": "inherit", "thinking": "high" }
+```
+
+All agents use `gpt-5.3-codex` (via `"inherit"`). The `thinking` field controls reasoning effort.
+
+Pass both parameters to Task calls:
 
 ```
 Task(
   prompt="...",
   subagent_type="gsd-planner",
-  model="{resolved_model}"  # "inherit", "o4-mini", or "gpt-4.1-nano"
+  model="inherit",
+  thinking="{resolved_thinking}"  # "high", "medium", or "low"
 )
 ```
-
-**Note:** o3-tier agents resolve to `"inherit"` (not `"o3"`). This causes the agent to use the parent session's model, avoiding conflicts with organization policies that may block specific model versions.
 
 ## Usage
 
 1. Resolve once at orchestration start
 2. Store the profile value
-3. Look up each agent's model from the table when spawning
-4. Pass model parameter to each Task call (values: `"inherit"`, `"o4-mini"`, `"gpt-4.1-nano"`)
+3. Look up each agent's `{ model, thinking }` from the table
+4. Pass both model and thinking parameters to each Task call

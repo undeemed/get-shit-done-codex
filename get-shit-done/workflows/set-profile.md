@@ -56,12 +56,12 @@ Agents will now use:
 [Show table from MODEL_PROFILES in gsd-tools.cjs for selected profile]
 
 Example:
-| Agent | Model |
-|-------|-------|
-| gsd-planner | o3 |
-| gsd-executor | o4-mini |
-| gsd-verifier | gpt-4.1-nano |
-| ... | ... |
+| Agent | Model | Thinking |
+|-------|-------|----------|
+| gsd-planner | gpt-5.3-codex | high |
+| gsd-executor | gpt-5.3-codex | medium |
+| gsd-verifier | gpt-5.3-codex | medium |
+| ... | ... | ... |
 
 Next spawned agents will use the new profile.
 ```

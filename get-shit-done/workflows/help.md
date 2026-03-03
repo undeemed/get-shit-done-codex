@@ -309,9 +309,9 @@ Usage: `$gsd-settings`
 **`$gsd-set-profile <profile>`**
 Quick switch model profile for GSD agents.
 
-- `quality` — o3 everywhere except verification
-- `balanced` — o3 for planning, o4-mini for execution (default)
-- `budget` — o4-mini for writing, gpt-4.1-nano for research/verification
+- `quality` — high thinking for decision-makers, medium for analysis agents
+- `balanced` — high thinking for planner/debugger, medium/low for others (default)
+- `budget` — minimal thinking — medium for planner/debugger, low everywhere else
 
 Usage: `$gsd-set-profile budget`
 
