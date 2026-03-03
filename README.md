@@ -268,9 +268,9 @@ All agents use **gpt-5.3-codex** with role-based thinking levels:
 
 | Profile    | Planner/Debugger | Executor/Verifier | Researchers/Mapper |
 | ---------- | ---------------- | ----------------- | ------------------ |
-| `quality`  | 🟢 high          | 🟡 medium         | 🟡 medium/🔵 low   |
-| `balanced` | 🟢 high          | 🟡 medium         | 🔵 low             |
-| `budget`   | 🟡 medium        | 🔵 low            | 🔵 low             |
+| `quality`  | 🔴 xhigh         | 🟢 high           | 🟢 high/🟡 medium  |
+| `balanced` | 🔴 xhigh         | 🟢 high           | 🟡 medium          |
+| `budget`   | 🟢 high          | 🟡 medium         | 🟡 medium          |
 
 Switch profiles: `$gsd-set-profile budget`
 
@@ -310,6 +310,13 @@ npx @undeemed/get-shit-done-codex@latest
 - Yes. The installer prints an update notice if a newer npm version exists.
 - In-Codex update checks are available via `$gsd-update`.
 - For release notifications outside the CLI, enable GitHub release watching on this repo.
+
+**`gsd-tools` scripting tips**
+
+- Use `--cwd <path>` (or `--cwd=<path>`) to target a specific project directory from automation scripts.
+- Use `state json` for machine-readable state; use `state-snapshot` for structured markdown-field extraction.
+- Use `requirements mark-complete REQ-01 REQ-02` to update both requirement checkboxes and traceability rows.
+- If `commit` appears to skip unexpectedly, check `.planning/config.json` for `commit_docs: false` and also check user defaults in `~/.gsd/defaults.json`.
 
 ## More Documentation
 

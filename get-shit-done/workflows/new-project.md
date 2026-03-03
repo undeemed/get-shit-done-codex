@@ -164,9 +164,9 @@ AskUserQuestion([
     question: "Which AI models for planning agents?",
     multiSelect: false,
     options: [
-      { label: "Balanced (Recommended)", description: "gpt-5.3-codex — smart thinking allocation per role" },
-      { label: "Quality", description: "gpt-5.3-codex — high thinking for all decision-makers" },
-      { label: "Budget", description: "gpt-5.3-codex — minimal thinking, fastest/cheapest" }
+      { label: "Balanced (Recommended)", description: "gpt-5.3-codex — xhigh/high/medium thinking allocation per role" },
+      { label: "Quality", description: "gpt-5.3-codex — xhigh thinking for all decision-makers" },
+      { label: "Budget", description: "gpt-5.3-codex — high/medium thinking, fastest/cheapest" }
     ]
   }
 ])
@@ -459,9 +459,9 @@ questions: [
     question: "Which AI models for planning agents?",
     multiSelect: false,
     options: [
-      { label: "Balanced (Recommended)", description: "gpt-5.3-codex — smart thinking allocation per role" },
-      { label: "Quality", description: "gpt-5.3-codex — high thinking for all decision-makers" },
-      { label: "Budget", description: "gpt-5.3-codex — minimal thinking, fastest/cheapest" }
+      { label: "Balanced (Recommended)", description: "gpt-5.3-codex — xhigh/high/medium thinking allocation per role" },
+      { label: "Quality", description: "gpt-5.3-codex — xhigh thinking for all decision-makers" },
+      { label: "Budget", description: "gpt-5.3-codex — high/medium thinking, fastest/cheapest" }
     ]
   }
 ]

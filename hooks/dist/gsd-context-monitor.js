@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Context Monitor - PostToolUse hook
+// Context Monitor - PostToolUse hook for Codex CLI
 // Reads context metrics from the statusline bridge file and injects
 // warnings when context usage is high. This makes the AGENT aware of
 // context limits (the statusline only shows the user).
