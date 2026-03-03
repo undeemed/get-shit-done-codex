@@ -6,6 +6,25 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.24.1] - 2026-03-03
+
+### Changed
+
+- **Model system overhaul** — all agents now use `gpt-5.3-codex` (Codex-optimized) with role-based thinking levels instead of different models per profile:
+  - Profiles now control **reasoning effort** (`high`/`medium`/`low`) rather than model selection
+  - `resolveModelInternal` returns `{ model: 'inherit', thinking }` objects (breaking API change from string return)
+  - `MODEL_PROFILES` entries use `{ m, t }` format: `{ m: 'gpt-5.3-codex', t: 'high' }`
+  - Thinking allocation by role: planner/debugger → high, executor/verifier → medium, mapper/researchers → low
+- Updated all workflow and reference docs to describe thinking-level profiles:
+  - `model-profiles.md` — full thinking-level reference table with role rationale
+  - `model-profile-resolution.md` — updated resolution docs for `{ model, thinking }` return type
+  - `set-profile.md`, `settings.md`, `help.md`, `new-project.md` — UI descriptions updated
+
+### Fixed
+
+- **`core.cjs` desync** — `core.cjs` still had the original Anthropic model names (`opus`/`sonnet`/`haiku`) while `gsd-tools.cjs` had been updated; both files now use identical `MODEL_PROFILES` and `resolveModelInternal`
+- Replaced all remaining old model references (`o3`, `gpt-4.1-nano`, `o4-mini`, `gpt-5`, `gpt-5-nano`) with `gpt-5.3-codex` + thinking levels across all code and docs
+
 ## [1.24.0] - 2026-03-03
 
 ### Added
