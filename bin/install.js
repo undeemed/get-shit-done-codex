@@ -19,6 +19,23 @@ const UPSTREAM_PACKAGE = 'get-shit-done-cc';
 const UPSTREAM_REPO = 'https://github.com/glittercowboy/get-shit-done';
 const FORK_REPO = 'https://github.com/undeemed/get-shit-done-codex';
 
+// ─── Codex Config Constants ───────────────────────────────────────────────────
+const GSD_CODEX_MARKER = '# GSD Agent Configuration \u2014 managed by get-shit-done installer';
+
+const CODEX_AGENT_SANDBOX = {
+  'gsd-executor': 'workspace-write',
+  'gsd-planner': 'workspace-write',
+  'gsd-phase-researcher': 'workspace-write',
+  'gsd-project-researcher': 'workspace-write',
+  'gsd-research-synthesizer': 'workspace-write',
+  'gsd-verifier': 'workspace-write',
+  'gsd-codebase-mapper': 'workspace-write',
+  'gsd-roadmapper': 'workspace-write',
+  'gsd-debugger': 'workspace-write',
+  'gsd-plan-checker': 'read-only',
+  'gsd-integration-checker': 'read-only',
+};
+
 const banner = `
 ${green}   ██████╗ ███████╗██████╗
    ██╔════╝ ██╔════╝██╔══██╗
@@ -169,12 +186,45 @@ function toSingleLine(value) {
 }
 
 function getCodexSkillAdapterHeader(skillName) {
+  const invocation = `$${skillName}`;
   return `<codex_skill_adapter>
-Codex native skill mode:
-- AGENTS-first: treat AGENTS.md as the persistent source of truth for behavior and constraints.
-- Invoke this workflow with \`$${skillName}\`.
-- Treat user text after \`$${skillName}\` as \`{{GSD_ARGS}}\` (empty when omitted).
-- Any legacy \`Task(...)\` notation in referenced docs means "spawn a specialized subagent" in Codex.
+## A. Skill Invocation
+- This skill is invoked by mentioning \`${invocation}\`.
+- Treat all user text after \`${invocation}\` as \`{{GSD_ARGS}}\`.
+- If no arguments are present, treat \`{{GSD_ARGS}}\` as empty.
+
+## B. AskUserQuestion → request_user_input Mapping
+GSD workflows use \`AskUserQuestion\` (GSD workflow syntax). Translate to Codex \`request_user_input\`:
+
+Parameter mapping:
+- \`header\` → \`header\`
+- \`question\` → \`question\`
+- Options formatted as \`"Label" — description\` → \`{label: "Label", description: "description"}\`
+- Generate \`id\` from header: lowercase, replace spaces with underscores
+
+Batched calls:
+- \`AskUserQuestion([q1, q2])\` → single \`request_user_input\` with multiple entries in \`questions[]\`
+
+Multi-select workaround:
+- Codex has no \`multiSelect\`. Use sequential single-selects, or present a numbered freeform list asking the user to enter comma-separated numbers.
+
+Execute mode fallback:
+- When \`request_user_input\` is rejected (Execute mode), present a plain-text numbered list and pick a reasonable default.
+
+## C. Task() → spawn_agent Mapping
+GSD workflows use \`Task(...)\` (GSD workflow syntax). Translate to Codex collaboration tools:
+
+Direct mapping:
+- \`Task(subagent_type="X", prompt="Y")\` → \`spawn_agent(agent_type="X", message="Y")\`
+- \`Task(model="...")\` → omit (Codex uses per-role config, not inline model selection)
+- \`fork_context: false\` by default — GSD agents load their own context via \`<files_to_read>\` blocks
+
+Parallel fan-out:
+- Spawn multiple agents → collect agent IDs → \`wait(ids)\` for all to complete
+
+Result parsing:
+- Look for structured markers in agent output: \`CHECKPOINT\`, \`PLAN COMPLETE\`, \`SUMMARY\`, etc.
+- \`close_agent(id)\` after collecting results from each agent
 </codex_skill_adapter>`;
 }
 
@@ -638,6 +688,216 @@ if (locationFlagCount > 1) {
   process.exit(1);
 }
 
+// ─── Upstream Codex Config Functions ──────────────────────────────────────────
+// These are ported from upstream's install.js for multi-agent config.toml
+// generation, merge, strip, and per-agent .toml config files.
+
+/**
+ * Convert an agent markdown file to Codex agent format.
+ * Applies base markdown conversions, then adds a <codex_agent_role> header
+ * and cleans up frontmatter (removes tools/color fields).
+ */
+function convertAgentToCodexFormat(content) {
+  let converted = convertPromptRefsToSkillRefs(content);
+  converted = convertCommandRefsToSkillMentions(converted);
+  converted = converted.replace(/\$ARGUMENTS\b/g, '{{GSD_ARGS}}');
+
+  const { frontmatter, body } = extractFrontmatterAndBody(converted);
+  if (!frontmatter) return converted;
+
+  const name = extractFrontmatterField(frontmatter, 'name') || 'unknown';
+  const description = extractFrontmatterField(frontmatter, 'description') || '';
+  const tools = extractFrontmatterField(frontmatter, 'tools') || '';
+
+  const roleHeader = `<codex_agent_role>
+role: ${name}
+tools: ${tools}
+purpose: ${toSingleLine(description)}
+</codex_agent_role>`;
+
+  const cleanFrontmatter = `---\nname: ${yamlQuote(name)}\ndescription: ${yamlQuote(toSingleLine(description))}\n---`;
+
+  return `${cleanFrontmatter}\n\n${roleHeader}\n${body}`;
+}
+
+function convertCommandToCodexSkill(content, skillName) {
+  let converted = convertPromptRefsToSkillRefs(content);
+  converted = convertCommandRefsToSkillMentions(converted);
+  converted = converted.replace(/\$ARGUMENTS\b/g, '{{GSD_ARGS}}');
+  const { frontmatter, body } = extractFrontmatterAndBody(converted);
+  let description = `Run GSD workflow ${skillName}.`;
+  if (frontmatter) {
+    const maybeDescription = extractFrontmatterField(frontmatter, 'description');
+    if (maybeDescription) {
+      description = maybeDescription;
+    }
+  }
+  description = toSingleLine(description);
+  const shortDescription = description.length > 180 ? `${description.slice(0, 177)}...` : description;
+  const adapter = getCodexSkillAdapterHeader(skillName);
+
+  return `---\nname: ${yamlQuote(skillName)}\ndescription: ${yamlQuote(description)}\nmetadata:\n  short-description: ${yamlQuote(shortDescription)}\n---\n\n${adapter}\n\n${body.trimStart()}`;
+}
+
+/**
+ * Generate a per-agent .toml config file for Codex.
+ * Sets sandbox_mode and developer_instructions from the agent markdown body.
+ */
+function generateCodexAgentToml(agentName, agentContent) {
+  const sandboxMode = CODEX_AGENT_SANDBOX[agentName] || 'read-only';
+  const { body } = extractFrontmatterAndBody(agentContent);
+  const instructions = body.trim();
+
+  const lines = [
+    `sandbox_mode = "${sandboxMode}"`,
+    `developer_instructions = """`,
+    instructions,
+    `"""`,
+  ];
+  return lines.join('\n') + '\n';
+}
+
+/**
+ * Generate the GSD config block for Codex config.toml.
+ * @param {Array<{name: string, description: string}>} agents
+ */
+function generateCodexConfigBlock(agents) {
+  const lines = [
+    GSD_CODEX_MARKER,
+    '[features]',
+    'multi_agent = true',
+    'default_mode_request_user_input = true',
+    '',
+    '[agents]',
+    'max_threads = 4',
+    'max_depth = 2',
+    '',
+  ];
+
+  for (const { name, description } of agents) {
+    lines.push(`[agents.${name}]`);
+    lines.push(`description = ${JSON.stringify(description)}`);
+    lines.push(`config_file = "agents/${name}.toml"`);
+    lines.push('');
+  }
+
+  return lines.join('\n');
+}
+
+/**
+ * Strip GSD sections from Codex config.toml content.
+ * Returns cleaned content, or null if file would be empty.
+ */
+function stripGsdFromCodexConfig(content) {
+  const markerIndex = content.indexOf(GSD_CODEX_MARKER);
+
+  if (markerIndex !== -1) {
+    let before = content.substring(0, markerIndex).trimEnd();
+    before = before.replace(/^multi_agent\s*=\s*true\s*\n?/m, '');
+    before = before.replace(/^default_mode_request_user_input\s*=\s*true\s*\n?/m, '');
+    before = before.replace(/^\[features\]\s*\n(?=\[|$)/m, '');
+    before = before.replace(/\n{3,}/g, '\n\n').trim();
+    if (!before) return null;
+    return before + '\n';
+  }
+
+  let cleaned = content;
+  cleaned = cleaned.replace(/^multi_agent\s*=\s*true\s*\n?/m, '');
+  cleaned = cleaned.replace(/^default_mode_request_user_input\s*=\s*true\s*\n?/m, '');
+  cleaned = cleaned.replace(/^\[agents\.gsd-[^\]]+\]\n(?:(?!\[)[^\n]*\n?)*/gm, '');
+  cleaned = cleaned.replace(/^\[features\]\s*\n(?=\[|$)/m, '');
+  cleaned = cleaned.replace(/^\[agents\]\s*\n(?=\[|$)/m, '');
+  cleaned = cleaned.replace(/\n{3,}/g, '\n\n').trim();
+
+  if (!cleaned) return null;
+  return cleaned + '\n';
+}
+
+/**
+ * Merge GSD config block into an existing or new config.toml.
+ */
+function mergeCodexConfig(configPath, gsdBlock) {
+  if (!fs.existsSync(configPath)) {
+    fs.writeFileSync(configPath, gsdBlock + '\n');
+    return;
+  }
+
+  const existing = fs.readFileSync(configPath, 'utf8');
+  const markerIndex = existing.indexOf(GSD_CODEX_MARKER);
+
+  if (markerIndex !== -1) {
+    const before = existing.substring(0, markerIndex).trimEnd();
+    const newContent = before ? before + '\n\n' + gsdBlock + '\n' : gsdBlock + '\n';
+    fs.writeFileSync(configPath, newContent);
+    return;
+  }
+
+  let content = existing;
+  const featuresRegex = /^\[features\]\s*$/m;
+  const hasFeatures = featuresRegex.test(content);
+
+  if (hasFeatures) {
+    if (!content.includes('multi_agent')) {
+      content = content.replace(featuresRegex, '[features]\nmulti_agent = true');
+    }
+    if (!content.includes('default_mode_request_user_input')) {
+      content = content.replace(/^\[features\].*$/m, '$&\ndefault_mode_request_user_input = true');
+    }
+    const agentsBlock = gsdBlock.substring(gsdBlock.indexOf('[agents]'));
+    content = content.trimEnd() + '\n\n' + GSD_CODEX_MARKER + '\n' + agentsBlock + '\n';
+  } else {
+    content = content.trimEnd() + '\n\n' + gsdBlock + '\n';
+  }
+
+  fs.writeFileSync(configPath, content);
+}
+
+/**
+ * Generate config.toml and per-agent .toml files for Codex.
+ */
+function installCodexConfig(targetDir, agentsSrc) {
+  const configPath = path.join(targetDir, 'config.toml');
+  const agentsTomlDir = path.join(targetDir, 'agents');
+  fs.mkdirSync(agentsTomlDir, { recursive: true });
+
+  const agentEntries = fs.readdirSync(agentsSrc).filter(f => f.startsWith('gsd-') && f.endsWith('.md'));
+  const agents = [];
+
+  for (const file of agentEntries) {
+    const content = fs.readFileSync(path.join(agentsSrc, file), 'utf8');
+    const { frontmatter } = extractFrontmatterAndBody(content);
+    const name = extractFrontmatterField(frontmatter, 'name') || file.replace('.md', '');
+    const description = extractFrontmatterField(frontmatter, 'description') || '';
+
+    agents.push({ name, description: toSingleLine(description) });
+
+    const tomlContent = generateCodexAgentToml(name, content);
+    fs.writeFileSync(path.join(agentsTomlDir, `${name}.toml`), tomlContent);
+  }
+
+  const gsdBlock = generateCodexConfigBlock(agents);
+  mergeCodexConfig(configPath, gsdBlock);
+
+  return agents.length;
+}
+
+// ─── Test-only exports ───────────────────────────────────────────────────────
+// When loaded as a module for testing, skip main CLI logic and export functions
+if (process.env.GSD_TEST_MODE) {
+  module.exports = {
+    getCodexSkillAdapterHeader,
+    convertAgentToCodexFormat,
+    generateCodexAgentToml,
+    generateCodexConfigBlock,
+    stripGsdFromCodexConfig,
+    mergeCodexConfig,
+    installCodexConfig,
+    convertCommandToCodexSkill,
+    GSD_CODEX_MARKER,
+    CODEX_AGENT_SANDBOX,
+  };
+} else {
+
 if (pathIdx !== -1 && !customPath) {
   console.error(`  ${yellow}--path requires a directory argument${reset}`);
   process.exit(1);
@@ -684,3 +944,5 @@ if (hasVerify) {
     });
   }
 }
+
+} // end of else block for GSD_TEST_MODE

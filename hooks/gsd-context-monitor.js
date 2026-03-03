@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-// Context Monitor - PostToolUse/AfterTool hook (Gemini uses AfterTool)
+// Context Monitor - PostToolUse hook for Codex CLI
 // Reads context metrics from the statusline bridge file and injects
 // warnings when context usage is high. This makes the AGENT aware of
 // context limits (the statusline only shows the user).
 //
 // How it works:
-// 1. The statusline hook writes metrics to /tmp/claude-ctx-{session_id}.json
+// 1. The statusline hook writes metrics to /tmp/codex-ctx-{session_id}.json
 // 2. This hook reads those metrics after each tool use
 // 3. When remaining context drops below thresholds, it injects a warning
 //    as additionalContext, which the agent sees in its conversation
@@ -39,7 +39,7 @@ process.stdin.on('end', () => {
     }
 
     const tmpDir = os.tmpdir();
-    const metricsPath = path.join(tmpDir, `claude-ctx-${sessionId}.json`);
+    const metricsPath = path.join(tmpDir, `codex-ctx-${sessionId}.json`);
 
     // If no metrics file, this is a subagent or fresh session -- exit silently
     if (!fs.existsSync(metricsPath)) {
@@ -63,7 +63,7 @@ process.stdin.on('end', () => {
     }
 
     // Debounce: check if we warned recently
-    const warnPath = path.join(tmpDir, `claude-ctx-${sessionId}-warned.json`);
+    const warnPath = path.join(tmpDir, `codex-ctx-${sessionId}-warned.json`);
     let warnData = { callsSinceWarn: 0, lastLevel: null };
     let firstWarn = true;
 
@@ -109,7 +109,7 @@ process.stdin.on('end', () => {
 
     const output = {
       hookSpecificOutput: {
-        hookEventName: process.env.GEMINI_API_KEY ? "AfterTool" : "PostToolUse",
+        hookEventName: "PostToolUse",
         additionalContext: message
       }
     };

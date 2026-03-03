@@ -16,7 +16,7 @@ const os = require('os');
 
 const {
   getCodexSkillAdapterHeader,
-  convertClaudeAgentToCodexAgent,
+  convertAgentToCodexFormat,
   generateCodexAgentToml,
   generateCodexConfigBlock,
   stripGsdFromCodexConfig,
@@ -65,9 +65,9 @@ describe('getCodexSkillAdapterHeader', () => {
   });
 });
 
-// ─── convertClaudeAgentToCodexAgent ─────────────────────────────────────────────
+// ─── convertAgentToCodexFormat ──────────────────────────────────────────────────
 
-describe('convertClaudeAgentToCodexAgent', () => {
+describe('convertAgentToCodexFormat', () => {
   test('adds codex_agent_role header and cleans frontmatter', () => {
     const input = `---
 name: gsd-executor
@@ -80,7 +80,7 @@ color: yellow
 You are a GSD plan executor.
 </role>`;
 
-    const result = convertClaudeAgentToCodexAgent(input);
+    const result = convertAgentToCodexFormat(input);
 
     // Frontmatter rebuilt with only name and description
     assert.ok(result.startsWith('---\n'), 'starts with frontmatter');
@@ -112,14 +112,14 @@ tools: Read
 
 Run /gsd:execute-phase to proceed.`;
 
-    const result = convertClaudeAgentToCodexAgent(input);
+    const result = convertAgentToCodexFormat(input);
     assert.ok(result.includes('$gsd-execute-phase'), 'converts slash commands');
     assert.ok(!result.includes('/gsd:execute-phase'), 'original slash command removed');
   });
 
   test('handles content without frontmatter', () => {
     const input = 'Just some content without frontmatter.';
-    const result = convertClaudeAgentToCodexAgent(input);
+    const result = convertAgentToCodexFormat(input);
     assert.strictEqual(result, input, 'returns input unchanged');
   });
 });

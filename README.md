@@ -311,7 +311,7 @@ The original repository contains:
 - Best practices and examples
 - Architecture and design principles
 
-**Note:** The original README is written for Codex Code. When following it, remember that this fork uses:
+**Note:** The original README is written for multiple runtimes (Claude Code, Gemini CLI, OpenCode). When following it, remember that this fork uses:
 
 - Codex-native skills (`$gsd-*`)
 - OpenAI Codex CLI & Desktop
