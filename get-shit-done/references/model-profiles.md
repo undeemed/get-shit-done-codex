@@ -4,36 +4,39 @@ Model profiles control which Codex model each GSD agent uses. This allows balanc
 
 ## Profile Definitions
 
-| Agent | `quality` | `balanced` | `budget` |
-|-------|-----------|------------|----------|
-| gsd-planner | opus | opus | sonnet |
-| gsd-roadmapper | opus | sonnet | sonnet |
-| gsd-executor | opus | sonnet | sonnet |
-| gsd-phase-researcher | opus | sonnet | haiku |
-| gsd-project-researcher | opus | sonnet | haiku |
-| gsd-research-synthesizer | sonnet | sonnet | haiku |
-| gsd-debugger | opus | sonnet | sonnet |
-| gsd-codebase-mapper | sonnet | haiku | haiku |
-| gsd-verifier | sonnet | sonnet | haiku |
-| gsd-plan-checker | sonnet | sonnet | haiku |
-| gsd-integration-checker | sonnet | sonnet | haiku |
+| Agent                    | `quality` | `balanced`   | `budget`     |
+| ------------------------ | --------- | ------------ | ------------ |
+| gsd-planner              | o3        | o3           | o4-mini      |
+| gsd-roadmapper           | o3        | o4-mini      | o4-mini      |
+| gsd-executor             | o3        | o4-mini      | o4-mini      |
+| gsd-phase-researcher     | o3        | o4-mini      | gpt-4.1-nano |
+| gsd-project-researcher   | o3        | o4-mini      | gpt-4.1-nano |
+| gsd-research-synthesizer | o4-mini   | o4-mini      | gpt-4.1-nano |
+| gsd-debugger             | o3        | o4-mini      | o4-mini      |
+| gsd-codebase-mapper      | o4-mini   | gpt-4.1-nano | gpt-4.1-nano |
+| gsd-verifier             | o4-mini   | o4-mini      | gpt-4.1-nano |
+| gsd-plan-checker         | o4-mini   | o4-mini      | gpt-4.1-nano |
+| gsd-integration-checker  | o4-mini   | o4-mini      | gpt-4.1-nano |
 
 ## Profile Philosophy
 
 **quality** - Maximum reasoning power
-- Opus for all decision-making agents
-- Sonnet for read-only verification
+
+- o3 for all decision-making agents
+- o4-mini for read-only verification
 - Use when: quota available, critical architecture work
 
 **balanced** (default) - Smart allocation
-- Opus only for planning (where architecture decisions happen)
-- Sonnet for execution and research (follows explicit instructions)
-- Sonnet for verification (needs reasoning, not just pattern matching)
+
+- o3 only for planning (where architecture decisions happen)
+- o4-mini for execution and research (follows explicit instructions)
+- o4-mini for verification (needs reasoning, not just pattern matching)
 - Use when: normal development, good balance of quality and cost
 
-**budget** - Minimal Opus usage
-- Sonnet for anything that writes code
-- Haiku for research and verification
+**budget** - Minimal o3 usage
+
+- o4-mini for anything that writes code
+- gpt-4.1-nano for research and verification
 - Use when: conserving quota, high-volume work, less critical phases
 
 ## Resolution Logic
@@ -55,19 +58,20 @@ Override specific agents without changing the entire profile:
 {
   "model_profile": "balanced",
   "model_overrides": {
-    "gsd-executor": "opus",
-    "gsd-planner": "haiku"
+    "gsd-executor": "o3",
+    "gsd-planner": "gpt-4.1-nano"
   }
 }
 ```
 
-Overrides take precedence over the profile. Valid values: `opus`, `sonnet`, `haiku`.
+Overrides take precedence over the profile. Valid values: `o3`, `o4-mini`, `gpt-4.1-nano`.
 
 ## Switching Profiles
 
 Runtime: `$gsd-set-profile <profile>`
 
 Per-project default: Set in `.planning/config.json`:
+
 ```json
 {
   "model_profile": "balanced"
@@ -76,17 +80,17 @@ Per-project default: Set in `.planning/config.json`:
 
 ## Design Rationale
 
-**Why Opus for gsd-planner?**
+**Why o3 for gsd-planner?**
 Planning involves architecture decisions, goal decomposition, and task design. This is where model quality has the highest impact.
 
-**Why Sonnet for gsd-executor?**
+**Why o4-mini for gsd-executor?**
 Executors follow explicit PLAN.md instructions. The plan already contains the reasoning; execution is implementation.
 
-**Why Sonnet (not Haiku) for verifiers in balanced?**
-Verification requires goal-backward reasoning - checking if code *delivers* what the phase promised, not just pattern matching. Sonnet handles this well; Haiku may miss subtle gaps.
+**Why o4-mini (not gpt-4.1-nano) for verifiers in balanced?**
+Verification requires goal-backward reasoning - checking if code _delivers_ what the phase promised, not just pattern matching. o4-mini handles this well; gpt-4.1-nano may miss subtle gaps.
 
-**Why Haiku for gsd-codebase-mapper?**
+**Why gpt-4.1-nano for gsd-codebase-mapper?**
 Read-only exploration and pattern extraction. No reasoning required, just structured output from file contents.
 
-**Why `inherit` instead of passing `opus` directly?**
-Codex CLI's `"opus"` alias maps to a specific model version. Organizations may block older opus versions while allowing newer ones. GSD returns `"inherit"` for opus-tier agents, causing them to use whatever opus version the user has configured in their session. This avoids version conflicts and silent fallbacks to Sonnet.
+**Why `inherit` instead of passing `o3` directly?**
+Codex CLI's `"o3"` alias maps to a specific model version. Organizations may block older versions while allowing newer ones. GSD returns `"inherit"` for o3-tier agents, causing them to use whatever model the user has configured in their session. This avoids version conflicts and silent fallbacks.

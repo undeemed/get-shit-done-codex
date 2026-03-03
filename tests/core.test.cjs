@@ -82,9 +82,9 @@ describe('loadConfig', () => {
 
   // Bug: loadConfig previously omitted model_overrides from return value
   test('returns model_overrides when present (REG-01)', () => {
-    writeConfig({ model_overrides: { 'gsd-executor': 'opus' } });
+    writeConfig({ model_overrides: { 'gsd-executor': 'o3' } });
     const config = loadConfig(tmpDir);
-    assert.deepStrictEqual(config.model_overrides, { 'gsd-executor': 'opus' });
+    assert.deepStrictEqual(config.model_overrides, { 'gsd-executor': 'o3' });
   });
 
   test('returns model_overrides as null when not in config', () => {
@@ -147,7 +147,7 @@ describe('resolveModelInternal', () => {
     test('all known agents resolve to a valid string for each profile', () => {
       const knownAgents = ['gsd-planner', 'gsd-executor', 'gsd-phase-researcher', 'gsd-codebase-mapper'];
       const profiles = ['quality', 'balanced', 'budget'];
-      const validValues = ['inherit', 'sonnet', 'haiku', 'opus'];
+      const validValues = ['inherit', 'o4-mini', 'gpt-4.1-nano', 'o3'];
 
       for (const profile of profiles) {
         writeConfig({ model_profile: profile });
@@ -166,14 +166,14 @@ describe('resolveModelInternal', () => {
     test('per-agent override takes precedence over profile', () => {
       writeConfig({
         model_profile: 'balanced',
-        model_overrides: { 'gsd-executor': 'haiku' },
+        model_overrides: { 'gsd-executor': 'gpt-4.1-nano' },
       });
-      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-executor'), 'haiku');
+      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-executor'), 'gpt-4.1-nano');
     });
 
-    test('opus override resolves to inherit', () => {
+    test('o3 override resolves to inherit', () => {
       writeConfig({
-        model_overrides: { 'gsd-executor': 'opus' },
+        model_overrides: { 'gsd-executor': 'o3' },
       });
       assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-executor'), 'inherit');
     });
@@ -181,22 +181,22 @@ describe('resolveModelInternal', () => {
     test('agents not in override fall back to profile', () => {
       writeConfig({
         model_profile: 'quality',
-        model_overrides: { 'gsd-executor': 'haiku' },
+        model_overrides: { 'gsd-executor': 'gpt-4.1-nano' },
       });
-      // gsd-planner not overridden, should use quality profile -> opus -> inherit
+      // gsd-planner not overridden, should use quality profile -> o3 -> inherit
       assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-planner'), 'inherit');
     });
   });
 
   describe('edge cases', () => {
-    test('returns sonnet for unknown agent type', () => {
+    test('returns o4-mini for unknown agent type', () => {
       writeConfig({ model_profile: 'balanced' });
-      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-nonexistent'), 'sonnet');
+      assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-nonexistent'), 'o4-mini');
     });
 
     test('defaults to balanced profile when model_profile missing', () => {
       writeConfig({});
-      // balanced profile, gsd-planner -> opus -> inherit
+      // balanced profile, gsd-planner -> o3 -> inherit
       assert.strictEqual(resolveModelInternal(tmpDir, 'gsd-planner'), 'inherit');
     });
   });
