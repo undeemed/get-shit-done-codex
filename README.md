@@ -262,6 +262,18 @@ GSD ships 11 specialized agent definitions in `agents/gsd-*.md`, each wired into
 
 Each agent gets its full role definition (700+ lines) loaded at spawn time — no context wasted on the orchestrator.
 
+### Model Profiles
+
+All agents use **gpt-5.3-codex** with role-based thinking levels:
+
+| Profile    | Planner/Debugger | Executor/Verifier | Researchers/Mapper |
+| ---------- | ---------------- | ----------------- | ------------------ |
+| `quality`  | 🟢 high          | 🟡 medium         | 🟡 medium/🔵 low   |
+| `balanced` | 🟢 high          | 🟡 medium         | 🔵 low             |
+| `budget`   | 🟡 medium        | 🔵 low            | 🔵 low             |
+
+Switch profiles: `$gsd-set-profile budget`
+
 ### Atomic Git Commits
 
 Each task gets its own commit immediately after completion:
@@ -311,10 +323,11 @@ The original repository contains:
 - Best practices and examples
 - Architecture and design principles
 
-**Note:** The original README is written for multiple runtimes (Claude Code, Gemini CLI, OpenCode). When following it, remember that this fork uses:
+**Note:** The original README is written for multiple runtimes. When following it, remember that this fork uses:
 
 - Codex-native skills (`$gsd-*`)
 - OpenAI Codex CLI & Desktop
+- `gpt-5.3-codex` with role-based thinking levels (not multi-model profiles)
 
 ## Keywords
 
