@@ -17,6 +17,7 @@ if $ARGUMENTS.profile not in ["quality", "balanced", "budget"]:
   Valid profiles: quality, balanced, budget
   EXIT
 ```
+
 </step>
 
 <step name="ensure_and_load_config">
@@ -34,6 +35,7 @@ This creates `.planning/config.json` with defaults if missing and loads current 
 Read current config from state load or directly:
 
 Update `model_profile` field:
+
 ```json
 {
   "model_profile": "$ARGUMENTS.profile"
@@ -56,25 +58,27 @@ Agents will now use:
 Example:
 | Agent | Model |
 |-------|-------|
-| gsd-planner | opus |
-| gsd-executor | sonnet |
-| gsd-verifier | haiku |
+| gsd-planner | o3 |
+| gsd-executor | o4-mini |
+| gsd-verifier | gpt-4.1-nano |
 | ... | ... |
 
 Next spawned agents will use the new profile.
 ```
 
 Map profile names:
+
 - quality: use "quality" column from MODEL_PROFILES
 - balanced: use "balanced" column from MODEL_PROFILES
 - budget: use "budget" column from MODEL_PROFILES
-</step>
+  </step>
 
 </process>
 
 <success_criteria>
+
 - [ ] Argument validated
 - [ ] Config file ensured
 - [ ] Config updated with new model_profile
 - [ ] Confirmation displayed with model table
-</success_criteria>
+      </success_criteria>
