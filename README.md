@@ -45,7 +45,7 @@ graph TB
 ## What Changed In This Fork
 
 - **AGENTS-first for Codex:** `AGENTS.md` is the primary behavior contract. [Agent.md Info](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals)
-- **Default Model is flagship:** Codex 5.3 is used for all profile modes, but at different thinking levels. 
+- **Default Model is flagship:** Codex 5.3 is used for all profile modes, but at different thinking levels. [Model Profiles](https://github.com/undeemed/get-shit-done-codex/edit/main/README.md#model-profiles)
 - **Native skills:** all commands use `$gsd-*` skill notation — no prompt aliases needed.
 - **Full config distribution:** installer ships `.codex/config.toml` (multi-agent, feature flags, MCP servers) and 11 rich `agents/*.md` sub-agent definitions — everything needed for multi-agent orchestration out of the box.
 - **Sub-agent linking:** each agent role in `config.toml` uses `developer_instructions` to load its full role definition from `agents/gsd-*.md` at runtime — no manual wiring needed.
