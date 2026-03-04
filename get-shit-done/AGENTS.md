@@ -83,29 +83,65 @@ Each task gets its own commit immediately after completion:
 
 The following commands are available. Invoke them with `$gsd-command-name`:
 
-| Command                           | Description                                 |
-| --------------------------------- | ------------------------------------------- |
-| `$gsd-new-project`                | Initialize project through deep questioning |
-| `$gsd-create-roadmap`             | Create roadmap and state tracking           |
-| `$gsd-map-codebase`               | Map existing codebase (brownfield projects) |
-| `$gsd-plan-phase [N]`             | Generate task plans for phase N             |
-| `$gsd-execute-plan [path]`        | Execute a PLAN.md file                      |
-| `$gsd-progress`                   | Show current position and what's next       |
-| `$gsd-verify-work [N]`            | User acceptance testing                     |
-| `$gsd-plan-fix [plan]`            | Plan fixes for UAT issues                   |
-| `$gsd-complete-milestone`         | Archive milestone, prep next version        |
-| `$gsd-discuss-milestone`          | Gather context for next milestone           |
-| `$gsd-new-milestone [name]`       | Create new milestone with phases            |
-| `$gsd-add-phase`                  | Append phase to roadmap                     |
-| `$gsd-insert-phase [N]`           | Insert urgent work                          |
-| `$gsd-remove-phase [N]`           | Remove future phase                         |
-| `$gsd-discuss-phase [N]`          | Gather context before planning              |
-| `$gsd-research-phase [N]`         | Deep ecosystem research                     |
-| `$gsd-list-phase-assumptions [N]` | Review assumptions before planning          |
-| `$gsd-pause-work`                 | Create handoff when stopping mid-phase      |
-| `$gsd-resume-work`                | Restore from last session                   |
-| `$gsd-consider-issues`            | Review deferred issues                      |
-| `$gsd-help`                       | Show all commands                           |
+**Core Workflow**
+
+| Command                    | Description                                 |
+| -------------------------- | ------------------------------------------- |
+| `$gsd-new-project`         | Initialize project through deep questioning |
+| `$gsd-create-roadmap`      | Create roadmap and state tracking           |
+| `$gsd-map-codebase`        | Map existing codebase (brownfield projects) |
+| `$gsd-plan-phase [N]`      | Generate task plans for phase N             |
+| `$gsd-execute-phase [N]`   | Execute all plans in parallel waves         |
+| `$gsd-execute-plan [path]` | Execute a PLAN.md file                      |
+| `$gsd-verify-work [N]`     | User acceptance testing                     |
+| `$gsd-progress`            | Show current position and what's next       |
+| `$gsd-quick`               | Quick-start shortcut for small tasks        |
+
+**Phase Management**
+
+| Command                           | Description                        |
+| --------------------------------- | ---------------------------------- |
+| `$gsd-add-phase`                  | Append phase to roadmap            |
+| `$gsd-insert-phase [N]`           | Insert urgent work at position N   |
+| `$gsd-remove-phase [N]`           | Remove future phase                |
+| `$gsd-discuss-phase [N]`          | Gather context before planning     |
+| `$gsd-research-phase [N]`         | Deep ecosystem research            |
+| `$gsd-list-phase-assumptions [N]` | Review assumptions before planning |
+
+**Milestones**
+
+| Command                     | Description                          |
+| --------------------------- | ------------------------------------ |
+| `$gsd-complete-milestone`   | Archive milestone, prep next version |
+| `$gsd-discuss-milestone`    | Gather context for next milestone    |
+| `$gsd-new-milestone [name]` | Create new milestone with phases     |
+| `$gsd-audit-milestone`      | Audit milestone completeness         |
+| `$gsd-plan-milestone-gaps`  | Plan for gaps in current milestone   |
+
+**Session & Debugging**
+
+| Command                | Description                            |
+| ---------------------- | -------------------------------------- |
+| `$gsd-pause-work`      | Create handoff when stopping mid-phase |
+| `$gsd-resume-work`     | Restore from last session              |
+| `$gsd-consider-issues` | Review deferred issues                 |
+| `$gsd-plan-fix [plan]` | Plan fixes for UAT issues              |
+| `$gsd-debug`           | Diagnose and debug issues              |
+| `$gsd-cleanup`         | Clean up planning artifacts            |
+
+**Configuration & Utilities**
+
+| Command                | Description                                      |
+| ---------------------- | ------------------------------------------------ |
+| `$gsd-set-profile <P>` | Switch model profile (quality, balanced, budget) |
+| `$gsd-settings`        | View or edit project config                      |
+| `$gsd-health`          | Project health check                             |
+| `$gsd-add-tests`       | Add tests for a phase                            |
+| `$gsd-add-todo`        | Add a todo item                                  |
+| `$gsd-check-todos`     | Review open todos                                |
+| `$gsd-reapply-patches` | Reapply saved patches                            |
+| `$gsd-update`          | Check for and install updates                    |
+| `$gsd-help`            | Show all commands                                |
 
 ## Workflow
 
