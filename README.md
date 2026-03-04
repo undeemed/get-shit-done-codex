@@ -91,7 +91,7 @@ The installer distributes everything GSD needs:
 On first run, Codex may prompt you to **trust the project** so the config takes effect (one-time, one-click).
 
 > [!NOTE]
-> `.codex/config.toml` is non-destructive — the installer skips it if you already have one, so your customizations are preserved on updates.
+> `.codex/config.toml` is non-destructive — the installer skips it if you already have one, so your customizations are preserved on updates. You can manually update it later referencing the .codex/.toml in this repo.
 
 ### Installed File Structure
 
