@@ -6,6 +6,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.24.3] - 2026-03-04
+
+### Docs
+
+- **Command table sync** — `AGENTS.md` and `README.md` command tables expanded from 21 → 35 entries, grouped into 5 categories (Core Workflow, Phase Management, Milestones, Session & Debugging, Configuration & Utilities)
+- Added all missing skill commands: `execute-phase`, `quick`, `audit-milestone`, `plan-milestone-gaps`, `debug`, `cleanup`, `set-profile`, `settings`, `health`, `add-tests`, `add-todo`, `check-todos`, `reapply-patches`, `update`
+- README: added "Default Model is flagship" to fork changes section
+- README: added config.toml manual update note
+
 ### Fixed
 
 - Restored `gsd-tools` dispatcher parity with lib commands:
